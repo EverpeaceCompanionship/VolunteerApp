@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adopt a Muslim Senior — Coordinator Dashboard</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@500;600&display=swap');
+  :root {
+    --cream: #FAF7F2; --gold: #C9A84C; --gold-light: #F0E0B0; --gold-dark: #9A7A2E;
+    --green: #2D6A4F; --green-light: #E8F5EE; --green-dark: #1B4332;
+    --charcoal: #2C2C2C; --text-secondary: #6B6B6B; --border: #E8E0D0;
+    --white: #FFFFFF; --red: #C0392B; --red-light: #FDECEA;
+    --blue: #2563EB; --blue-light: #EFF6FF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Lato', sans-serif; background: var(--cream); color: var(--charcoal); min-height: 100vh; }
+
+  /* HEADER */
+  .app-header { background: var(--green-dark); padding: 0; }
+  .header-content { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; }
+  .header-logo { display: flex; align-items: center; gap: 10px; }
+  .logo-text h1 { font-family: 'Playfair Display', serif; font-size: 15px; color: white; }
+  .logo-text p { font-size: 11px; color: var(--gold-light); text-transform: uppercase; letter-spacing: 0.05em; }
+  .admin-badge { background: var(--gold); color: var(--green-dark); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+  .btn-signout { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; font-size: 12px; padding: 5px 12px; border-radius: 20px; cursor: pointer; font-family: 'Lato', sans-serif; }
+
+  /* LAYOUT */
+  .container { max-width: 900px; margin: 0 auto; padding: 20px 16px 60px; }
+
+  /* CARDS */
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+  .card-title { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--green-dark); margin-bottom: 4px; }
+  .card-sub { font-size: 12px; color: var(--text-secondary); margin-bottom: 14px; }
+
+  /* NAV */
+  .nav-tabs { display: flex; gap: 6px; background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 5px; margin-bottom: 20px; overflow-x: auto; }
+  .nav-tab { flex-shrink: 0; padding: 9px 16px; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; background: transparent; color: var(--text-secondary); font-family: 'Lato', sans-serif; transition: all 0.2s; }
+  .nav-tab.active { background: var(--green); color: white; }
+
+  /* SCREEN */
+  .screen { display: none; }
+  .screen.active { display: block; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* FORMS */
+  label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--charcoal); margin-bottom: 5px; margin-top: 12px; }
+  input, select, textarea { width: 100%; padding: 10px 13px; border: 1.5px solid var(--border); border-radius: 9px; font-size: 13px; font-family: 'Lato', sans-serif; color: var(--charcoal); background: var(--cream); outline: none; }
+  input:focus, select:focus, textarea:focus { border-color: var(--gold); background: var(--white); }
+  textarea { resize: vertical; min-height: 70px; }
+
+  /* BUTTONS */
+  .btn { padding: 11px 20px; border: none; border-radius: 9px; font-size: 13px; font-weight: 700; font-family: 'Lato', sans-serif; cursor: pointer; transition: all 0.2s; }
+  .btn-primary { background: var(--green); color: white; }
+  .btn-primary:hover { background: var(--green-dark); }
+  .btn-primary:disabled { background: #aaa; cursor: not-allowed; }
+  .btn-gold { background: var(--gold); color: var(--green-dark); }
+  .btn-gold:hover { background: var(--gold-dark); color: white; }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+  .btn-outline { background: transparent; border: 1.5px solid var(--green); color: var(--green); }
+  .btn-copy { background: var(--blue-light); color: var(--blue); border: 1px solid #BFDBFE; }
+  .btn-copy:hover { background: var(--blue); color: white; }
+
+  /* ALERTS */
+  .alert { padding: 12px 14px; border-radius: 9px; font-size: 13px; margin-bottom: 12px; display: flex; gap: 10px; align-items: flex-start; }
+  .alert-success { background: var(--green-light); color: var(--green-dark); border: 1px solid #A8D5BC; }
+  .alert-error { background: var(--red-light); color: var(--red); border: 1px solid #F5C6C1; }
+  .alert-info { background: #FDF8EC; color: var(--gold-dark); border: 1px solid var(--gold-light); }
+
+  /* LOADING */
+  .loading { text-align: center; padding: 24px; color: var(--text-secondary); font-size: 13px; }
+  .spinner { width: 26px; height: 26px; border: 3px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 10px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* VOLUNTEER CARDS */
+  .vol-card { border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; background: var(--cream); }
+  .vol-card.has-avail { border-color: var(--green); background: var(--green-light); }
+  .vol-name { font-size: 14px; font-weight: 700; color: var(--green-dark); }
+  .vol-meta { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+  .avail-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+  .chip { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: var(--white); border: 1px solid var(--border); color: var(--charcoal); }
+  .chip.am    { background: #FEF9C3; border-color: #FDE047; color: #713F12; }
+  .chip.pm    { background: #DBEAFE; border-color: #93C5FD; color: #1e3a5f; }
+  .chip.eve   { background: #EDE9FE; border-color: #C4B5FD; color: #4C1D95; }
+  .chip.date  { background: var(--cream); font-weight: 700; }
+
+  /* SENIOR CARDS */
+  .senior-card { border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; background: var(--white); }
+  .senior-name { font-size: 14px; font-weight: 700; color: var(--green-dark); }
+  .senior-detail { font-size: 12px; color: var(--text-secondary); margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+
+  /* MATCH CARD */
+  .match-output { border: 2px solid var(--green); border-radius: 14px; padding: 20px; background: var(--green-light); margin-top: 16px; display: none; }
+  .match-output.show { display: block; }
+  .match-event-title { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--green-dark); margin-bottom: 12px; }
+  .event-copybox { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 14px; font-size: 12px; font-family: monospace; white-space: pre-wrap; line-height: 1.7; color: var(--charcoal); margin-bottom: 10px; }
+
+  /* GRID */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* STATS STRIP */
+  .stats-strip { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+  .stat-pill { flex: 1; min-width: 120px; background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; }
+  .stat-num { font-size: 22px; font-weight: 700; color: var(--green); }
+  .stat-lbl { font-size: 11px; color: var(--text-secondary); }
+
+  /* SEARCH */
+  .search-bar { position: relative; margin-bottom: 14px; }
+  .search-bar input { padding-left: 36px; }
+  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; color: var(--text-secondary); }
+
+  /* LOGIN */
+  .login-wrap { max-width: 360px; margin: 80px auto 0; }
+  .login-crescent { text-align: center; font-size: 60px; margin-bottom: 12px; }
+  .login-heading { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--green-dark); text-align: center; margin-bottom: 6px; }
+  .login-sub { font-size: 13px; color: var(--text-secondary); text-align: center; margin-bottom: 20px; }
+
+  /* AVAILABILITY FILTER */
+  .filter-row { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  .filter-btn { padding: 6px 14px; border: 1.5px solid var(--border); border-radius: 20px; font-size: 12px; font-weight: 700; background: white; cursor: pointer; color: var(--text-secondary); font-family: 'Lato', sans-serif; }
+  .filter-btn.active { border-color: var(--green); background: var(--green-light); color: var(--green-dark); }
+
+  .no-avail-note { text-align: center; padding: 20px; color: var(--text-secondary); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="header-content">
+    <div class="header-logo">
+      <div style="width:36px;height:36px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;">&#127969;</div>
+      <div class="logo-text">
+        <h1>Adopt a Muslim Senior</h1>
+        <p>Coordinator Dashboard</p>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="admin-badge" id="coord-badge" style="display:none">&#128274; Admin</span>
+      <button class="btn-signout" onclick="doLogout()" id="btn-signout" style="display:none">Sign Out</button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ===== LOGIN ===== -->
+  <div class="screen active" id="screen-login">
+    <div class="login-wrap">
+      <div class="login-crescent">&#127769;</div>
+      <h2 class="login-heading">Coordinator Access</h2>
+      <p class="login-sub">Enter your coordinator PIN to access the admin dashboard.</p>
+      <div class="card">
+        <div id="pin-alert"></div>
+        <label for="pin-input">Coordinator PIN</label>
+        <input type="password" id="pin-input" placeholder="Enter PIN" autocomplete="off">
+        <button class="btn btn-primary" onclick="doLogin()" style="width:100%;margin-top:14px">Access Dashboard</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== DASHBOARD ===== -->
+  <div class="screen" id="screen-dash">
+
+    <!-- Stats strip -->
+    <div class="stats-strip">
+      <div class="stat-pill"><div class="stat-num" id="stat-vols">–</div><div class="stat-lbl">Volunteers</div></div>
+      <div class="stat-pill"><div class="stat-num" id="stat-seniors">–</div><div class="stat-lbl">Seniors</div></div>
+      <div class="stat-pill"><div class="stat-num" id="stat-avail">–</div><div class="stat-lbl">Submitted Availability</div></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="showPanel('panel-avail')">&#128197; Availability</button>
+      <button class="nav-tab"        onclick="showPanel('panel-seniors')">&#128116; Seniors</button>
+      <button class="nav-tab"        onclick="showPanel('panel-match')">&#129309; Match Builder</button>
+    </div>
+
+    <!-- PANEL: AVAILABILITY -->
+    <div class="tab-panel active" id="panel-avail">
+      <div class="card">
+        <h3 class="card-title">Volunteer Availability</h3>
+        <p class="card-sub">Showing volunteers who submitted availability this cycle. Use this to plan your calendar assignments.</p>
+
+        <div class="filter-row" id="avail-filters">
+          <button class="filter-btn active" onclick="filterAvail('all', this)">All</button>
+          <button class="filter-btn" onclick="filterAvail('avail', this)">&#10003; Has Availability</button>
+          <button class="filter-btn" onclick="filterAvail('none', this)">No Availability Yet</button>
+        </div>
+
+        <div class="search-bar">
+          <span class="search-icon">&#128269;</span>
+          <input type="text" id="vol-search" placeholder="Search volunteer name..." oninput="filterVolunteers()">
+        </div>
+
+        <div id="vol-list">
+          <div class="loading"><div class="spinner"></div>Loading volunteers...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL: SENIORS -->
+    <div class="tab-panel" id="panel-seniors">
+      <div class="card">
+        <h3 class="card-title">Senior Roster</h3>
+        <p class="card-sub">All registered seniors. Use this alongside availability to plan your visit schedule.</p>
+        <div class="search-bar">
+          <span class="search-icon">&#128269;</span>
+          <input type="text" id="senior-search" placeholder="Search senior name or facility..." oninput="filterSeniors()">
+        </div>
+        <div id="senior-list">
+          <div class="loading"><div class="spinner"></div>Loading seniors...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL: MATCH BUILDER -->
+    <div class="tab-panel" id="panel-match">
+      <div class="card">
+        <h3 class="card-title">&#129309; Match Builder</h3>
+        <p class="card-sub">Select a volunteer and a senior, choose a date and time, and get a ready-to-copy Google Calendar event description.</p>
+
+        <div class="two-col">
+          <div>
+            <label>Select Volunteer</label>
+            <select id="match-vol">
+              <option value="">— Select volunteer —</option>
+            </select>
+          </div>
+          <div>
+            <label>Select Senior</label>
+            <select id="match-senior">
+              <option value="">— Select senior —</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="two-col" style="margin-top:4px">
+          <div>
+            <label>Visit Date</label>
+            <input type="date" id="match-date">
+          </div>
+          <div>
+            <label>Start Time</label>
+            <input type="time" id="match-start" value="14:00">
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div>
+            <label>Duration</label>
+            <select id="match-duration">
+              <option value="1h">1 hour</option>
+              <option value="1.5h" selected>1.5 hours</option>
+              <option value="2h">2 hours</option>
+              <option value="30min">30 minutes</option>
+            </select>
+          </div>
+          <div>
+            <label>Visit Language</label>
+            <select id="match-lang">
+              <option value="English">English</option>
+              <option value="French">French / Français</option>
+              <option value="Arabic">Arabic / عربي</option>
+              <option value="Bilingual">Bilingual</option>
+            </select>
+          </div>
+        </div>
+
+        <label>Coordinator Notes (optional)</label>
+        <textarea id="match-notes" placeholder="Any special instructions for this visit..."></textarea>
+
+        <div style="margin-top:14px">
+          <button class="btn btn-gold" onclick="generateMatch()">Generate Calendar Event &#8594;</button>
+        </div>
+
+        <div class="match-output" id="match-output">
+          <div class="match-event-title" id="match-event-title"></div>
+          <p style="font-size:12px;color:var(--text-secondary);margin-bottom:8px">Copy this description into your Google Calendar event:</p>
+          <div class="event-copybox" id="match-copybox"></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-copy btn-sm" onclick="copyEventDetails()">&#128203; Copy Event Details</button>
+            <button class="btn btn-outline btn-sm" onclick="clearMatch()">Clear</button>
+          </div>
+          <div id="copy-confirm" style="font-size:12px;color:var(--green);margin-top:8px;display:none">&#10003; Copied to clipboard!</div>
+        </div>
+      </div>
+
+      <!-- RECENT PROPOSED MATCHES -->
+      <div class="card">
+        <h3 class="card-title">Proposed Matches (This Session)</h3>
+        <p class="card-sub">Matches you created during this session. Not saved — copy them before you leave.</p>
+        <div id="proposed-matches">
+          <p class="no-avail-note">No matches proposed yet.</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /screen-dash -->
+</div><!-- /container -->
+
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+
+// 🔑 Change this PIN to something only you know.
+// Since this file is on GitHub, keep it simple but not obvious.
+const ADMIN_PIN = '1998';
+
+const BASEROW_TOKEN    = 'SWKMnsqQrocyKfXg9TVb5mMWTGGb1Zsc';
+const BASE_URL         = 'https://api.baserow.io/api';
+const VOLUNTEERS_TABLE = 988315;
+const SENIORS_TABLE    = 917379;
+
+// ============================================================
+// STATE
+// ============================================================
+let allVolunteers    = [];
+let allSeniors       = [];
+let proposedMatches  = [];
+let currentFilter    = 'all';
+
+// ============================================================
+// LOGIN
+// ============================================================
+function doLogin() {
+  const pin = document.getElementById('pin-input').value.trim();
+  const alertBox = document.getElementById('pin-alert');
+  if (pin === ADMIN_PIN) {
+    document.getElementById('screen-login').classList.remove('active');
+    document.getElementById('screen-dash').classList.add('active');
+    document.getElementById('coord-badge').style.display = 'inline';
+    document.getElementById('btn-signout').style.display = 'inline';
+    document.getElementById('match-date').value = new Date().toISOString().split('T')[0];
+    loadAll();
+  } else {
+    alertBox.innerHTML = '<div class="alert alert-error"><span>&#10005;</span><span>Incorrect PIN. Please try again.</span></div>';
+  }
+}
+
+function doLogout() {
+  location.reload();
+}
+
+document.getElementById('pin-input').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+// ============================================================
+// LOAD DATA
+// ============================================================
+async function loadAll() {
+  await Promise.all([loadVolunteers(), loadSeniors()]);
+}
+
+async function loadVolunteers() {
+  try {
+    let rows = [], next = `${BASE_URL}/database/rows/table/${VOLUNTEERS_TABLE}/?user_field_names=true&size=200`;
+    while (next) {
+      const res  = await fetch(next, { headers: { 'Authorization': `Token ${BASEROW_TOKEN}` } });
+      const data = await res.json();
+      rows = rows.concat(data.results || []);
+      next = data.next || null;
+    }
+    allVolunteers = rows;
+    document.getElementById('stat-vols').textContent = rows.length;
+    renderVolunteers(rows);
+    populateVolDropdown(rows);
+  } catch(e) {
+    document.getElementById('vol-list').innerHTML = `<div class="alert alert-error">Could not load volunteers: ${e.message}</div>`;
+  }
+}
+
+async function loadSeniors() {
+  try {
+    let rows = [], next = `${BASE_URL}/database/rows/table/${SENIORS_TABLE}/?user_field_names=true&size=200`;
+    while (next) {
+      const res  = await fetch(next, { headers: { 'Authorization': `Token ${BASEROW_TOKEN}` } });
+      const data = await res.json();
+      rows = rows.concat(data.results || []);
+      next = data.next || null;
+    }
+    allSeniors = rows;
+    document.getElementById('stat-seniors').textContent = rows.length;
+    renderSeniors(rows);
+    populateSeniorDropdown(rows);
+  } catch(e) {
+    document.getElementById('senior-list').innerHTML = `<div class="alert alert-error">Could not load seniors: ${e.message}</div>`;
+  }
+}
+
+// ============================================================
+// RENDER VOLUNTEERS
+// ============================================================
+function getVolField(row, candidates) {
+  for (const c of candidates) {
+    const key = Object.keys(row).find(k => k.toLowerCase() === c.toLowerCase());
+    if (key && row[key]) return String(row[key]).trim();
+  }
+  for (const c of candidates) {
+    const key = Object.keys(row).find(k => k.toLowerCase().includes(c.toLowerCase()) && c.length > 2);
+    if (key && row[key]) return String(row[key]).trim();
+  }
+  return '';
+}
+
+function parseAvailability(availText) {
+  if (!availText || typeof availText !== 'string') return [];
+  const lines = availText.split('\n').filter(l => l.trim() && !l.includes('[Preferred'));
+  return lines.map(line => {
+    const [datePart, slotPart] = line.split(':');
+    return { date: (datePart || '').trim(), slots: (slotPart || '').trim().split(' & ').filter(Boolean) };
+  });
+}
+
+function renderVolunteers(rows) {
+  const withAvail   = rows.filter(r => {
+    const av = getVolField(r, ['Availability Schedule', 'Availability', 'Schedule', 'Disponibilité']);
+    return av && av.trim().length > 5;
+  });
+  document.getElementById('stat-avail').textContent = withAvail.length;
+
+  let filtered = rows;
+  if (currentFilter === 'avail') filtered = withAvail;
+  if (currentFilter === 'none')  filtered = rows.filter(r => !withAvail.includes(r));
+
+  const query = (document.getElementById('vol-search').value || '').toLowerCase();
+  if (query) filtered = filtered.filter(r => (getVolField(r, ['Full Legal Name','Name','Nom']) || '').toLowerCase().includes(query));
+
+  if (filtered.length === 0) {
+    document.getElementById('vol-list').innerHTML = '<div class="no-avail-note">No volunteers match.</div>'; return;
+  }
+
+  document.getElementById('vol-list').innerHTML = filtered.map(r => {
+    const name   = getVolField(r, ['Full Legal Name','Name','Nom']) || 'Unknown';
+    const email  = getVolField(r, ['Email','E-mail','Mail']) || '';
+    const phone  = getVolField(r, ['Phone','Tel','Phone Number','Mobile']) || '';
+    const active = r['Active'] || r['Actif'] || r['active'];
+    const avText = getVolField(r, ['Availability Schedule','Availability','Schedule','Disponibilité']) || '';
+    const parsed = parseAvailability(avText);
+    const hasAvail = parsed.length > 0;
+
+    const slotColor = (s) => {
+      const sl = s.toLowerCase();
+      if (sl.includes('am') || sl.includes('matin') || sl.includes('morning')) return 'chip am';
+      if (sl.includes('pm') || sl.includes('après') || sl.includes('afternoon')) return 'chip pm';
+      if (sl.includes('eve') || sl.includes('soir') || sl.includes('evening')) return 'chip eve';
+      return 'chip';
+    };
+
+    const chipsHtml = parsed.map(p =>
+      `<span class="chip date">${p.date}</span>${p.slots.map(s => `<span class="${slotColor(s)}">${s}</span>`).join('')}`
+    ).join('');
+
+    const preferredLine = avText.match(/\[Preferred visits: ([^\]]+)\]/);
+    const preferred = preferredLine ? ` &middot; Prefers ${preferredLine[1]}` : '';
+
+    return `
+      <div class="vol-card ${hasAvail ? 'has-avail' : ''}">
+        <div style="display:flex;justify-content:space-between;align-items:start">
+          <div>
+            <div class="vol-name">${name}</div>
+            <div class="vol-meta">${email}${phone ? ' &middot; ' + phone : ''}${active ? ' &middot; <span style="color:var(--green)">&#10003; Active</span>' : ''}${preferred}</div>
+          </div>
+          ${hasAvail ? '<span style="font-size:18px;color:var(--green)">&#10003;</span>' : '<span style="font-size:18px;color:#ccc">&#128337;</span>'}
+        </div>
+        ${hasAvail ? `<div class="avail-chips">${chipsHtml}</div>` : '<div style="font-size:12px;color:var(--text-secondary);margin-top:6px">No availability submitted yet.</div>'}
+      </div>`;
+  }).join('');
+}
+
+function filterAvail(type, btn) {
+  currentFilter = type;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderVolunteers(allVolunteers);
+}
+
+function filterVolunteers() { renderVolunteers(allVolunteers); }
+
+// ============================================================
+// RENDER SENIORS
+// ============================================================
+function renderSeniors(rows) {
+  const query = (document.getElementById('senior-search').value || '').toLowerCase();
+  let filtered = rows;
+  if (query) filtered = rows.filter(r => {
+    const name     = getVolField(r, ['Full Legal Name','Name','Nom']) || '';
+    const facility = getVolField(r, ['The senior housing facility','Facility','Résidence']) || '';
+    return (name + ' ' + facility).toLowerCase().includes(query);
+  });
+
+  if (filtered.length === 0) {
+    document.getElementById('senior-list').innerHTML = '<div class="no-avail-note">No seniors match.</div>'; return;
+  }
+
+  document.getElementById('senior-list').innerHTML = filtered.map(r => {
+    const name     = getVolField(r, ['Full Legal Name','Name','Nom']) || 'Unknown';
+    const facility = getVolField(r, ['The senior housing facility','Facility','Résidence','Address']) || '';
+    const lang     = getVolField(r, ['languages','Languages','Langue']) || '';
+    const avail    = getVolField(r, ['Availability','Disponibilité']) || '';
+    const prefs    = getVolField(r, ['Participation & Visit Preferences','Special accomodation','Notes','Préférences']) || '';
+
+    return `
+      <div class="senior-card">
+        <div class="senior-name">${name}</div>
+        ${facility ? `<div class="senior-detail">&#127968; ${facility}</div>` : ''}
+        ${lang     ? `<div class="senior-detail">&#128483;&#65039; ${lang}</div>` : ''}
+        ${avail    ? `<div class="senior-detail">&#128197; ${avail}</div>` : ''}
+        ${prefs    ? `<div class="senior-detail" style="color:var(--gold-dark)">&#128161; ${prefs.substring(0,120)}${prefs.length>120?'...':''}</div>` : ''}
+      </div>`;
+  }).join('');
+}
+
+function filterSeniors() { renderSeniors(allSeniors); }
+
+// ============================================================
+// DROPDOWNS
+// ============================================================
+function populateVolDropdown(rows) {
+  const sel = document.getElementById('match-vol');
+  sel.innerHTML = '<option value="">— Select volunteer —</option>';
+  rows.forEach((r, i) => {
+    const name = getVolField(r, ['Full Legal Name','Name','Nom']) || 'Volunteer ' + i;
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = name;
+    sel.appendChild(opt);
+  });
+}
+
+function populateSeniorDropdown(rows) {
+  const sel = document.getElementById('match-senior');
+  sel.innerHTML = '<option value="">— Select senior —</option>';
+  rows.forEach((r, i) => {
+    const name = getVolField(r, ['Full Legal Name','Name','Nom']) || 'Senior ' + i;
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = name;
+    sel.appendChild(opt);
+  });
+}
+
+// ============================================================
+// MATCH BUILDER — Q3
+// ============================================================
+function generateMatch() {
+  const volIdx    = document.getElementById('match-vol').value;
+  const senIdx    = document.getElementById('match-senior').value;
+  const date      = document.getElementById('match-date').value;
+  const startTime = document.getElementById('match-start').value;
+  const duration  = document.getElementById('match-duration').value;
+  const lang      = document.getElementById('match-lang').value;
+  const notes     = document.getElementById('match-notes').value.trim();
+
+  if (!volIdx || !senIdx || !date || !startTime) {
+    alert('Please fill in volunteer, senior, date, and time.'); return;
+  }
+
+  const vol = allVolunteers[parseInt(volIdx)];
+  const sen = allSeniors[parseInt(senIdx)];
+
+  const volName    = getVolField(vol, ['Full Legal Name','Name','Nom']);
+  const volEmail   = getVolField(vol, ['Email','E-mail','Mail']);
+  const volPhone   = getVolField(vol, ['Phone','Tel','Phone Number','Mobile']);
+  const senName    = getVolField(sen, ['Full Legal Name','Name','Nom']);
+  const senFacility= getVolField(sen, ['The senior housing facility','Facility','Résidence','Address']);
+  const senPrefs   = getVolField(sen, ['Participation & Visit Preferences','Special accomodation','Notes','Préférences']);
+
+  // Calculate end time
+  const [h, m]    = startTime.split(':').map(Number);
+  let endMinutes  = h * 60 + m;
+  if (duration === '30min') endMinutes += 30;
+  else if (duration === '1h') endMinutes += 60;
+  else if (duration === '1.5h') endMinutes += 90;
+  else endMinutes += 120;
+  const endTime   = `${String(Math.floor(endMinutes/60)).padStart(2,'0')}:${String(endMinutes%60).padStart(2,'0')}`;
+
+  const dateObj   = new Date(date + 'T12:00:00');
+  const dateStr   = dateObj.toLocaleDateString('en-CA', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+
+  const eventTitle = `Visit — ${senName}`;
+  const description = [
+    `🕌 Adopt a Muslim Senior — Confirmed Visit`,
+    ``,
+    `Volunteer: ${volName}`,
+    volEmail ? `Email: ${volEmail}` : '',
+    volPhone ? `Phone: ${volPhone}` : '',
+    ``,
+    `Senior: ${senName}`,
+    senFacility ? `Location: ${senFacility}` : '',
+    ``,
+    `Date: ${dateStr}`,
+    `Time: ${startTime} – ${endTime} (${duration})`,
+    `Language: ${lang}`,
+    senPrefs ? `\nSenior Notes: ${senPrefs}` : '',
+    notes ? `\nCoordinator Notes: ${notes}` : '',
+    ``,
+    `— Everpeace Companionship | Adopt a Muslim Senior Ottawa`,
+  ].filter(l => l !== undefined && l !== null).join('\n');
+
+  document.getElementById('match-event-title').textContent = `&#128197; ${eventTitle}`;
+  document.getElementById('match-copybox').textContent = description;
+  document.getElementById('match-output').classList.add('show');
+  document.getElementById('copy-confirm').style.display = 'none';
+
+  // Add to session list
+  proposedMatches.unshift({ vol: volName, senior: senName, date: dateStr, time: startTime + ' – ' + endTime });
+  renderProposedMatches();
+
+  document.getElementById('match-output').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function renderProposedMatches() {
+  if (proposedMatches.length === 0) {
+    document.getElementById('proposed-matches').innerHTML = '<p class="no-avail-note">No matches proposed yet.</p>'; return;
+  }
+  document.getElementById('proposed-matches').innerHTML = proposedMatches.map((m, i) => `
+    <div style="padding:10px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--green-dark)">${m.vol} <span style="color:var(--text-secondary);font-weight:400">with</span> ${m.senior}</div>
+        <div style="font-size:11px;color:var(--text-secondary)">${m.date} &middot; ${m.time}</div>
+      </div>
+      <span style="font-size:18px">&#129309;</span>
+    </div>`).join('');
+}
+
+async function copyEventDetails() {
+  const text = document.getElementById('match-copybox').textContent;
+  try {
+    await navigator.clipboard.writeText(text);
+    document.getElementById('copy-confirm').style.display = 'block';
+    setTimeout(() => { document.getElementById('copy-confirm').style.display = 'none'; }, 3000);
+  } catch(e) {
+    // Fallback: select text
+    const range = document.createRange();
+    range.selectNodeContents(document.getElementById('match-copybox'));
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+  }
+}
+
+function clearMatch() {
+  document.getElementById('match-output').classList.remove('show');
+  document.getElementById('match-vol').value    = '';
+  document.getElementById('match-senior').value = '';
+  document.getElementById('match-notes').value  = '';
+}
+
+// ============================================================
+// UI
+// ============================================================
+function showPanel(panelId) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(panelId).classList.add('active');
+  event.target.classList.add('active');
+
+  // Refresh renders when switching tabs
+  if (panelId === 'panel-avail')   renderVolunteers(allVolunteers);
+  if (panelId === 'panel-seniors') renderSeniors(allSeniors);
+}
+</script>
+</body>
+</html>
