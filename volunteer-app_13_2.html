@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adopt a Muslim Senior — Volunteer Portal</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@500;600&display=swap');
+  :root {
+    --cream: #FAF7F2; --gold: #C9A84C; --gold-light: #F0E0B0; --gold-dark: #9A7A2E;
+    --green: #2D6A4F; --green-light: #E8F5EE; --green-dark: #1B4332;
+    --charcoal: #2C2C2C; --text-secondary: #6B6B6B; --border: #E8E0D0;
+    --white: #FFFFFF; --red: #C0392B; --red-light: #FDECEA;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Lato', sans-serif; background: var(--cream); color: var(--charcoal); min-height: 100vh; }
+  .app-header { background: var(--green-dark); padding: 0; position: relative; overflow: hidden; }
+  .header-pattern {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C9A84C' fill-opacity='0.12'%3E%3Cpath d='M20 0 L40 20 L20 40 L0 20 Z M20 8 L32 20 L20 32 L8 20 Z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .header-content { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; }
+  .header-logo { display: flex; align-items: center; gap: 12px; }
+  .logo-mark { width: 44px; height: 44px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .logo-text h1 { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 600; color: var(--white); line-height: 1.2; }
+  .logo-text p { font-size: 11px; color: var(--gold-light); letter-spacing: 0.05em; text-transform: uppercase; }
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  .lang-toggle { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; font-size: 12px; padding: 5px 10px; border-radius: 20px; cursor: pointer; font-family: 'Lato', sans-serif; }
+  .lang-toggle:hover { background: rgba(255,255,255,0.25); }
+  .user-badge { background: var(--gold); color: var(--green-dark); font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 20px; display: none; }
+  .container { max-width: 540px; margin: 0 auto; padding: 20px 16px 40px; }
+  .bismillah { text-align: center; font-size: 42px; color: var(--gold-dark); padding: 14px 0 12px; border-bottom: 1px solid var(--gold-light); margin-bottom: 10px; }
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+  .card-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 500; color: var(--green-dark); margin-bottom: 4px; }
+  .card-sub { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; line-height: 1.5; }
+  label { display: block; font-size: 12px; font-weight: 700; color: var(--charcoal); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; margin-top: 14px; }
+  input, select, textarea { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; font-family: 'Lato', sans-serif; color: var(--charcoal); background: var(--cream); transition: border-color 0.2s; outline: none; }
+  input:focus, select:focus, textarea:focus { border-color: var(--gold); background: var(--white); }
+  textarea { resize: vertical; min-height: 80px; }
+  .btn { width: 100%; padding: 13px; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; font-family: 'Lato', sans-serif; cursor: pointer; transition: all 0.2s; margin-top: 16px; }
+  .btn-primary { background: var(--green); color: white; }
+  .btn-primary:hover { background: var(--green-dark); transform: translateY(-1px); }
+  .btn-primary:disabled { background: #aaa; cursor: not-allowed; transform: none; }
+  .btn-gold { background: var(--gold); color: var(--green-dark); }
+  .btn-gold:hover { background: var(--gold-dark); color: white; }
+  .btn-outline { background: transparent; border: 1.5px solid var(--green); color: var(--green); }
+  .btn-outline:hover { background: var(--green-light); }
+  .nav-tabs { display: flex; gap: 6px; background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 5px; margin-bottom: 20px; }
+  .nav-tab { flex: 1; padding: 9px 6px; border: none; border-radius: 8px; font-size: 12px; font-weight: 700; font-family: 'Lato', sans-serif; cursor: pointer; background: transparent; color: var(--text-secondary); transition: all 0.2s; text-align: center; }
+  .nav-tab.active { background: var(--green); color: white; }
+  .nav-tab .tab-icon { display: block; font-size: 16px; margin-bottom: 2px; }
+  .screen { display: none !important; }
+  .screen.active { display: block !important; }
+  .week-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gold-dark); margin: 16px 0 8px; }
+  .day-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px; margin-bottom: 6px; cursor: pointer; transition: all 0.2s; background: var(--cream); }
+  .day-row.selected { border-color: var(--green); background: var(--green-light); }
+  .day-check { width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; color: white; transition: all 0.2s; }
+  .day-row.selected .day-check { background: var(--green); border-color: var(--green); }
+  .day-row.selected .day-check::after { content: '\2713'; }
+  .day-info { flex: 1; }
+  .day-name { font-size: 13px; font-weight: 700; }
+  .day-date { font-size: 11px; color: var(--text-secondary); }
+  .time-pills { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
+  .time-pill { font-size: 11px; padding: 3px 9px; border: 1px solid var(--border); border-radius: 20px; cursor: pointer; background: white; color: var(--text-secondary); transition: all 0.15s; }
+  .time-pill.active { background: var(--gold); border-color: var(--gold); color: var(--green-dark); font-weight: 700; }
+  .assignment-card { background: linear-gradient(135deg, var(--green-dark), var(--green)); border-radius: 16px; padding: 20px; color: white; margin-bottom: 12px; position: relative; overflow: hidden; }
+  .assignment-card::before { content: '\263D'; position: absolute; right: 16px; top: 12px; font-size: 40px; opacity: 0.15; }
+  .assignment-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold-light); margin-bottom: 6px; }
+  .assignment-name { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 500; margin-bottom: 12px; }
+  .assignment-detail { font-size: 13px; color: rgba(255,255,255,0.85); display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+  .no-assignment { text-align: center; padding: 30px 20px; color: var(--text-secondary); }
+  .no-assignment .no-icon { font-size: 40px; margin-bottom: 10px; }
+  .no-assignment p { font-size: 13px; line-height: 1.6; }
+  .visit-history-item { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .visit-history-item:last-child { border-bottom: none; }
+  .visit-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--green); flex-shrink: 0; margin-top: 4px; }
+  .visit-dot.calendar { background: var(--gold); }
+  .visit-info { flex: 1; }
+  .visit-senior { font-size: 13px; font-weight: 700; }
+  .visit-date { font-size: 11px; color: var(--text-secondary); }
+  .visit-note { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+  .alert { padding: 12px 14px; border-radius: 10px; font-size: 13px; line-height: 1.5; margin-bottom: 12px; display: flex; gap: 10px; align-items: flex-start; }
+  .alert-success { background: var(--green-light); color: var(--green-dark); border: 1px solid #A8D5BC; }
+  .alert-error { background: var(--red-light); color: var(--red); border: 1px solid #F5C6C1; }
+  .alert-info { background: #FDF8EC; color: var(--gold-dark); border: 1px solid var(--gold-light); }
+  .alert-icon { font-size: 16px; flex-shrink: 0; }
+  .loading { text-align: center; padding: 30px; color: var(--text-secondary); font-size: 13px; }
+  .spinner { width: 30px; height: 30px; border: 3px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .stats-row { display: flex; gap: 10px; margin-bottom: 16px; }
+  .stat-box { flex: 1; background: var(--cream); border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; }
+  .stat-num { font-size: 24px; font-weight: 700; color: var(--green); }
+  .stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+  .login-hero { text-align: center; padding: 10px 20px 10px; }
+  .login-crescent { font-size: 70px; margin-bottom: 8px; }
+  .login-title { font-family: 'Playfair Display', serif; font-size: 30px; color: var(--green-dark); margin-bottom: 6px; }
+  .login-sub { font-size: 15px; color: var(--text-secondary); line-height: 1.5; }
+  .login-verse { font-style: italic; font-size: 13px; color: var(--gold-dark); text-align: center; padding: 10px 16px; margin: 10px 0; border-left: 3px solid var(--gold); background: #FDF8EC; border-radius: 0 8px 8px 0; }
+  .app-footer { text-align: center; font-size: 11px; color: var(--text-secondary); margin-top: 30px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .slot-tile { background: var(--cream); border: 2px solid var(--border); border-radius: 14px; padding: 16px 12px; text-align: center; cursor: pointer; transition: all 0.2s; user-select: none; }
+  .slot-tile:hover { border-color: var(--gold); background: #FDF8EC; }
+  .slot-tile.selected { border-color: var(--green); background: var(--green-light); }
+  .slot-icon { font-size: 24px; margin-bottom: 6px; }
+  .slot-name { font-size: 13px; font-weight: 700; color: var(--charcoal); margin-bottom: 3px; }
+  .slot-tile.selected .slot-name { color: var(--green-dark); }
+  .slot-tile.selected::after { content: " \u2713"; color: var(--green); font-weight: 700; }
+  .calendar-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; background: #FDF8EC; color: var(--gold-dark); border: 1px solid var(--gold-light); border-radius: 20px; padding: 2px 8px; margin-bottom: 8px; }
+  @media (max-width: 360px) { .container { padding: 16px 12px 40px; } .assignment-name { font-size: 18px; } }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="header-pattern"></div>
+  <div class="header-content">
+    <div class="header-logo">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAIAAAC2BqGFAAB5aUlEQVR42ky9d7RlVbE9XFVrrb1Pujnfvp0znYAOBJGcRQRRAUFFBIw889Pn02fOOT71GRAQUEQEJebSmKakKQ2pqKiUElKiJFWiJFaiJFZiJFYiJFYiJFb/AxMBBVHpAgAAAABJRU5ErkJggg==" style="width:44px;height:44px;border-radius:50%;object-fit:cover;" alt="Everpeace Companionship Logo">
+      <div class="logo-text">
+        <h1 id="app-title">Adopt a Muslim Senior</h1>
+        <p id="app-subtitle">Volunteer Portal</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="lang-toggle" onclick="toggleLang()" id="lang-btn">FR</button>
+      <div class="user-badge" id="user-badge">...</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="bismillah" id="bismillah-text">&#x628;&#x650;&#x633;&#x652;&#x645;&#x650; &#x627;&#x644;&#x644;&#x651;&#x647;&#x650; &#x627;&#x644;&#x631;&#x651;&#x62D;&#x652;&#x645;&#x670;&#x646;&#x650; &#x627;&#x644;&#x631;&#x651;&#x62D;&#x650;&#x64A;&#x645;&#x650;</div>
+
+  <!-- ===== LOGIN ===== -->
+  <div class="screen active" id="screen-login">
+    <div class="login-hero">
+      <div class="login-crescent">&#127769;</div>
+      <h2 class="login-title" id="login-title">Welcome, Volunteer</h2>
+      <p class="login-sub" id="login-sub">Sign in to manage your visits and availability</p>
+    </div>
+    <div class="login-verse" id="login-verse">
+      "Worship Allah and associate nothing with Him, and to parents do good, and to relatives, orphans, the needy, the near neighbor, the far neighbor..." — Quran 4:36
+    </div>
+    <div class="card">
+      <div id="login-alert"></div>
+      <label for="login-email" id="label-email">Email Address</label>
+      <input type="email" id="login-email" placeholder="your@email.com" autocomplete="email">
+      <label for="login-phone" id="label-phone">OR Phone Number</label>
+      <input type="tel" id="login-phone" placeholder="+1 613 000 0000" autocomplete="tel">
+      <button class="btn btn-primary" onclick="doLogin()" id="btn-login">Sign In / Se connecter</button>
+      <p style="font-size:12px;color:var(--text-secondary);text-align:center;margin-top:12px" id="login-help">
+        Your email or phone must match our volunteer records.
+      </p>
+    </div>
+  </div>
+
+  <!-- ===== MAIN APP ===== -->
+  <div class="screen" id="screen-main">
+
+    <div id="greeting-box" style="margin-bottom:16px">
+      <p style="font-size:20px;font-weight:300;color:var(--green-dark)" id="greeting-text">As-salamu alaykum!</p>
+      <p style="font-size:13px;color:var(--text-secondary)" id="greeting-sub">Here's your volunteer dashboard</p>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-num" id="stat-visits">–</div>
+        <div class="stat-label" id="stat-visits-label">Total Visits</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="stat-status">–</div>
+        <div class="stat-label" id="stat-status-label">Status</div>
+      </div>
+    </div>
+
+    <!-- NAV -->
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="showTab('tab-assignment')" id="nav-assignment">
+        <span class="tab-icon">&#128100;</span>
+        <span id="nav-assignment-label">My Visit</span>
+      </button>
+      <button class="nav-tab" onclick="showTab('tab-availability')" id="nav-availability">
+        <span class="tab-icon">&#128197;</span>
+        <span id="nav-availability-label">Availability</span>
+      </button>
+      <button class="nav-tab" onclick="showTab('tab-log')" id="nav-log">
+        <span class="tab-icon">&#9997;&#65039;</span>
+        <span id="nav-log-label">Log Visit</span>
+      </button>
+    </div>
+
+    <!-- TAB: MY VISIT -->
+    <div id="tab-assignment" class="tab-content">
+      <div id="assignment-container">
+        <div class="loading"><div class="spinner"></div><span id="loading-assignment">Loading your visit...</span></div>
+      </div>
+    </div>
+
+    <!-- TAB: AVAILABILITY -->
+    <div id="tab-availability" class="tab-content" style="display:none">
+      <div class="card">
+        <h3 class="card-title" id="avail-title">Submit Your Availability</h3>
+        <p class="card-sub" id="avail-sub">Select the exact days and times you are available for the next 2 weeks. Deadline: Wednesday.</p>
+        <div id="avail-alert"></div>
+        <div id="calendar-grid"></div>
+        <div style="margin-top:16px">
+          <label id="label-freq">How many visits would you like this cycle?</label>
+          <select id="freq-select">
+            <option value="1">1 visit</option>
+            <option value="2-3" selected>2–3 visits</option>
+            <option value="flexible">Flexible — as many as needed</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="submitAvailability()" id="btn-submit-avail">Submit Availability</button>
+      </div>
+    </div>
+
+    <!-- TAB: LOG VISIT -->
+    <div id="tab-log" class="tab-content" style="display:none">
+      <div class="card">
+        <h3 class="card-title" id="log-title">Log a Completed Visit</h3>
+        <p class="card-sub" id="log-sub">Record your visit so we can track progress and retention.</p>
+        <div id="log-alert"></div>
+        <label id="label-visit-date">Date of Visit</label>
+        <input type="date" id="visit-date">
+        <label id="label-senior-visited">Senior Visited</label>
+        <input type="text" id="senior-visited" placeholder="Senior's name" readonly style="background:#f5f5f5">
+        <label id="label-duration">Duration</label>
+        <select id="visit-duration">
+          <option value="30">30 minutes</option>
+          <option value="60" selected>1 hour</option>
+          <option value="90">1.5 hours</option>
+          <option value="120">2 hours</option>
+          <option value="120+">More than 2 hours</option>
+        </select>
+        <label id="label-mood">How did the senior seem today?</label>
+        <select id="senior-mood">
+          <option value="Very happy">&#128522; Very happy and engaged</option>
+          <option value="Good">&#128578; Good spirits</option>
+          <option value="Quiet">&#128528; Quiet, but okay</option>
+          <option value="Sad">&#128532; Seemed sad or lonely</option>
+          <option value="Unwell">&#129314; Not feeling well</option>
+        </select>
+        <label id="label-notes">Visit Notes</label>
+        <textarea id="visit-notes" placeholder="What did you talk about? Any concerns to flag?"></textarea>
+        <label id="label-followup">Does this senior need a follow-up?</label>
+        <select id="followup-needed">
+          <option value="No">No — everything was fine</option>
+          <option value="Yes - coordinator">Yes — please contact coordinator</option>
+          <option value="Yes - health">Yes — health concern to flag</option>
+          <option value="Yes - family">Yes — family should be notified</option>
+        </select>
+        <button class="btn btn-gold" onclick="submitVisitLog()" id="btn-log-visit">Log This Visit</button>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title" id="history-title">Recent Visits</h3>
+        <div id="visit-history-container">
+          <div class="loading"><div class="spinner"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-footer">
+      <p>Adopt a Muslim Senior &middot; Islamic Care Center Ottawa</p>
+      <p style="margin-top:4px">Muslim Family Services of Ottawa</p>
+      <button class="btn btn-outline" onclick="doLogout()" style="margin-top:16px;width:auto;padding:8px 24px;font-size:12px" id="btn-logout">Sign Out</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CONFIG — Edit these values
+// ============================================================
+const BASEROW_TOKEN    = 'SWKMnsqQrocyKfXg9TVb5mMWTGGb1Zsc';
+const BASE_URL         = 'https://api.baserow.io/api';
+const VOLUNTEERS_TABLE = 988315;
+const SENIORS_TABLE    = 917379;
+const VISITS_TABLE     = 917197;
+
+// ✅ STEP 2: After deploying the Google Apps Script (calendar-bridge.gs),
+// paste your Web App URL here. Leave empty ('') to use Baserow-only mode.
+const CALENDAR_SCRIPT_URL = '';
+
+// ============================================================
+// STATE
+// ============================================================
+let currentLang      = 'en';
+let currentVolunteer = null;
+let selectedDays     = {};
+let calendarData     = null;   // cached response from Google Apps Script
+
+// ============================================================
+// TRANSLATIONS
+// ============================================================
+const T = {
+  en: {
+    appTitle: 'Adopt a Muslim Senior', appSubtitle: 'Volunteer Portal',
+    loginTitle: 'Welcome, Volunteer', loginSub: 'Sign in to manage your visits and availability',
+    labelEmail: 'Email Address', labelPhone: 'OR Phone Number',
+    btnLogin: 'Sign In', loginHelp: 'Your email or phone must match our volunteer records.',
+    loginError: 'No volunteer found with that email or phone. Please check and try again.',
+    loginLoading: 'Looking you up...',
+    greetingText: (n) => `As-salamu alaykum, ${n}!`, greetingSub: "Here's your volunteer dashboard",
+    statVisitsLabel: 'Total Visits', statStatusLabel: 'Status',
+    navAssignment: 'My Visit', navAvailability: 'Availability', navLog: 'Log Visit',
+    availTitle: 'Submit Your Availability', availSub: 'Select days and times for the next 2 weeks. Deadline: Wednesday.',
+    labelFreq: 'How many visits would you like this cycle?',
+    btnSubmitAvail: 'Submit Availability',
+    availSuccess: "Your availability has been saved. JazakAllah khair! You'll receive your assignment by Friday insha'Allah.",
+    availError: 'Could not save availability. Please try again.',
+    logTitle: 'Log a Completed Visit', logSub: 'Record your visit so we can track progress and retention.',
+    labelVisitDate: 'Date of Visit', labelSeniorVisited: 'Senior Visited',
+    labelDuration: 'Duration', labelMood: 'How did the senior seem today?',
+    labelNotes: 'Visit Notes', labelFollowup: 'Does this senior need a follow-up?',
+    btnLogVisit: 'Log This Visit', historyTitle: 'Recent Visits', noVisits: 'No visits logged yet.',
+    logSuccess: 'Visit logged successfully. Barakallah feek!', logError: 'Could not log visit. Please try again.',
+    loadingAssignment: 'Loading your visit...', assignedLabel: 'Your confirmed visit',
+    calendarLabel: 'From your coordinator\'s calendar',
+    noAssignedTitle: 'No visit assigned yet',
+    noAssignedText: "Submit your availability and you'll receive your assignment by Friday insha'Allah.",
+    btnLogout: 'Sign Out',
+    week1: 'Week 1', week2: 'Week 2', morning: 'Morning', afternoon: 'Afternoon', evening: 'Evening',
+    active: 'Active \u2713', inactive: 'Inactive',
+  },
+  fr: {
+    appTitle: 'Adopter un A\u00een\u00e9 Musulman', appSubtitle: 'Portail B\u00e9n\u00e9vole',
+    loginTitle: 'Bienvenue, B\u00e9n\u00e9vole', loginSub: 'Connectez-vous pour g\u00e9rer vos visites et disponibilit\u00e9s',
+    labelEmail: 'Adresse Email', labelPhone: 'OU Num\u00e9ro de T\u00e9l\u00e9phone',
+    btnLogin: 'Se connecter', loginHelp: 'Votre email ou t\u00e9l\u00e9phone doit correspondre \u00e0 nos dossiers.',
+    loginError: 'Aucun b\u00e9n\u00e9vole trouv\u00e9. Veuillez v\u00e9rifier.',
+    loginLoading: 'Recherche en cours...',
+    greetingText: (n) => `As-salamu alaykum, ${n}!`, greetingSub: 'Voici votre tableau de bord',
+    statVisitsLabel: 'Total Visites', statStatusLabel: 'Statut',
+    navAssignment: 'Ma Visite', navAvailability: 'Disponibilit\u00e9s', navLog: 'Journal',
+    availTitle: 'Soumettre vos Disponibilit\u00e9s', availSub: 'S\u00e9lectionnez vos jours pour les 2 prochaines semaines. Date limite: mercredi.',
+    labelFreq: 'Combien de visites souhaitez-vous ce cycle?',
+    btnSubmitAvail: 'Soumettre les Disponibilit\u00e9s',
+    availSuccess: "Vos disponibilit\u00e9s ont \u00e9t\u00e9 enregistr\u00e9es. JazakAllah khair! Vous recevrez votre affectation vendredi insha'Allah.",
+    availError: 'Impossible d\'enregistrer. Veuillez r\u00e9essayer.',
+    logTitle: 'Journaliser une Visite', logSub: 'Enregistrez votre visite pour le suivi.',
+    labelVisitDate: 'Date de la Visite', labelSeniorVisited: 'A\u00een\u00e9(e) Visit\u00e9(e)',
+    labelDuration: 'Dur\u00e9e', labelMood: 'Comment \u00e9tait l\'a\u00een\u00e9(e)?',
+    labelNotes: 'Notes de Visite', labelFollowup: 'Un suivi est-il n\u00e9cessaire?',
+    btnLogVisit: 'Enregistrer la Visite', historyTitle: 'Visites R\u00e9centes', noVisits: 'Aucune visite enregistr\u00e9e.',
+    logSuccess: 'Visite enregistr\u00e9e. Barakallah feek!', logError: 'Impossible d\'enregistrer. Veuillez r\u00e9essayer.',
+    loadingAssignment: 'Chargement...', assignedLabel: 'Votre visite confirm\u00e9e',
+    calendarLabel: 'Du calendrier de votre coordinatrice',
+    noAssignedTitle: 'Aucune visite assign\u00e9e', noAssignedText: "Soumettez vos disponibilit\u00e9s et vous recevrez votre affectation vendredi insha'Allah.",
+    btnLogout: 'Se d\u00e9connecter',
+    week1: 'Semaine 1', week2: 'Semaine 2', morning: 'Matin', afternoon: 'Apr\u00e8s-midi', evening: 'Soir',
+    active: 'Actif \u2713', inactive: 'Inactif',
+  }
+};
+
+function t(key, ...args) {
+  const val = T[currentLang][key];
+  return typeof val === 'function' ? val(...args) : (val || key);
+}
+
+// ============================================================
+// VOLUNTEER FIELD HELPERS
+// (works regardless of exact Baserow column names)
+// ============================================================
+function getVolunteerField(volunteer, candidates) {
+  if (!volunteer) return '';
+  for (const candidate of candidates) {
+    const key = Object.keys(volunteer).find(k => k.toLowerCase() === candidate.toLowerCase());
+    if (key && volunteer[key]) return String(volunteer[key]).trim();
+  }
+  // fuzzy: partial match
+  for (const candidate of candidates) {
+    const key = Object.keys(volunteer).find(k => k.toLowerCase().includes(candidate.toLowerCase()));
+    if (key && volunteer[key]) return String(volunteer[key]).trim();
+  }
+  return '';
+}
+
+function getVolunteerEmail() {
+  return getVolunteerField(currentVolunteer, ['Email', 'email', 'E-mail', 'Mail']).toLowerCase();
+}
+
+function getVolunteerPhone() {
+  return getVolunteerField(currentVolunteer, ['Phone', 'phone', 'Tel', 'Phone Number', 'Mobile', 'Number']).replace(/\D/g, '');
+}
+
+function getVolunteerName() {
+  return getVolunteerField(currentVolunteer, ['Full Legal Name', 'Name', 'Full Name', 'Nom']);
+}
+
+function firstName(fullName) {
+  if (!fullName) return '';
+  return fullName.split(' ')[0];
+}
+
+function cleanPhone(p) { return (p || '').replace(/\D/g, ''); }
+
+// ============================================================
+// LANGUAGE
+// ============================================================
+function toggleLang() {
+  currentLang = currentLang === 'en' ? 'fr' : 'en';
+  document.getElementById('lang-btn').textContent = currentLang === 'en' ? 'FR' : 'EN';
+  applyTranslations();
+}
+
+function applyTranslations() {
+  const ids = {
+    'app-title': 'appTitle', 'app-subtitle': 'appSubtitle', 'login-title': 'loginTitle',
+    'login-sub': 'loginSub', 'label-email': 'labelEmail', 'label-phone': 'labelPhone',
+    'btn-login': 'btnLogin', 'login-help': 'loginHelp', 'stat-visits-label': 'statVisitsLabel',
+    'stat-status-label': 'statStatusLabel', 'nav-assignment-label': 'navAssignment',
+    'nav-availability-label': 'navAvailability', 'nav-log-label': 'navLog',
+    'avail-title': 'availTitle', 'avail-sub': 'availSub', 'label-freq': 'labelFreq',
+    'btn-submit-avail': 'btnSubmitAvail', 'log-title': 'logTitle', 'log-sub': 'logSub',
+    'label-visit-date': 'labelVisitDate', 'label-senior-visited': 'labelSeniorVisited',
+    'label-duration': 'labelDuration', 'label-mood': 'labelMood',
+    'label-notes': 'labelNotes', 'label-followup': 'labelFollowup',
+    'btn-log-visit': 'btnLogVisit', 'history-title': 'historyTitle', 'btn-logout': 'btnLogout'
+  };
+  Object.entries(ids).forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = t(key);
+  });
+  if (currentVolunteer) {
+    document.getElementById('greeting-text').textContent = t('greetingText', firstName(getVolunteerName()));
+    document.getElementById('greeting-sub').textContent  = t('greetingSub');
+  }
+  buildCalendar();
+}
+
+// ============================================================
+// BASEROW API
+// ============================================================
+async function baserowGet(tableId, params = '') {
+  const res = await fetch(`${BASE_URL}/database/rows/table/${tableId}/?user_field_names=true${params}`, {
+    headers: { 'Authorization': `Token ${BASEROW_TOKEN}` }
+  });
+  if (!res.ok) throw new Error('Baserow GET ' + res.status);
+  return res.json();
+}
+
+async function baserowCreate(tableId, data) {
+  const res = await fetch(`${BASE_URL}/database/rows/table/${tableId}/?user_field_names=true`, {
+    method: 'POST',
+    headers: { 'Authorization': `Token ${BASEROW_TOKEN}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error('Baserow CREATE ' + res.status + ': ' + JSON.stringify(json).substring(0,200));
+  return json;
+}
+
+async function baserowUpdate(tableId, rowId, data) {
+  const res = await fetch(`${BASE_URL}/database/rows/table/${tableId}/${rowId}/?user_field_names=true`, {
+    method: 'PATCH',
+    headers: { 'Authorization': `Token ${BASEROW_TOKEN}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error('Baserow UPDATE ' + res.status);
+  return res.json();
+}
+
+// Get actual field names from Baserow table
+async function getTableFields(tableId) {
+  try {
+    const res = await fetch(`${BASE_URL}/database/fields/table/${tableId}/`, {
+      headers: { 'Authorization': `Token ${BASEROW_TOKEN}` }
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data.map(f => f.name) : [];
+  } catch(e) {
+    return [];
+  }
+}
+
+// ============================================================
+// SMART FIELD MAPPING (Q1 Fix)
+// Matches our data keys to whatever column names exist in Baserow
+// ============================================================
+function findBestField(availableFields, candidates) {
+  // Exact match first
+  for (const c of candidates) {
+    const match = availableFields.find(f => f.toLowerCase() === c.toLowerCase());
+    if (match) return match;
+  }
+  // Partial match
+  for (const c of candidates) {
+    const words = c.toLowerCase().split(' ');
+    const match = availableFields.find(f => words.some(w => w.length > 2 && f.toLowerCase().includes(w)));
+    if (match) return match;
+  }
+  return candidates[0]; // fallback to first candidate
+}
+
+function buildVisitPayload(availableFields, { date, senior, duration, mood, notes, followup }) {
+  const F = (candidates) => findBestField(availableFields, candidates);
+  const data = {};
+  data[F(['Volunteer', 'Volunteer Name', 'Nom Bénévole', 'Bénévole'])]       = getVolunteerName();
+  data[F(['Senior', 'Senior Name', 'Senior Visited', 'Aîné', 'Senior(e)'])]  = senior;
+  data[F(['Date', 'Visit Date', 'Date of Visit', 'Date de Visite'])]          = date;
+  data[F(['Duration', 'Durée', 'Duration (minutes)', 'Time'])]                = duration + ' min';
+  data[F(['Senior Mood', 'Mood', 'How did senior seem', 'Humeur'])]           = mood;
+  data[F(['Notes', 'Visit Notes', 'Notes de Visite', 'Comments'])]            = notes;
+  data[F(['Follow-up needed', 'Follow-up', 'Followup', 'Suivi'])]             = followup;
+  data[F(['Status', 'Statut', 'Visit Status'])]                               = 'Completed';
+  return data;
+}
+
+// ============================================================
+// LOGIN
+// ============================================================
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const phone = document.getElementById('login-phone').value.trim();
+  const btn   = document.getElementById('btn-login');
+  const alertBox = document.getElementById('login-alert');
+
+  if (!email && !phone) { showAlert(alertBox, t('loginError'), 'error'); return; }
+
+  btn.textContent = t('loginLoading');
+  btn.disabled    = true;
+  showAlert(alertBox, 'Connecting...', 'info');
+
+  try {
+    let allRows = [], nextUrl = `${BASE_URL}/database/rows/table/${VOLUNTEERS_TABLE}/?user_field_names=true&size=200`;
+    while (nextUrl) {
+      const res = await fetch(nextUrl, { headers: { 'Authorization': `Token ${BASEROW_TOKEN}` }, mode: 'cors' });
+      if (!res.ok) { throw new Error('API Error ' + res.status); }
+      const data = await res.json();
+      allRows = allRows.concat(data.results || []);
+      nextUrl = data.next || null;
+    }
+
+    const inputPhoneDigits = cleanPhone(phone);
+    let found = null;
+
+    for (const row of allRows) {
+      const keys = Object.keys(row);
+      if (email) {
+        for (const key of keys) {
+          if (key.toLowerCase().includes('mail') || key.toLowerCase().includes('email')) {
+            if ((row[key] || '').toLowerCase().trim() === email) { found = row; break; }
+          }
+        }
+      }
+      if (found) break;
+      if (phone && inputPhoneDigits.length >= 7) {
+        for (const key of keys) {
+          if (key.toLowerCase().includes('phone') || key.toLowerCase().includes('tel') || key.toLowerCase().includes('number')) {
+            const rowLast = cleanPhone(row[key]).slice(-10);
+            if (rowLast && rowLast === inputPhoneDigits.slice(-10)) { found = row; break; }
+          }
+        }
+      }
+      if (found) break;
+    }
+
+    if (!found) {
+      const sample = allRows[0] ? Object.keys(allRows[0]).join(', ') : 'no rows';
+      showAlert(alertBox, `${t('loginError')}<br><small style="opacity:0.7">Debug — columns: ${sample} | Rows: ${allRows.length}</small>`, 'error');
+      btn.textContent = t('btnLogin'); btn.disabled = false; return;
+    }
+
+    currentVolunteer = found;
+    document.getElementById('user-badge').textContent  = firstName(getVolunteerName());
+    document.getElementById('user-badge').style.display = 'block';
+    document.getElementById('screen-login').classList.remove('active');
+    document.getElementById('screen-main').classList.add('active');
+    document.getElementById('greeting-text').textContent = t('greetingText', firstName(getVolunteerName()));
+    document.getElementById('greeting-sub').textContent  = t('greetingSub');
+
+    const isActive = found['Active'] || found['Actif'] || found['active'];
+    document.getElementById('stat-status').textContent   = isActive ? '\u2713' : '\u2013';
+    document.getElementById('stat-status').style.color   = isActive ? 'var(--green)' : '#aaa';
+    document.getElementById('stat-visits').textContent   = '\u2013';
+    document.getElementById('visit-date').value          = new Date().toISOString().split('T')[0];
+
+    // Load everything
+    await loadMyVisit();
+    loadVisitHistory();
+    buildCalendar();
+
+  } catch(e) {
+    showAlert(alertBox, 'Connection error: ' + e.message, 'error');
+    btn.textContent = t('btnLogin'); btn.disabled = false;
+  }
+}
+
+// ============================================================
+// MY VISIT TAB — Q2
+// Reads from Google Calendar (via Apps Script) if configured,
+// otherwise falls back to Baserow assignment field.
+// ============================================================
+async function loadMyVisit() {
+  const container = document.getElementById('assignment-container');
+
+  if (CALENDAR_SCRIPT_URL) {
+    await loadCalendarVisit(container);
+  } else {
+    await loadBaserowAssignment(container);
+  }
+}
+
+// — — Calendar-based visit (Q2) — —
+async function loadCalendarVisit(container) {
+  container.innerHTML = `<div class="loading"><div class="spinner"></div><span>${t('loadingAssignment')}</span></div>`;
+
+  try {
+    const email = getVolunteerEmail();
+    const phone = getVolunteerPhone();
+    if (!email && phone.length < 7) throw new Error('No identifier');
+
+    const url = `${CALENDAR_SCRIPT_URL}?email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}`;
+    const res  = await fetch(url);
+    if (!res.ok) throw new Error('Script error ' + res.status);
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || 'Unknown error');
+
+    calendarData = data;
+
+    // Q4: update visit counter from calendar
+    document.getElementById('stat-visits').textContent = data.completedTotal || '0';
+
+    if (!data.upcoming || data.upcoming.length === 0) {
+      container.innerHTML = buildNoAssignmentCard();
+      document.getElementById('senior-visited').value = '';
+      return;
+    }
+
+    // Show all upcoming visits (most people have 1–2 at a time)
+    let html = `<div class="calendar-badge">&#128197; ${t('calendarLabel')}</div>`;
+    data.upcoming.forEach((ev, i) => {
+      const startDate  = new Date(ev.start);
+      const endDate    = new Date(ev.end);
+      const dateStr    = startDate.toLocaleDateString(currentLang === 'fr' ? 'fr-CA' : 'en-CA', { weekday:'long', month:'long', day:'numeric' });
+      const startTime  = startDate.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+      const endTime    = endDate.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+      const seniorName = ev.seniorName || ev.title;
+
+      if (i === 0 && ev.seniorName) {
+        document.getElementById('senior-visited').value = ev.seniorName;
+      }
+
+      html += `
+        <div class="assignment-card">
+          <div class="assignment-label">${t('assignedLabel')}</div>
+          <div class="assignment-name">${seniorName || '\u2013'}</div>
+          <div class="assignment-detail">&#128197; ${dateStr}</div>
+          <div class="assignment-detail">&#128336; ${startTime} \u2013 ${endTime}</div>
+          ${ev.location ? `<div class="assignment-detail">&#127968; ${ev.location}</div>` : ''}
+        </div>`;
+    });
+
+    container.innerHTML = html;
+
+  } catch(e) {
+    // Graceful fallback to Baserow
+    await loadBaserowAssignment(container);
+  }
+}
+
+// — — Baserow-based assignment (fallback) — —
+async function loadBaserowAssignment(container) {
+  try {
+    const seniorField = currentVolunteer['Matched_Senior'] || currentVolunteer['Senior'] ||
+                        currentVolunteer['Assigned Senior'] || null;
+    let senior = null;
+
+    if (seniorField) {
+      const name = typeof seniorField === 'object' ? seniorField.value : seniorField;
+      const data = await baserowGet(SENIORS_TABLE, `&search=${encodeURIComponent(name)}&size=5`);
+      if (data.results && data.results.length > 0) senior = data.results[0];
+    }
+
+    if (senior) {
+      const facility    = senior['The senior housing facility'] || senior['Facility'] || '';
+      const address     = senior['Address'] || '';
+      const language    = senior['languages'] || senior['Languages'] || '';
+      const availability= senior['Availability'] || '';
+      const name        = senior['Full Legal Name'] || senior['Name'] || '';
+
+      document.getElementById('senior-visited').value = name;
+      document.getElementById('stat-visits').textContent =
+        currentVolunteer['Visits_This_Month'] || currentVolunteer['Total Visits'] || '0';
+
+      container.innerHTML = `
+        <div class="assignment-card">
+          <div class="assignment-label">${t('assignedLabel')}</div>
+          <div class="assignment-name">${name || '\u2013'}</div>
+          <div class="assignment-detail">&#127968; ${facility || address || '\u2013'}</div>
+          <div class="assignment-detail">&#128483;&#65039; ${language || '\u2013'}</div>
+          <div class="assignment-detail">&#128197; ${availability || '\u2013'}</div>
+        </div>
+        <div class="alert alert-info">
+          <span class="alert-icon">&#128155;</span>
+          <span>${senior['Participation & Visit Preferences'] || senior['Special accomodation'] || senior['Notes'] || 'No special notes.'}</span>
+        </div>`;
+    } else {
+      document.getElementById('stat-visits').textContent = '0';
+      container.innerHTML = buildNoAssignmentCard();
+    }
+  } catch(e) {
+    container.innerHTML = buildNoAssignmentCard();
+  }
+}
+
+function buildNoAssignmentCard() {
+  return `
+    <div class="card">
+      <div class="no-assignment">
+        <div class="no-icon">&#127769;</div>
+        <h3 style="font-family:'Playfair Display',serif;color:var(--green-dark);margin-bottom:8px">${t('noAssignedTitle')}</h3>
+        <p>${t('noAssignedText')}</p>
+      </div>
+    </div>`;
+}
+
+// ============================================================
+// AVAILABILITY
+// ============================================================
+function buildCalendar() {
+  const grid = document.getElementById('calendar-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  const today = new Date();
+  const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const daysFr = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  const months  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const monthsFr= ['Jan','\u202Av\u202C','Mar','Avr','Mai','Juin','Jul','Ao\u00fbt','Sep','Oct','Nov','D\u00e9c'];
+
+  for (let week = 0; week < 2; week++) {
+    const wl = document.createElement('div');
+    wl.className = 'week-label';
+    wl.textContent = week === 0 ? t('week1') : t('week2');
+    grid.appendChild(wl);
+
+    for (let d = 0; d < 7; d++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + (week * 7) + d);
+      const dow     = date.getDay();
+      const dateKey = date.toISOString().split('T')[0];
+      const dayName = currentLang === 'fr' ? daysFr[dow] : days[dow];
+      const monName = currentLang === 'fr' ? monthsFr[date.getMonth()] : months[date.getMonth()];
+
+      const row = document.createElement('div');
+      row.className = 'day-row' + (selectedDays[dateKey] ? ' selected' : '');
+      row.innerHTML = `
+        <div class="day-check"></div>
+        <div class="day-info">
+          <div class="day-name">${dayName}</div>
+          <div class="day-date">${monName} ${date.getDate()}</div>
+          <div class="time-pills">
+            <span class="time-pill ${selectedDays[dateKey]?.morning   ? 'active':''}" onclick="toggleTime(event,'${dateKey}','morning')">${t('morning')}</span>
+            <span class="time-pill ${selectedDays[dateKey]?.afternoon ? 'active':''}" onclick="toggleTime(event,'${dateKey}','afternoon')">${t('afternoon')}</span>
+            <span class="time-pill ${selectedDays[dateKey]?.evening   ? 'active':''}" onclick="toggleTime(event,'${dateKey}','evening')">${t('evening')}</span>
+          </div>
+        </div>`;
+      row.addEventListener('click', (e) => { if (e.target.classList.contains('time-pill')) return; toggleDay(dateKey, row); });
+      grid.appendChild(row);
+    }
+  }
+}
+
+function toggleDay(dateKey, row) {
+  if (selectedDays[dateKey]) { delete selectedDays[dateKey]; row.classList.remove('selected'); }
+  else { selectedDays[dateKey] = { morning:false, afternoon:false, evening:false }; row.classList.add('selected'); }
+}
+
+function toggleTime(e, dateKey, slot) {
+  e.stopPropagation();
+  if (!selectedDays[dateKey]) { selectedDays[dateKey] = { morning:false, afternoon:false, evening:false }; e.target.closest('.day-row').classList.add('selected'); }
+  selectedDays[dateKey][slot] = !selectedDays[dateKey][slot];
+  e.target.classList.toggle('active', selectedDays[dateKey][slot]);
+}
+
+async function submitAvailability() {
+  const alertBox = document.getElementById('avail-alert');
+  const btn = document.getElementById('btn-submit-avail');
+  const freq = document.getElementById('freq-select').value;
+
+  if (Object.keys(selectedDays).length === 0) {
+    showAlert(alertBox, currentLang === 'fr' ? 'Veuillez s\u00e9lectionner au moins un jour.' : 'Please select at least one day.', 'error'); return;
+  }
+
+  btn.disabled = true; btn.textContent = currentLang === 'fr' ? 'Enregistrement...' : 'Saving...';
+
+  const dayAbbr = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const lines = Object.entries(selectedDays).map(([date, times]) => {
+    const d = new Date(date + 'T12:00:00');
+    const slots = [times.morning && (currentLang==='fr'?'Matin':'AM'), times.afternoon && (currentLang==='fr'?'Apr\u00e8s-midi':'PM'), times.evening && (currentLang==='fr'?'Soir':'Evening')].filter(Boolean);
+    return `${dayAbbr[d.getDay()]} ${d.toLocaleString('en',{month:'short'})} ${d.getDate()}: ${slots.length ? slots.join(' & ') : 'Any time'}`;
+  });
+  const availText = lines.join('\n') + `\n[Preferred visits: ${freq}]`;
+
+  try {
+    // Find the availability field name (flexible)
+    const volFields = await getTableFields(VOLUNTEERS_TABLE);
+    const availField = findBestField(volFields, ['Availability Schedule', 'Availability', 'Disponibilit\u00e9', 'Schedule']);
+    const payload = {};
+    payload[availField] = availText;
+
+    const res = await fetch(`${BASE_URL}/database/rows/table/${VOLUNTEERS_TABLE}/${currentVolunteer.id}/?user_field_names=true`, {
+      method: 'PATCH',
+      headers: { 'Authorization': `Token ${BASEROW_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const result = await res.json();
+    if (!res.ok) { showAlert(alertBox, 'Error ' + res.status + ': ' + JSON.stringify(result).substring(0,200), 'error'); }
+    else { showAlert(alertBox, t('availSuccess'), 'success'); selectedDays = {}; buildCalendar(); }
+  } catch(e) {
+    showAlert(alertBox, 'Network error: ' + e.message, 'error');
+  }
+
+  btn.disabled = false; btn.textContent = t('btnSubmitAvail');
+}
+
+// ============================================================
+// LOG VISIT — Q1 (with smart field detection)
+// ============================================================
+async function submitVisitLog() {
+  const alertBox = document.getElementById('log-alert');
+  const btn      = document.getElementById('btn-log-visit');
+  const date     = document.getElementById('visit-date').value;
+  const senior   = document.getElementById('senior-visited').value;
+  const duration = document.getElementById('visit-duration').value;
+  const mood     = document.getElementById('senior-mood').value;
+  const notes    = document.getElementById('visit-notes').value;
+  const followup = document.getElementById('followup-needed').value;
+
+  if (!date) {
+    showAlert(alertBox, currentLang === 'fr' ? 'Veuillez entrer la date.' : 'Please enter the visit date.', 'error'); return;
+  }
+
+  btn.disabled = true; btn.textContent = currentLang === 'fr' ? 'Enregistrement...' : 'Saving...';
+
+  try {
+    // Detect actual field names in the visits table (Q1 fix)
+    const visitsFields = await getTableFields(VISITS_TABLE);
+    const payload = buildVisitPayload(visitsFields, { date, senior, duration, mood, notes, followup });
+
+    await baserowCreate(VISITS_TABLE, payload);
+
+    showAlert(alertBox, t('logSuccess'), 'success');
+    document.getElementById('visit-notes').value     = '';
+    document.getElementById('followup-needed').value = 'No';
+    loadVisitHistory();
+
+  } catch(e) {
+    showAlert(alertBox, `${t('logError')}<br><small style="opacity:0.6">${e.message}</small>`, 'error');
+  }
+
+  btn.disabled = false; btn.textContent = t('btnLogVisit');
+}
+
+// ============================================================
+// VISIT HISTORY
+// Shows calendar-based history if available (Q2), then Baserow log
+// ============================================================
+async function loadVisitHistory() {
+  const container = document.getElementById('visit-history-container');
+  let html = '';
+
+  // Calendar-based past visits
+  if (calendarData && calendarData.recentCompleted && calendarData.recentCompleted.length > 0) {
+    calendarData.recentCompleted.forEach(ev => {
+      const d = new Date(ev.start);
+      const dateStr = d.toLocaleDateString(currentLang === 'fr' ? 'fr-CA' : 'en-CA', { month:'short', day:'numeric', year:'numeric' });
+      const time    = d.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+      html += `
+        <div class="visit-history-item">
+          <div class="visit-dot calendar"></div>
+          <div class="visit-info">
+            <div class="visit-senior">${ev.seniorName || ev.title}</div>
+            <div class="visit-date">&#128197; ${dateStr} &middot; ${time}${ev.location ? ' &middot; ' + ev.location : ''}</div>
+          </div>
+        </div>`;
+    });
+  }
+
+  // Baserow-logged visits
+  try {
+    const name = getVolunteerName();
+    const data = await baserowGet(VISITS_TABLE, `&search=${encodeURIComponent(name)}&size=10&order_by=-Date`);
+    const rows = (data.results || []).filter(r =>
+      Object.values(r).some(v => String(v||'').toLowerCase().includes(name.toLowerCase().split(' ')[0]))
+    );
+
+    if (rows.length > 0) {
+      rows.forEach(r => {
+        const dateVal  = r['Date'] || r['Visit Date'] || r['Date de Visite'] || '';
+        const duration = r['Duration'] || r['Dur\u00e9e'] || '';
+        const senior   = r['Senior'] || r['Senior Name'] || '';
+        const notes    = r['Notes'] || r['Visit Notes'] || '';
+        html += `
+          <div class="visit-history-item">
+            <div class="visit-dot"></div>
+            <div class="visit-info">
+              <div class="visit-senior">${senior || '\u2013'}</div>
+              <div class="visit-date">${dateVal}${duration ? ' &middot; ' + duration : ''}</div>
+              ${notes ? `<div class="visit-note">${String(notes).substring(0,80)}${String(notes).length > 80 ? '...' : ''}</div>` : ''}
+            </div>
+          </div>`;
+      });
+    }
+  } catch(e) { /* Baserow log unavailable */ }
+
+  if (!html) {
+    container.innerHTML = `<p style="font-size:13px;color:var(--text-secondary);text-align:center;padding:16px">${t('noVisits')}</p>`;
+  } else {
+    container.innerHTML = html;
+  }
+}
+
+// ============================================================
+// UI HELPERS
+// ============================================================
+function showTab(tabId) {
+  document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById(tabId).style.display = 'block';
+  const navMap = { 'tab-assignment':'nav-assignment', 'tab-availability':'nav-availability', 'tab-log':'nav-log' };
+  document.getElementById(navMap[tabId]).classList.add('active');
+}
+
+function showAlert(container, message, type) {
+  const icons = { success:'\u2713', error:'\u2715', info:'\u2139' };
+  container.innerHTML = `<div class="alert alert-${type}"><span class="alert-icon">${icons[type]}</span><span>${message}</span></div>`;
+  if (type === 'success') setTimeout(() => { container.innerHTML = ''; }, 5000);
+}
+
+function doLogout() {
+  currentVolunteer = null; selectedDays = {}; calendarData = null;
+  document.getElementById('screen-main').classList.remove('active');
+  document.getElementById('screen-login').classList.add('active');
+  document.getElementById('user-badge').style.display = 'none';
+  document.getElementById('login-email').value = '';
+  document.getElementById('login-phone').value = '';
+  document.getElementById('login-alert').innerHTML = '';
+  document.getElementById('btn-login').disabled = false;
+  document.getElementById('btn-login').textContent = t('btnLogin');
+}
+
+// Enter key on login
+document.getElementById('login-email').addEventListener('keydown', e => { if (e.key==='Enter') doLogin(); });
+document.getElementById('login-phone').addEventListener('keydown', e => { if (e.key==='Enter') doLogin(); });
+
+window.addEventListener('unhandledrejection', e => {
+  const ab = document.getElementById('login-alert');
+  if (ab) showAlert(ab, 'Error: ' + (e.reason?.message || String(e.reason)), 'error');
+  const btn = document.getElementById('btn-login');
+  if (btn) { btn.disabled = false; btn.textContent = 'Sign In'; }
+});
+</script>
+</body>
+</html>
