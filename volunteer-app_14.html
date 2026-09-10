@@ -429,19 +429,31 @@
         <button class="training-pill active" onclick="trainingFilter('all',this)" id="tpill-all">
           <span id="tpill-all-label">All</span> <span class="tc" id="tc-all">8</span>
         </button>
+        <button class="training-pill" onclick="trainingFilter('webinar',this)" id="tpill-webinar">
+          <span id="tpill-webinar-label">&#127891; Webinars</span> <span class="tc" id="tc-webinar">3</span>
+        </button>
         <button class="training-pill" onclick="trainingFilter('video',this)" id="tpill-video">
-          <span id="tpill-video-label">&#9654; Videos</span> <span class="tc" id="tc-video">5</span>
+          <span id="tpill-video-label">&#9654; Videos</span> <span class="tc" id="tc-video">0</span>
         </button>
         <button class="training-pill" onclick="trainingFilter('pdf',this)" id="tpill-pdf">
-          <span id="tpill-pdf-label">&#128196; Documents</span> <span class="tc" id="tc-pdf">3</span>
+          <span id="tpill-pdf-label">&#128196; Documents</span> <span class="tc" id="tc-pdf">2</span>
+        </button>
+        <button class="training-pill" onclick="trainingFilter('wtgo',this)" id="tpill-wtgo">
+          <span id="tpill-wtgo-label">&#128218; When They Get Older</span> <span class="tc" id="tc-wtgo">2</span>
         </button>
       </div>
+
+      <div class="training-section-label" id="training-webinar-label">&#127891; WEBINARS</div>
+      <div id="training-webinar-grid"></div>
 
       <div class="training-section-label" id="training-video-label">&#9654; VIDEO COURSES</div>
       <div id="training-video-grid"></div>
 
       <div class="training-section-label" id="training-pdf-label">&#128196; REFERENCE DOCUMENTS</div>
       <div id="training-pdf-grid"></div>
+
+      <div class="training-section-label" id="training-wtgo-label">&#128218; WHEN THEY GET OLDER</div>
+      <div id="training-wtgo-grid"></div>
     </div>
 
     <div class="app-footer">
@@ -567,6 +579,7 @@ const T = {
     trainingProgressLabel: (d,t) => `${d} of ${t} modules completed`,
     tpillAll: 'All', tpillVideo: '\u25b6 Videos', tpillDoc: '\u{1F4C4} Documents',
     videoSectionLabel: '\u25b6 VIDEO COURSES', pdfSectionLabel: '\u{1F4C4} REFERENCE DOCUMENTS',
+    webinarSectionLabel: '\u{1F393} WEBINARS', wtgoSectionLabel: '\u{1F4DA} WHEN THEY GET OLDER',
     openVideo: '\u25b6 Watch', openPdf: '\u{1F4C4} Open', markDone: '\u2713 Done', markUndo: '\u21a9 Undo',
     trainingEmpty: 'No resources here.',
   },
@@ -638,6 +651,7 @@ const T = {
     trainingProgressLabel: (d,tot) => `${d} module${d!==1?'s':''} sur ${tot} termin\u00e9${d!==1?'s':''}`,
     tpillAll: 'Tout', tpillVideo: '\u25b6 Vid\u00e9os', tpillDoc: '\u{1F4C4} Documents',
     videoSectionLabel: '\u25b6 COURS EN VID\u00c9O', pdfSectionLabel: '\u{1F4C4} DOCUMENTS DE R\u00c9F\u00c9RENCE',
+    webinarSectionLabel: '\u{1F393} WEBINAIRES', wtgoSectionLabel: '\u{1F4DA} WHEN THEY GET OLDER',
     openVideo: '\u25b6 Regarder', openPdf: '\u{1F4C4} Ouvrir', markDone: '\u2713 Termin\u00e9', markUndo: '\u21a9 Annuler',
     trainingEmpty: 'Aucune ressource ici.',
   }
@@ -742,7 +756,8 @@ function applyTranslations() {
     'btn-log-visit': 'btnLogVisit', 'history-title': 'historyTitle', 'btn-logout': 'btnLogout',
     'nav-training-label': 'navTraining',
     'training-eyebrow': 'trainingEyebrow', 'training-title': 'trainingTitle', 'training-subtitle': 'trainingSubtitle',
-    'training-video-label': 'videoSectionLabel', 'training-pdf-label': 'pdfSectionLabel'
+    'training-video-label': 'videoSectionLabel', 'training-pdf-label': 'pdfSectionLabel',
+    'training-webinar-label': 'webinarSectionLabel', 'training-wtgo-label': 'wtgoSectionLabel'
   };
   Object.entries(ids).forEach(([id, key]) => {
     const el = document.getElementById(id);
@@ -970,15 +985,21 @@ async function verifyPassword() {
   const btn      = document.getElementById('btn-verify-pw');
   if (!password) { showAlert(alertBox, t('passwordRequired'), 'error'); return; }
   btn.disabled = true; btn.textContent = t('loginLoading');
-  const inputHash = await hashPassword(password, currentVolunteer.id);
-  if (inputHash !== getPasswordHash()) {
-    showAlert(alertBox, t('wrongPassword'), 'error');
+  try {
+    const inputHash = await hashPassword(password, currentVolunteer.id);
+    if (inputHash !== getPasswordHash()) {
+      showAlert(alertBox, t('wrongPassword'), 'error');
+      btn.disabled = false; btn.textContent = t('btnSignIn');
+      document.getElementById('login-password').value = '';
+      document.getElementById('login-password').focus();
+      return;
+    }
+    completeLogin();
+  } catch(e) {
+    // Ensure button is always re-enabled so volunteer isn't permanently locked out
+    showAlert(alertBox, 'Something went wrong. Please try again.', 'error');
     btn.disabled = false; btn.textContent = t('btnSignIn');
-    document.getElementById('login-password').value = '';
-    document.getElementById('login-password').focus();
-    return;
   }
-  completeLogin();
 }
 
 // ============================================================
@@ -1032,6 +1053,7 @@ function completeLogin() {
 // ============================================================
 function backToStep1() {
   currentVolunteer = null;
+  _loginEmail = ''; _loginPhone = '';  // clear stale login identifiers
   document.getElementById('login-step1').style.display          = 'block';
   document.getElementById('login-step2-password').style.display = 'none';
   document.getElementById('login-step2-create').style.display   = 'none';
@@ -1041,8 +1063,17 @@ function backToStep1() {
   document.getElementById('new-password').value     = '';
   document.getElementById('confirm-password').value = '';
   document.getElementById('reset-otp').value        = '';
+  // Reset Continue button
   const btn = document.getElementById('btn-continue');
   btn.disabled = false; btn.textContent = t('btnContinue');
+  // Reset Sign In button (Bug 2 fix — was staying disabled after failed attempt)
+  const btnVerify = document.getElementById('btn-verify-pw');
+  btnVerify.disabled = false; btnVerify.textContent = t('btnSignIn');
+  // Reset Create Password button
+  const btnCreate = document.getElementById('btn-create-pw');
+  if (btnCreate) { btnCreate.disabled = false; btnCreate.textContent = t('btnCreatePassword'); }
+  // Hide user badge (Bug 1 fix — was showing leftover name from previous session)
+  document.getElementById('user-badge').style.display = 'none';
 }
 
 // ============================================================
@@ -1695,24 +1726,34 @@ async function loadVisitHistory() {
   // Baserow-logged visits
   try {
     const name = getVolunteerName();
-    const data = await baserowGet(VISITS_TABLE, `&search=${encodeURIComponent(name)}&size=10&order_by=-Date`);
-    const rows = (data.results || []).filter(r =>
-      Object.values(r).some(v => String(v||'').toLowerCase().includes(name.toLowerCase().split(' ')[0]))
-    );
+    const data = await baserowGet(VISITS_TABLE, `&search=${encodeURIComponent(name)}&size=20`);
+    const rows = (data.results || []).filter(r => {
+      // Must mention volunteer's first name in any field
+      const first = name.toLowerCase().split(' ')[0];
+      if (!Object.values(r).some(v => String(v||'').toLowerCase().includes(first))) return false;
+      // Exclude Upcoming rows — future assignments, not completed visits
+      const allVals = Object.values(r).map(v => String(v||'').toLowerCase().trim());
+      if (allVals.some(v => v === 'upcoming')) return false;
+      return true;
+    });
 
     if (rows.length > 0) {
       rows.forEach(r => {
-        const dateVal  = r['Date'] || r['Visit Date'] || r['Date de Visite'] || '';
-        const duration = r['Duration'] || r['Dur\u00e9e'] || '';
-        const senior   = r['Senior'] || r['Senior Name'] || '';
-        const notes    = r['Notes'] || r['Visit Notes'] || '';
+        const dateVal  = extractVal(r['Date'] || r['Visit Date'] || r['Date de Visite'] || '');
+        const duration = extractVal(r['Duration'] || r['Dur\u00e9e'] || '');
+        const senior   = extractVal(r['Senior'] || r['Senior Name'] || '');
+        // Parse Notes — JSON format used by admin match; show only coordinatorNotes
+        const rawNotes = extractVal(r['Notes'] || r['Visit Notes'] || '');
+        let notesDisplay = '';
+        try { notesDisplay = JSON.parse(rawNotes).coordinatorNotes || ''; }
+        catch(e) { notesDisplay = rawNotes; }
         html += `
           <div class="visit-history-item">
             <div class="visit-dot"></div>
             <div class="visit-info">
               <div class="visit-senior">${senior || '\u2013'}</div>
               <div class="visit-date">${dateVal}${duration ? ' &middot; ' + duration : ''}</div>
-              ${notes ? `<div class="visit-note">${String(notes).substring(0,80)}${String(notes).length > 80 ? '...' : ''}</div>` : ''}
+              ${notesDisplay ? `<div class="visit-note">${notesDisplay.substring(0,80)}${notesDisplay.length > 80 ? '...' : ''}</div>` : ''}
             </div>
           </div>`;
       });
@@ -1781,26 +1822,36 @@ document.getElementById('login-phone').addEventListener('keydown', e => { if (e.
 // PDFs:   upload to Google Drive → Share → "Anyone with the link" → paste that link.
 // ============================================================
 const TRAINING_COURSES = [
-  // ── AVAILABLE WEBINARS ──────────────────────────────────────────────────────
+  // ── WEBINARS ─────────────────────────────────────────────────────────────────
   {
-    id: 'tr1', type: 'video', emoji: '🧠',
+    id: 'tr1', type: 'video', section: 'webinar', emoji: '🧠',
     cat:   { en: 'Wellbeing',        fr: 'Bien-être' },
     title: { en: 'Mental Health and Its Importance',
              fr: 'La santé mentale et son importance' },
     desc:  { en: 'Presented by Dr. Antar — an in-depth look at mental health awareness and its role in compassionate volunteer companionship.',
              fr: 'Présenté par Dr. Antar — regard approfondi sur la santé mentale et son rôle dans l\'accompagnement bénévole.' },
-    dur:   { en: 'Webinar', fr: 'Webinaire' },
+    dur:   { en: '📹 Video · Webinar', fr: '📹 Vidéo · Webinaire' },
     url: 'https://drive.google.com/file/d/1iFk-j60YdUWmK7jCpMwQtRM25kJxWhBE/view?usp=sharing'
   },
   {
-    id: 'tr2', type: 'video', emoji: '🤝',
+    id: 'tr2', type: 'video', section: 'webinar', emoji: '🤝',
     cat:   { en: 'Best Practices',   fr: 'Meilleures pratiques' },
     title: { en: 'The Do\'s and Don\'ts with Elders as a Volunteer',
              fr: 'Les bonnes et mauvaises pratiques avec les aîné(e)s' },
     desc:  { en: 'Presented by Sawsan Ibrahim, Nurse Clinician — practical guidance on respectful and effective elder companionship.',
              fr: 'Présenté par Sawsan Ibrahim, infirmière clinicienne — conseils pratiques pour un accompagnement respectueux et efficace.' },
-    dur:   { en: 'Webinar', fr: 'Webinaire' },
+    dur:   { en: '📹 Video · Webinar', fr: '📹 Vidéo · Webinaire' },
     url: 'https://drive.google.com/file/d/1kbQOk5OYVVvhS_fHREUc8qUSJ6iRhAHV/view?usp=sharing'
+  },
+  {
+    id: 'tr6', type: 'pdf', section: 'webinar', emoji: '📊', typeLabel: 'SLIDES',
+    cat:   { en: 'Best Practices',   fr: 'Meilleures pratiques' },
+    title: { en: 'Elder Volunteer Guide — Presentation Slides',
+             fr: 'Guide du bénévole auprès des aîné(e)s — Diapositives' },
+    desc:  { en: 'Slide deck by Sawsan Ibrahim, Nurse Clinician — companion resource to the Do\'s and Don\'ts webinar.',
+             fr: 'Diapositives de Sawsan Ibrahim, infirmière clinicienne — complément au webinaire sur les bonnes pratiques.' },
+    dur:   { en: '📄 Document · Slides', fr: '📄 Document · Diapositives' },
+    url: 'https://docs.google.com/presentation/d/165JrYv8id_fWHqAHMYypdMzEPDrpcM09/edit?usp=sharing'
   },
   // ── COMING SOON — VIDEOS ────────────────────────────────────────────────────
   {
@@ -1835,14 +1886,24 @@ const TRAINING_COURSES = [
   },
   // ── AVAILABLE DOCUMENTS ─────────────────────────────────────────────────────
   {
-    id: 'tr6', type: 'pdf', emoji: '📊',
-    cat:   { en: 'Best Practices',   fr: 'Meilleures pratiques' },
-    title: { en: 'Elder Volunteer Guide — Presentation Slides',
-             fr: 'Guide du bénévole auprès des aîné(e)s — Diapositives' },
-    desc:  { en: 'Slide deck by Sawsan Ibrahim, Nurse Clinician — companion resource to the Do\'s and Don\'ts webinar.',
-             fr: 'Diapositives de Sawsan Ibrahim, infirmière clinicienne — complément au webinaire sur les bonnes pratiques.' },
-    dur:   { en: 'Slides', fr: 'Diapositives' },
-    url: 'https://docs.google.com/presentation/d/165JrYv8id_fWHqAHMYypdMzEPDrpcM09/edit?usp=sharing'
+    id: 'tr9', type: 'pdf', emoji: '💬',
+    cat:   { en: 'Communication',    fr: 'Communication' },
+    title: { en: 'Age-Friendly Communication',
+             fr: 'Communication adaptée aux aîné(e)s' },
+    desc:  { en: 'Facts, tips and Ideas',
+             fr: 'Faits, conseils et idées' },
+    dur:   { en: '📄 Document · PDF', fr: '📄 Document · PDF' },
+    url: 'https://www.canada.ca/content/dam/phac-aspc/migration/phac-aspc/seniors-aines/alt-formats/pdf/publications/public/various-varies/afcomm-commavecaines/AFComm-Commavecaines-eng.pdf'
+  },
+  {
+    id: 'tr10', type: 'pdf', emoji: '🏠',
+    cat:   { en: 'Caregiving',       fr: 'Soutien aux proches' },
+    title: { en: 'Caregiving Strategies Handbook',
+             fr: 'Manuel de stratégies pour les aidants' },
+    desc:  { en: 'Providing care and support for an Older Adult Living with Family',
+             fr: 'Fournir des soins et du soutien à un aîné vivant en famille' },
+    dur:   { en: '📄 Document · PDF', fr: '📄 Document · PDF' },
+    url: './PGLO-Caregiving-Strategies-Handbook-2nd-Edition-06-2026-Final.pdf'
   },
   // ── COMING SOON — DOCUMENTS ─────────────────────────────────────────────────
   {
@@ -1864,6 +1925,27 @@ const TRAINING_COURSES = [
              fr: 'Introduction douce à la démence — rester patient(e), présent(e) et bienveillant(e).' },
     dur:   { en: 'Coming soon', fr: 'Bientôt disponible' },
     url: ''
+  },
+  // ── WHEN THEY GET OLDER SERIES ───────────────────────────────────────────────
+  {
+    id: 'tr11', type: 'pdf', section: 'wtgo', emoji: '🟣',
+    cat:   { en: 'Dementia',         fr: 'Démence' },
+    title: { en: 'How to Manage Life with Dementia',
+             fr: 'Comment gérer la vie avec la démence' },
+    desc:  { en: 'No. 5 in a series of guides from When They Get Older',
+             fr: 'N° 5 dans une série de guides de When They Get Older' },
+    dur:   { en: '📄 Document · Guide', fr: '📄 Document · Guide' },
+    url: './How-to-manage-life-with-dementia.pdf'
+  },
+  {
+    id: 'tr12', type: 'pdf', section: 'wtgo', emoji: '🟠',
+    cat:   { en: 'Health & Wellbeing', fr: 'Santé et bien-être' },
+    title: { en: 'How to Help Your Parents Live Well with Hearing Loss',
+             fr: 'Comment aider vos parents à bien vivre avec une perte auditive' },
+    desc:  { en: 'No. 2 in a series of guides from When They Get Older',
+             fr: 'N° 2 dans une série de guides de When They Get Older' },
+    dur:   { en: '📄 Document · Guide', fr: '📄 Document · Guide' },
+    url: './How-to___-Help-your-parents-live-well-with-hearing-loss.pdf'
   }
 ];
 
@@ -1929,7 +2011,7 @@ function updateTrainingProgress() {
 function buildCourseCard(c) {
   const done    = trainingCompleted.includes(c.id);
   const isVideo = c.type === 'video';
-  const typeStr = isVideo ? 'VIDEO' : 'PDF';
+  const typeStr = c.typeLabel || (isVideo ? 'VIDEO' : 'PDF');
 
   if (c.comingSoon) {
     const soonLabel = currentLang === 'fr' ? '🚧 Bientôt disponible' : '🚧 Coming Soon';
@@ -1980,25 +2062,42 @@ function buildCourseCard(c) {
 
 function renderTraining() {
   const af = trainingActiveFilter;
-  const videos = TRAINING_COURSES.filter(c => c.type === 'video' && (af === 'all' || af === 'video'));
-  const pdfs   = TRAINING_COURSES.filter(c => c.type === 'pdf'   && (af === 'all' || af === 'pdf'));
 
+  const webinars = TRAINING_COURSES.filter(c => c.section === 'webinar');
+  const videos   = TRAINING_COURSES.filter(c => c.type === 'video' && !c.section);
+  const pdfs     = TRAINING_COURSES.filter(c => c.type === 'pdf' && !c.section);
+  const wtgo     = TRAINING_COURSES.filter(c => c.section === 'wtgo');
+
+  const wGrid = document.getElementById('training-webinar-grid');
   const vGrid = document.getElementById('training-video-grid');
   const pGrid = document.getElementById('training-pdf-grid');
+  const gGrid = document.getElementById('training-wtgo-grid');
+  const wLbl  = document.getElementById('training-webinar-label');
   const vLbl  = document.getElementById('training-video-label');
   const pLbl  = document.getElementById('training-pdf-label');
+  const gLbl  = document.getElementById('training-wtgo-label');
   if (!vGrid) return;
 
-  vGrid.innerHTML = videos.length ? videos.map(buildCourseCard).join('') : `<div class="training-empty">${t('trainingEmpty')}</div>`;
-  pGrid.innerHTML = pdfs.length   ? pdfs.map(buildCourseCard).join('')   : `<div class="training-empty">${t('trainingEmpty')}</div>`;
+  const empty = `<div class="training-empty">${t('trainingEmpty')}</div>`;
+  wGrid.innerHTML = webinars.length ? webinars.map(buildCourseCard).join('') : empty;
+  vGrid.innerHTML = videos.length   ? videos.map(buildCourseCard).join('')   : empty;
+  pGrid.innerHTML = pdfs.length     ? pdfs.map(buildCourseCard).join('')     : empty;
+  gGrid.innerHTML = wtgo.length     ? wtgo.map(buildCourseCard).join('')     : empty;
 
-  vLbl.style.display = (af === 'all' || af === 'video') ? '' : 'none';
-  pLbl.style.display = (af === 'all' || af === 'pdf')   ? '' : 'none';
+  const showAll = af === 'all';
+  const show = (el, condition) => { if (el) el.style.display = (showAll || condition) ? '' : 'none'; };
+  show(wLbl,  af === 'webinar'); show(wGrid, af === 'webinar');
+  show(vLbl,  af === 'video');   show(vGrid, af === 'video');
+  show(pLbl,  af === 'pdf');     show(pGrid, af === 'pdf');
+  show(gLbl,  af === 'wtgo');    show(gGrid, af === 'wtgo');
 
   // Update pill counts (available = not comingSoon)
-  document.getElementById('tc-all').textContent   = TRAINING_COURSES.filter(c => !c.comingSoon).length;
-  document.getElementById('tc-video').textContent = TRAINING_COURSES.filter(c => c.type === 'video' && !c.comingSoon).length;
-  document.getElementById('tc-pdf').textContent   = TRAINING_COURSES.filter(c => c.type === 'pdf'   && !c.comingSoon).length;
+  const avail = TRAINING_COURSES.filter(c => !c.comingSoon);
+  document.getElementById('tc-all').textContent     = avail.length;
+  document.getElementById('tc-webinar').textContent = avail.filter(c => c.section === 'webinar').length;
+  document.getElementById('tc-video').textContent   = avail.filter(c => c.type === 'video' && !c.section).length;
+  document.getElementById('tc-pdf').textContent     = avail.filter(c => c.type === 'pdf' && !c.section).length;
+  document.getElementById('tc-wtgo').textContent    = avail.filter(c => c.section === 'wtgo').length;
 
   updateTrainingProgress();
 }
