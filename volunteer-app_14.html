@@ -1227,40 +1227,38 @@ async function doChangePassword() {
 }
 
 // ============================================================
-// VISIT COUNTER — counts all visit records for this volunteer
+// VISIT COUNTER — always counts from Baserow, takes max with calendar
 // ============================================================
 async function loadVisitCount() {
-  // Calendar is configured — count is already set by loadCalendarVisit(). Don't overwrite it.
-  if (CALENDAR_SCRIPT_URL) return;
-
-  // No calendar — fall back to Baserow count
+  // ALWAYS count from Baserow, regardless of calendar.
+  // Calendar may miss events where email/phone isn't in description.
+  // Baserow captures all visits logged through the app.
+  // We show whichever is higher — never an undercount.
   try {
-    const fullName   = getVolunteerName();                 // e.g. "Fatima Benali"
-    const first      = fullName.split(' ')[0];             // e.g. "Fatima"
+    const fullName   = getVolunteerName();
+    const first      = fullName.split(' ')[0];
     const nameLower  = fullName.toLowerCase();
     const firstLower = first.toLowerCase();
 
     const fields = await getTableFields(VISITS_TABLE);
     const volF   = findBestField(fields, ['Volunteer','Volunteer Name','Bénévole','Nom Bénévole']);
 
-    // Search by full name for specificity (Baserow searches across all text fields)
-    const searchTerm = fullName.includes(' ') ? fullName : first;
     let all = [], nextUrl =
-      `${BASE_URL}/database/rows/table/${VISITS_TABLE}/?user_field_names=true&size=200&search=${encodeURIComponent(searchTerm)}`;
+      `${BASE_URL}/database/rows/table/${VISITS_TABLE}/?user_field_names=true&size=200&search=${encodeURIComponent(fullName.includes(' ') ? fullName : first)}`;
 
     while (nextUrl) {
-      const res  = await fetch(nextUrl, { headers: { 'Authorization': `Token ${BASEROW_TOKEN}` } });
+      const res = await fetch(nextUrl, { headers: { 'Authorization': `Token ${BASEROW_TOKEN}` } });
       if (!res.ok) break;
       const data = await res.json();
       all     = all.concat(data.results || []);
       nextUrl = data.next || null;
     }
 
-    // If full-name search returned nothing, retry with first name only
+    // If no results with full name, retry with first name
     if (all.length === 0 && fullName.includes(' ')) {
       nextUrl = `${BASE_URL}/database/rows/table/${VISITS_TABLE}/?user_field_names=true&size=200&search=${encodeURIComponent(first)}`;
       while (nextUrl) {
-        const res  = await fetch(nextUrl, { headers: { 'Authorization': `Token ${BASEROW_TOKEN}` } });
+        const res = await fetch(nextUrl, { headers: { 'Authorization': `Token ${BASEROW_TOKEN}` } });
         if (!res.ok) break;
         const data = await res.json();
         all     = all.concat(data.results || []);
@@ -1268,16 +1266,20 @@ async function loadVisitCount() {
       }
     }
 
-    // Filter: volunteer column must contain this volunteer's name
-    // No status filter — any logged visit row counts regardless of status field value
-    const count = all.filter(r => {
-      const rVol = extractVal(r[volF] || '').toLowerCase();
-      // Prefer full-name match; fall back to first name (guard: >2 chars to avoid noise)
-      return rVol.includes(nameLower) ||
-             (firstLower.length > 2 && rVol.includes(firstLower));
+    const baserowCount = all.filter(r => {
+      const rVol    = extractVal(r[volF] || '').toLowerCase();
+      const allVals = Object.values(r).map(v => String(v||'').toLowerCase().trim());
+      // Exclude Upcoming rows — those are future assignments not yet completed
+      if (allVals.some(v => v === 'upcoming')) return false;
+      // Must match this volunteer's name
+      return rVol.includes(nameLower) || (firstLower.length > 2 && rVol.includes(firstLower));
     }).length;
 
-    document.getElementById('stat-visits').textContent = count;
+    // Take the MAX of whatever calendar set and what Baserow found
+    const current = parseInt(document.getElementById('stat-visits').textContent) || 0;
+    if (baserowCount > current) {
+      document.getElementById('stat-visits').textContent = baserowCount;
+    }
   } catch(e) { /* keep existing value */ }
 }
 
