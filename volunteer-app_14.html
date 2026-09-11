@@ -439,7 +439,7 @@
           <span id="tpill-pdf-label">&#128196; Documents</span> <span class="tc" id="tc-pdf">2</span>
         </button>
         <button class="training-pill" onclick="trainingFilter('wtgo',this)" id="tpill-wtgo">
-          <span id="tpill-wtgo-label">&#128218; When They Get Older</span> <span class="tc" id="tc-wtgo">2</span>
+          <span id="tpill-wtgo-label">&#128218; How to :</span> <span class="tc" id="tc-wtgo">2</span>
         </button>
       </div>
 
@@ -452,7 +452,7 @@
       <div class="training-section-label" id="training-pdf-label">&#128196; REFERENCE DOCUMENTS</div>
       <div id="training-pdf-grid"></div>
 
-      <div class="training-section-label" id="training-wtgo-label">&#128218; WHEN THEY GET OLDER</div>
+      <div class="training-section-label" id="training-wtgo-label">&#128218; HOW TO :</div>
       <div id="training-wtgo-grid"></div>
     </div>
 
@@ -579,7 +579,7 @@ const T = {
     trainingProgressLabel: (d,t) => `${d} of ${t} modules completed`,
     tpillAll: 'All', tpillVideo: '\u25b6 Videos', tpillDoc: '\u{1F4C4} Documents',
     videoSectionLabel: '\u25b6 VIDEO COURSES', pdfSectionLabel: '\u{1F4C4} REFERENCE DOCUMENTS',
-    webinarSectionLabel: '\u{1F393} WEBINARS', wtgoSectionLabel: '\u{1F4DA} WHEN THEY GET OLDER',
+    webinarSectionLabel: '\u{1F393} WEBINARS', wtgoSectionLabel: '\u{1F4DA} HOW to :',
     openVideo: '\u25b6 Watch', openPdf: '\u{1F4C4} Open', markDone: '\u2713 Done', markUndo: '\u21a9 Undo',
     trainingEmpty: 'No resources here.',
   },
@@ -651,7 +651,7 @@ const T = {
     trainingProgressLabel: (d,tot) => `${d} module${d!==1?'s':''} sur ${tot} termin\u00e9${d!==1?'s':''}`,
     tpillAll: 'Tout', tpillVideo: '\u25b6 Vid\u00e9os', tpillDoc: '\u{1F4C4} Documents',
     videoSectionLabel: '\u25b6 COURS EN VID\u00c9O', pdfSectionLabel: '\u{1F4C4} DOCUMENTS DE R\u00c9F\u00c9RENCE',
-    webinarSectionLabel: '\u{1F393} WEBINAIRES', wtgoSectionLabel: '\u{1F4DA} WHEN THEY GET OLDER',
+    webinarSectionLabel: '\u{1F393} WEBINAIRES', wtgoSectionLabel: '\u{1F4DA} HOW to :',
     openVideo: '\u25b6 Regarder', openPdf: '\u{1F4C4} Ouvrir', markDone: '\u2713 Termin\u00e9', markUndo: '\u21a9 Annuler',
     trainingEmpty: 'Aucune ressource ici.',
   }
@@ -1275,9 +1275,13 @@ async function loadVisitCount() {
       return rVol.includes(nameLower) || (firstLower.length > 2 && rVol.includes(firstLower));
     }).length;
 
-    // Take the MAX of whatever calendar set and what Baserow found
+    // Only update if calendar returned 0 or nothing (meaning it likely failed or found nothing)
+    // This prevents a broken/overcounting calendar result from being locked in permanently
     const current = parseInt(document.getElementById('stat-visits').textContent) || 0;
-    if (baserowCount > current) {
+    if (current === 0 && baserowCount > 0) {
+      document.getElementById('stat-visits').textContent = baserowCount;
+    } else if (baserowCount > current && current < 5) {
+      // Only override small calendar counts with Baserow — avoids overriding legitimate high calendar counts
       document.getElementById('stat-visits').textContent = baserowCount;
     }
   } catch(e) { /* keep existing value */ }
@@ -1357,7 +1361,7 @@ async function loadCalendarVisit(container) {
     // Try Baserow count too since calendar didn't provide it
     try {
       const fullName  = getVolunteerName();
-      const first     = fullName.split(' ')[0];
+      const first     = fullName.split(' ')[0].toLowerCase();
       const fields    = await getTableFields(VISITS_TABLE);
       const volF      = findBestField(fields, ['Volunteer','Volunteer Name','Bénévole']);
       let all = [], nextUrl = `${BASE_URL}/database/rows/table/${VISITS_TABLE}/?user_field_names=true&size=200&search=${encodeURIComponent(first)}`;
@@ -1368,7 +1372,12 @@ async function loadCalendarVisit(container) {
         all = all.concat(data.results || []);
         nextUrl = data.next || null;
       }
-      const count = all.filter(r => extractVal(r[volF] || '').toLowerCase().includes(first.toLowerCase())).length;
+      const count = all.filter(r => {
+        const rVol    = extractVal(r[volF] || '').toLowerCase();
+        const allVals = Object.values(r).map(v => String(v||'').toLowerCase().trim());
+        if (allVals.some(v => v === 'upcoming')) return false; // exclude future assignments
+        return rVol.includes(first);
+      }).length;
       document.getElementById('stat-visits').textContent = count;
     } catch(e2) { /* keep existing value */ }
   }
