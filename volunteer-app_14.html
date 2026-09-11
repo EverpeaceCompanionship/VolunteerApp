@@ -1305,9 +1305,10 @@ async function loadCalendarVisit(container) {
   try {
     const email = getVolunteerEmail();
     const phone = getVolunteerPhone();
-    if (!email && phone.length < 7) throw new Error('No identifier');
+    const name  = getVolunteerName();
+    if (!email && phone.length < 7 && name.length < 3) throw new Error('No identifier');
 
-    const url = `${CALENDAR_SCRIPT_URL}?email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}`;
+    const url = `${CALENDAR_SCRIPT_URL}?email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}&name=${encodeURIComponent(name)}`;
     const res  = await fetch(url);
     if (!res.ok) throw new Error('Script error ' + res.status);
     const data = await res.json();
