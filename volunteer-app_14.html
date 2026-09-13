@@ -441,6 +441,9 @@
         <button class="training-pill" onclick="trainingFilter('wtgo',this)" id="tpill-wtgo">
           <span id="tpill-wtgo-label">&#128218; How to :</span> <span class="tc" id="tc-wtgo">2</span>
         </button>
+        <button class="training-pill" onclick="trainingFilter('policies',this)" id="tpill-policies">
+          <span id="tpill-policies-label">&#128196; Volunteer Policies</span> <span class="tc" id="tc-policies">3</span>
+        </button>
       </div>
 
       <div class="training-section-label" id="training-webinar-label">&#127891; WEBINARS</div>
@@ -454,6 +457,9 @@
 
       <div class="training-section-label" id="training-wtgo-label">&#128218; HOW TO :</div>
       <div id="training-wtgo-grid"></div>
+
+      <div class="training-section-label" id="training-policies-label">&#128196; VOLUNTEER POLICIES</div>
+      <div id="training-policies-grid"></div>
     </div>
 
     <div class="app-footer">
@@ -1865,6 +1871,37 @@ const TRAINING_COURSES = [
     dur:   { en: '📄 Document · Slides', fr: '📄 Document · Diapositives' },
     url: 'https://docs.google.com/presentation/d/165JrYv8id_fWHqAHMYypdMzEPDrpcM09/edit?usp=sharing'
   },
+  // ── VOLUNTEER POLICIES ───────────────────────────────────────────────────────
+  {
+    id: 'tr19', type: 'pdf', section: 'policies', emoji: '📋',
+    cat:   { en: 'Volunteer Policies', fr: 'Politiques bénévoles' },
+    title: { en: 'Volunteer Agreement',
+             fr: 'Accord bénévole' },
+    desc:  { en: 'Volunteer Policies',
+             fr: 'Politiques bénévoles' },
+    dur:   { en: '📄 Document · Policy', fr: '📄 Document · Politique' },
+    url: './volunteer-agreement.pdf'
+  },
+  {
+    id: 'tr20', type: 'pdf', section: 'policies', emoji: '🛡️',
+    cat:   { en: 'Volunteer Policies', fr: 'Politiques bénévoles' },
+    title: { en: 'Volunteer Waiver and Release',
+             fr: 'Décharge et renonciation bénévole' },
+    desc:  { en: 'Volunteer Policies',
+             fr: 'Politiques bénévoles' },
+    dur:   { en: '📄 Document · Policy', fr: '📄 Document · Politique' },
+    url: './volunteer-waiver.pdf'
+  },
+  {
+    id: 'tr21', type: 'pdf', section: 'policies', emoji: '📜',
+    cat:   { en: 'Volunteer Policies', fr: 'Politiques bénévoles' },
+    title: { en: 'Volunteer Code of Conduct',
+             fr: 'Code de conduite bénévole' },
+    desc:  { en: 'Volunteer Policies',
+             fr: 'Politiques bénévoles' },
+    dur:   { en: '📄 Document · Policy', fr: '📄 Document · Politique' },
+    url: './volunteer-code-of-conduct.pdf'
+  },
   // ── COMING SOON — VIDEOS ────────────────────────────────────────────────────
   {
     id: 'tr3', type: 'video', emoji: '👴',
@@ -1877,14 +1914,13 @@ const TRAINING_COURSES = [
     url: 'https://youtu.be/Pyr7Zf-eVq4?si=ilEeLyqPcKRmiZh0'
   },
   {
-    id: 'tr4', type: 'video', emoji: '❤️', comingSoon: true,
-    cat:   { en: 'Wellbeing',        fr: 'Bien-être' },
-    title: { en: 'Recognizing Isolation & Loneliness',
-             fr: 'Reconnaître l\'isolement et la solitude' },
-    desc:  { en: 'Signs to watch for, how to respond with care, and when to flag concerns.',
-             fr: 'Signaux à surveiller, comment réagir avec bienveillance et quand alerter.' },
-    dur:   { en: 'Coming soon', fr: 'Bientôt disponible' },
-    url: ''
+    id: 'tr4', type: 'video', emoji: '🕌',
+    cat:   { en: 'Islamic Values',   fr: 'Valeurs islamiques' },
+    title: { en: 'The Rights of the Elderly in Islam',
+             fr: 'Les droits des aîné(e)s en Islam' },
+    desc:  { en: '', fr: '' },
+    dur:   { en: '📹 Video', fr: '📹 Vidéo' },
+    url: 'https://youtu.be/gEAWJBzerzw?si=DK1-UyhtnmUtaPD7'
   },
   {
     id: 'tr5', type: 'video', emoji: '📋', comingSoon: true,
@@ -1956,6 +1992,15 @@ const TRAINING_COURSES = [
              fr: 'Première édition' },
     dur:   { en: '📄 Document · WHO Guidelines', fr: '📄 Document · Lignes directrices OMS' },
     url: './who-dementia-1st-edition.pdf'
+  },
+  {
+    id: 'tr18', type: 'pdf', emoji: '💬',
+    cat:   { en: 'Communication',    fr: 'Communication' },
+    title: { en: 'Conversation Starters and Icebreakers for the Elderly',
+             fr: 'Brise-glaces et sujets de conversation pour les aîné(e)s' },
+    desc:  { en: '', fr: '' },
+    dur:   { en: '📄 Document', fr: '📄 Document' },
+    url: 'https://share.google/Fj0GL3ypBxjH23Y6w'
   },
   // ── COMING SOON — DOCUMENTS ─────────────────────────────────────────────────
   {
@@ -2129,15 +2174,18 @@ function renderTraining() {
   const videos   = TRAINING_COURSES.filter(c => c.type === 'video' && !c.section);
   const pdfs     = TRAINING_COURSES.filter(c => c.type === 'pdf' && !c.section);
   const wtgo     = TRAINING_COURSES.filter(c => c.section === 'wtgo');
+  const policies = TRAINING_COURSES.filter(c => c.section === 'policies');
 
   const wGrid = document.getElementById('training-webinar-grid');
   const vGrid = document.getElementById('training-video-grid');
   const pGrid = document.getElementById('training-pdf-grid');
   const gGrid = document.getElementById('training-wtgo-grid');
+  const yGrid = document.getElementById('training-policies-grid');
   const wLbl  = document.getElementById('training-webinar-label');
   const vLbl  = document.getElementById('training-video-label');
   const pLbl  = document.getElementById('training-pdf-label');
   const gLbl  = document.getElementById('training-wtgo-label');
+  const yLbl  = document.getElementById('training-policies-label');
   if (!vGrid) return;
 
   const empty = `<div class="training-empty">${t('trainingEmpty')}</div>`;
@@ -2145,21 +2193,24 @@ function renderTraining() {
   vGrid.innerHTML = videos.length   ? videos.map(buildCourseCard).join('')   : empty;
   pGrid.innerHTML = pdfs.length     ? pdfs.map(buildCourseCard).join('')     : empty;
   gGrid.innerHTML = wtgo.length     ? wtgo.map(buildCourseCard).join('')     : empty;
+  yGrid.innerHTML = policies.length ? policies.map(buildCourseCard).join('') : empty;
 
   const showAll = af === 'all';
   const show = (el, condition) => { if (el) el.style.display = (showAll || condition) ? '' : 'none'; };
-  show(wLbl,  af === 'webinar'); show(wGrid, af === 'webinar');
-  show(vLbl,  af === 'video');   show(vGrid, af === 'video');
-  show(pLbl,  af === 'pdf');     show(pGrid, af === 'pdf');
-  show(gLbl,  af === 'wtgo');    show(gGrid, af === 'wtgo');
+  show(wLbl,  af === 'webinar');  show(wGrid, af === 'webinar');
+  show(vLbl,  af === 'video');    show(vGrid, af === 'video');
+  show(pLbl,  af === 'pdf');      show(pGrid, af === 'pdf');
+  show(gLbl,  af === 'wtgo');     show(gGrid, af === 'wtgo');
+  show(yLbl,  af === 'policies'); show(yGrid, af === 'policies');
 
   // Update pill counts (available = not comingSoon)
   const avail = TRAINING_COURSES.filter(c => !c.comingSoon);
-  document.getElementById('tc-all').textContent     = avail.length;
-  document.getElementById('tc-webinar').textContent = avail.filter(c => c.section === 'webinar').length;
-  document.getElementById('tc-video').textContent   = avail.filter(c => c.type === 'video' && !c.section).length;
-  document.getElementById('tc-pdf').textContent     = avail.filter(c => c.type === 'pdf' && !c.section).length;
-  document.getElementById('tc-wtgo').textContent    = avail.filter(c => c.section === 'wtgo').length;
+  document.getElementById('tc-all').textContent      = avail.length;
+  document.getElementById('tc-webinar').textContent  = avail.filter(c => c.section === 'webinar').length;
+  document.getElementById('tc-video').textContent    = avail.filter(c => c.type === 'video' && !c.section).length;
+  document.getElementById('tc-pdf').textContent      = avail.filter(c => c.type === 'pdf' && !c.section).length;
+  document.getElementById('tc-wtgo').textContent     = avail.filter(c => c.section === 'wtgo').length;
+  document.getElementById('tc-policies').textContent = avail.filter(c => c.section === 'policies').length;
 
   updateTrainingProgress();
 }
