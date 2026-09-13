@@ -331,7 +331,9 @@
         <span id="nav-log-label">Log Visit</span>
       </button>
       <button class="nav-tab" onclick="showTab('tab-training')" id="nav-training">
-        <span class="tab-icon">&#127979;</span>
+        <span class="tab-icon" style="position:relative;display:inline-block">&#127979;
+          <span id="training-tab-badge" style="position:absolute;top:-3px;right:-5px;width:9px;height:9px;background:#E53935;border-radius:50%;display:none;border:1.5px solid white"></span>
+        </span>
         <span id="nav-training-label">Training</span>
       </button>
     </div>
@@ -446,6 +448,9 @@
         </button>
       </div>
 
+      <div class="training-section-label" id="training-policies-label">&#128196; VOLUNTEER POLICIES</div>
+      <div id="training-policies-grid"></div>
+
       <div class="training-section-label" id="training-webinar-label">&#127891; WEBINARS</div>
       <div id="training-webinar-grid"></div>
 
@@ -457,9 +462,6 @@
 
       <div class="training-section-label" id="training-wtgo-label">&#128218; HOW TO :</div>
       <div id="training-wtgo-grid"></div>
-
-      <div class="training-section-label" id="training-policies-label">&#128196; VOLUNTEER POLICIES</div>
-      <div id="training-policies-grid"></div>
     </div>
 
     <div class="app-footer">
@@ -1052,6 +1054,7 @@ function completeLogin() {
   loadVisitCount();
   buildCalendar();
   trainingLoadProgress();
+  updateTrainingTabBadge();
 }
 
 // ============================================================
@@ -1233,7 +1236,36 @@ async function doChangePassword() {
 }
 
 // ============================================================
-// VISIT COUNTER — always counts from Baserow, takes max with calendar
+// VOLUNTEER POLICY TRACKING
+// Tracks which of the 3 policy documents have been opened
+// Stored in localStorage per volunteer — scoped by their email OR phone
+// ============================================================
+const POLICY_IDS = ['tr19', 'tr20', 'tr21'];
+
+function getPolicyKey() {
+  // Use email if available, otherwise phone digits — always unique per volunteer
+  return `ep_policies_${_loginEmail || _loginPhone || 'unknown'}`;
+}
+
+function getPoliciesOpened() {
+  try { return JSON.parse(localStorage.getItem(getPolicyKey()) || '[]'); }
+  catch(e) { return []; }
+}
+
+function markPolicyOpened(id) {
+  const opened = getPoliciesOpened();
+  if (!opened.includes(id)) { opened.push(id); localStorage.setItem(getPolicyKey(), JSON.stringify(opened)); }
+}
+
+function isPolicyRead(id) { return getPoliciesOpened().includes(id); }
+
+function allPoliciesRead() { return POLICY_IDS.every(id => isPolicyRead(id)); }
+
+function updateTrainingTabBadge() {
+  const badge = document.getElementById('training-tab-badge');
+  if (!badge) return;
+  badge.style.display = allPoliciesRead() ? 'none' : 'block';
+}
 // ============================================================
 async function loadVisitCount() {
   // ALWAYS count from Baserow, regardless of calendar.
@@ -2091,7 +2123,7 @@ function trainingToggleDone(id) {
   updateTrainingProgress();
 }
 
-function trainingOpenResource(url) {
+function trainingOpenResource(url, courseId) {
   if (url.includes('REPLACE_WITH_REAL_LINK')) {
     alert(currentLang === 'en'
       ? 'This resource link has not been set up yet. Contact your coordinator for access.'
@@ -2099,6 +2131,12 @@ function trainingOpenResource(url) {
     return;
   }
   window.open(url, '_blank', 'noopener');
+  // Mark policy as read and update badges
+  if (courseId && POLICY_IDS.includes(courseId)) {
+    markPolicyOpened(courseId);
+    updateTrainingTabBadge();
+    renderTraining();
+  }
 }
 
 function updateTrainingProgress() {
@@ -2115,9 +2153,10 @@ function updateTrainingProgress() {
 }
 
 function buildCourseCard(c) {
-  const done    = trainingCompleted.includes(c.id);
-  const isVideo = c.type === 'video';
-  const typeStr = c.typeLabel || (isVideo ? 'VIDEO' : 'PDF');
+  const done         = trainingCompleted.includes(c.id);
+  const isVideo      = c.type === 'video';
+  const typeStr      = c.typeLabel || (isVideo ? 'VIDEO' : 'PDF');
+  const isPolicyNew  = c.section === 'policies' && !isPolicyRead(c.id);
 
   if (c.comingSoon) {
     const soonLabel = currentLang === 'fr' ? '🚧 Bientôt disponible' : '🚧 Coming Soon';
@@ -2143,7 +2182,8 @@ function buildCourseCard(c) {
   // Encode URL in a data attribute to avoid single-quote issues in onclick
   const safeId  = c.id.replace(/'/g, "\\'");
   return `
-    <div class="course-card${done ? ' cc-done' : ''}">
+    <div class="course-card${done ? ' cc-done' : ''}" style="position:relative">
+      ${isPolicyNew ? `<span style="position:absolute;top:10px;right:10px;background:#E53935;color:white;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;z-index:2;letter-spacing:0.05em">NEW</span>` : ''}
       <div class="course-card-inner">
         <div class="course-thumb${isVideo ? '' : ' pdf-bg'}">
           <div class="course-emoji">${c.emoji}</div>
@@ -2157,7 +2197,7 @@ function buildCourseCard(c) {
           <div class="course-footer">
             <span class="course-duration">⏱ ${c.dur[currentLang] || c.dur.en}</span>
             <div class="course-actions">
-              <button class="btn-course-open" data-url="${c.url.replace(/"/g,'&quot;')}" onclick="trainingOpenResource(this.dataset.url)">${lbl}</button>
+              <button class="btn-course-open" data-url="${c.url.replace(/"/g,'&quot;')}" data-id="${c.id}" onclick="trainingOpenResource(this.dataset.url, this.dataset.id)">${lbl}</button>
               <button class="btn-course-done" onclick="trainingToggleDone('${safeId}')">${doneBtn}</button>
             </div>
           </div>
