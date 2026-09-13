@@ -1477,8 +1477,7 @@ async function loadBaserowAssignment(container) {
                 <span style="font-size:20px;flex-shrink:0">&#127968;</span>
                 <div>
                   <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold-light);margin-bottom:3px">Address</div>
-                  <div style="font-size:13px;font-weight:600;line-height:1.4">${address}</div>
-                  ${mapsUrl ? `<a href="${mapsUrl}" target="_blank" style="font-size:11px;color:var(--gold-light);text-decoration:underline;display:inline-block;margin-top:4px">&#128205; Open in Google Maps &#8599;</a>` : ''}
+                  <a href="https://maps.google.com/?q=${encodeURIComponent(address)}" target="_blank" style="font-size:13px;font-weight:600;line-height:1.4;color:white;text-decoration:underline;display:block">${address} &#128205;</a>
                 </div>
               </div>` : ''}
 
