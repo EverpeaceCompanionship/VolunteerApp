@@ -443,6 +443,12 @@
         <button class="training-pill" onclick="trainingFilter('wtgo',this)" id="tpill-wtgo">
           <span id="tpill-wtgo-label">&#128218; How to :</span> <span class="tc" id="tc-wtgo">2</span>
         </button>
+        <button class="training-pill" onclick="trainingFilter('courses',this)" id="tpill-courses">
+          <span id="tpill-courses-label">&#127979; Online Courses</span> <span class="tc" id="tc-courses">3</span>
+        </button>
+        <button class="training-pill" onclick="trainingFilter('safety',this)" id="tpill-safety">
+          <span id="tpill-safety-label">&#128737;&#65039; Safety</span> <span class="tc" id="tc-safety">4</span>
+        </button>
         <button class="training-pill" onclick="trainingFilter('policies',this)" id="tpill-policies">
           <span id="tpill-policies-label">&#128196; Volunteer Policies</span> <span class="tc" id="tc-policies">3</span>
         </button>
@@ -453,6 +459,12 @@
 
       <div class="training-section-label" id="training-webinar-label">&#127891; WEBINARS</div>
       <div id="training-webinar-grid"></div>
+
+      <div class="training-section-label" id="training-courses-label">&#127979; FREE ONLINE COURSES</div>
+      <div id="training-courses-grid"></div>
+
+      <div class="training-section-label" id="training-safety-label">&#128737;&#65039; SAFETY &amp; WELL-BEING</div>
+      <div id="training-safety-grid"></div>
 
       <div class="training-section-label" id="training-video-label">&#9654; VIDEO COURSES</div>
       <div id="training-video-grid"></div>
@@ -588,6 +600,8 @@ const T = {
     tpillAll: 'All', tpillVideo: '\u25b6 Videos', tpillDoc: '\u{1F4C4} Documents',
     videoSectionLabel: '\u25b6 VIDEO COURSES', pdfSectionLabel: '\u{1F4C4} REFERENCE DOCUMENTS',
     webinarSectionLabel: '\u{1F393} WEBINARS', wtgoSectionLabel: '\u{1F4DA} HOW to :',
+    coursesSectionLabel: '\u{1F3EB} FREE ONLINE COURSES', safetySectionLabel: '\u{1F6E1}\uFE0F SAFETY \u0026 WELL-BEING',
+    tpillCourses: '\u{1F3EB} Online Courses', tpillSafety: '\u{1F6E1}\uFE0F Safety',
     openVideo: '\u25b6 Watch', openPdf: '\u{1F4C4} Open', markDone: '\u2713 Done', markUndo: '\u21a9 Undo',
     trainingEmpty: 'No resources here.',
   },
@@ -660,6 +674,8 @@ const T = {
     tpillAll: 'Tout', tpillVideo: '\u25b6 Vid\u00e9os', tpillDoc: '\u{1F4C4} Documents',
     videoSectionLabel: '\u25b6 COURS EN VID\u00c9O', pdfSectionLabel: '\u{1F4C4} DOCUMENTS DE R\u00c9F\u00c9RENCE',
     webinarSectionLabel: '\u{1F393} WEBINAIRES', wtgoSectionLabel: '\u{1F4DA} HOW to :',
+    coursesSectionLabel: '\u{1F3EB} FORMATIONS EN LIGNE GRATUITES', safetySectionLabel: '\u{1F6E1}\uFE0F S\u00c9CURIT\u00c9 ET BIEN-\u00caTRE',
+    tpillCourses: '\u{1F3EB} Formations en ligne', tpillSafety: '\u{1F6E1}\uFE0F S\u00e9curit\u00e9',
     openVideo: '\u25b6 Regarder', openPdf: '\u{1F4C4} Ouvrir', markDone: '\u2713 Termin\u00e9', markUndo: '\u21a9 Annuler',
     trainingEmpty: 'Aucune ressource ici.',
   }
@@ -765,7 +781,9 @@ function applyTranslations() {
     'nav-training-label': 'navTraining',
     'training-eyebrow': 'trainingEyebrow', 'training-title': 'trainingTitle', 'training-subtitle': 'trainingSubtitle',
     'training-video-label': 'videoSectionLabel', 'training-pdf-label': 'pdfSectionLabel',
-    'training-webinar-label': 'webinarSectionLabel', 'training-wtgo-label': 'wtgoSectionLabel'
+    'training-webinar-label': 'webinarSectionLabel', 'training-wtgo-label': 'wtgoSectionLabel',
+    'training-courses-label': 'coursesSectionLabel', 'training-safety-label': 'safetySectionLabel',
+    'tpill-courses-label': 'tpillCourses', 'tpill-safety-label': 'tpillSafety'
   };
   Object.entries(ids).forEach(([id, key]) => {
     const el = document.getElementById(id);
@@ -2054,6 +2072,91 @@ const TRAINING_COURSES = [
     dur:   { en: 'Coming soon', fr: 'Bientôt disponible' },
     url: ''
   },
+  // ── FREE ONLINE COURSES (external, free) ─────────────────────────────────────
+  {
+    id: 'tr22', type: 'video', section: 'courses', emoji: '🧩', typeLabel: 'COURSE',
+    cat:   { en: 'Dementia',         fr: 'Démence' },
+    title: { en: 'Dementia-Inclusive Training (Ottawa)',
+             fr: 'Formation inclusive sur la démence (Ottawa)' },
+    desc:  { en: 'Free 30-minute online session by the Dementia Society of Ottawa and Renfrew County — how to approach and communicate with a person living with dementia. Held online every Tuesday.',
+             fr: 'Séance en ligne gratuite de 30 minutes offerte par la Dementia Society of Ottawa and Renfrew County — comment aborder une personne vivant avec la démence et communiquer avec elle. Tous les mardis en ligne (en anglais).' },
+    dur:   { en: '🎓 Live online · 30 min', fr: '🎓 En ligne en direct · 30 min' },
+    url: 'https://dementiahelp.ca/inclusivetraining/'
+  },
+  {
+    id: 'tr23', type: 'video', section: 'courses', emoji: '🏘️', typeLabel: 'COURSE',
+    cat:   { en: 'Dementia',         fr: 'Démence' },
+    title: { en: 'Building Dementia-Friendly Communities',
+             fr: 'Bâtir des collectivités amies des personnes atteintes de démence' },
+    desc:  { en: 'Free self-paced e-learning from the Alzheimer Society of Canada — 4 short modules on understanding dementia and including people living with it.',
+             fr: 'Formation en ligne gratuite et à votre rythme de la Société Alzheimer du Canada — 4 courts modules pour comprendre la démence et inclure les personnes qui en sont atteintes.' },
+    dur:   { en: '🎓 Self-paced · 4 × 15 min', fr: '🎓 À votre rythme · 4 × 15 min' },
+    url: 'https://alzheimer.ca/en/get-involved/become-dementia-friendly/dementia-friendly-canada'
+  },
+  {
+    id: 'tr24', type: 'video', section: 'courses', emoji: '🫶', typeLabel: 'COURSE',
+    cat:   { en: 'Wellbeing',        fr: 'Bien-être' },
+    title: { en: 'Psychological First Aid',
+             fr: 'Premiers secours psychologiques' },
+    desc:  { en: 'Johns Hopkins University (Coursera) — reflective listening, recognizing distress, and when to refer to professional help. Free to audit (certificate optional, paid).',
+             fr: 'Université Johns Hopkins (Coursera) — écoute réflexive, reconnaître la détresse et savoir quand orienter vers un professionnel. Gratuit en mode auditeur (en anglais ; certificat payant facultatif).' },
+    dur:   { en: '🎓 Self-paced · ~7 h', fr: '🎓 À votre rythme · ~7 h' },
+    url: 'https://www.coursera.org/learn/psychological-first-aid'
+  },
+  // ── SAFETY & WELL-BEING ──────────────────────────────────────────────────────
+  {
+    id: 'tr25', type: 'pdf', section: 'safety', emoji: '🚩', typeLabel: 'GUIDE',
+    cat:   { en: 'Elder Abuse',      fr: 'Maltraitance' },
+    title: { en: 'How to Identify Abuse and Help Older Adults at Risk',
+             fr: 'Comment reconnaître les signes de mauvais traitements et aider les aînés à risque' },
+    desc:  { en: 'Public Health Agency of Canada — warning signs of physical, financial, psychological abuse and neglect, and how to respond safely. Always tell the coordinator about any concern.',
+             fr: 'Agence de la santé publique du Canada — signes de maltraitance physique, financière, psychologique et de négligence, et comment réagir. Signalez toujours vos inquiétudes à la coordinatrice.' },
+    dur:   { en: '📄 Document · Gov. of Canada', fr: '📄 Document · Gouv. du Canada' },
+    url:   'https://www.canada.ca/en/public-health/services/publications/health-risks-safety/how-identify-elder-abuse.html',
+    urlFr: 'https://www.canada.ca/content/dam/phac-aspc/documents/services/publications/health-risks-safety/how-identify-elder-abuse/pub1-fra.pdf'
+  },
+  {
+    id: 'tr26', type: 'pdf', section: 'safety', emoji: '📞', typeLabel: 'HELPLINE',
+    cat:   { en: 'Elder Abuse',      fr: 'Maltraitance' },
+    title: { en: 'Seniors Safety Line — 1-866-299-1011',
+             fr: 'Ligne d\'assistance aux aînés — 1-866-299-1011' },
+    desc:  { en: 'Free, confidential 24/7 Ontario helpline for seniors experiencing abuse, and for the people who support them. Available in 200+ languages, including Arabic and French.',
+             fr: 'Ligne d\'aide ontarienne gratuite et confidentielle, 24 h/24, 7 j/7, pour les aînés victimes de maltraitance et leurs proches. Offerte en plus de 200 langues, dont l\'arabe et le français.' },
+    dur:   { en: '🌐 Website · 24/7', fr: '🌐 Site web · 24 h/24' },
+    url: 'https://seniorssafetyline.ca/'
+  },
+  {
+    id: 'tr27', type: 'pdf', section: 'safety', emoji: '🩹', typeLabel: 'GUIDE',
+    cat:   { en: 'Safety',           fr: 'Sécurité' },
+    title: { en: 'If You Fall or Witness a Fall, Do You Know What to Do?',
+             fr: 'Les chutes… victime ou témoin, sachez comment réagir' },
+    desc:  { en: 'Public Health Agency of Canada — what to do (and not do) if a senior falls during your visit, and when to call for help.',
+             fr: 'Agence de la santé publique du Canada — quoi faire (et ne pas faire) si un(e) aîné(e) chute pendant votre visite, et quand appeler à l\'aide.' },
+    dur:   { en: '📄 Document · Gov. of Canada', fr: '📄 Document · Gouv. du Canada' },
+    url: 'https://www.canada.ca/en/public-health/services/publications/healthy-living/you-fall-witness-a-fall-you-know-what.html'
+  },
+  {
+    id: 'tr28', type: 'pdf', section: 'safety', emoji: '🌱', typeLabel: 'ARTICLE',
+    cat:   { en: 'Volunteer Self-Care', fr: 'Prendre soin de soi' },
+    title: { en: 'Empathy and Compassion Fatigue',
+             fr: 'Empathie et fatigue de compassion' },
+    desc:  { en: 'Canadian Mental Health Association — recognizing emotional exhaustion, setting healthy boundaries, and caring for yourself while you care for others.',
+             fr: 'Association canadienne pour la santé mentale — reconnaître l\'épuisement émotionnel, poser des limites saines et prendre soin de soi en aidant les autres (en anglais).' },
+    dur:   { en: '📄 Article · CMHA', fr: '📄 Article · ACSM' },
+    url: 'https://cmha.ca/news/empathy-and-compassion-fatigue/'
+  },
+  // ── DEMENTIA COMMUNICATION (reference document) ─────────────────────────────
+  {
+    id: 'tr29', type: 'pdf', emoji: '🗣️',
+    cat:   { en: 'Dementia',         fr: 'Démence' },
+    title: { en: 'Communication — Day to Day Series',
+             fr: 'La communication — Série Au jour le jour' },
+    desc:  { en: 'Alzheimer Society of Canada — how dementia affects communication and practical tips to connect at every stage.',
+             fr: 'Société Alzheimer du Canada — comment la démence affecte la communication et conseils pratiques pour garder le lien à chaque stade.' },
+    dur:   { en: '📄 Document · PDF', fr: '📄 Document · PDF' },
+    url:   'https://alzheimer.ca/sites/default/files/documents/day-to-day-series_communication.pdf',
+    urlFr: 'https://alzheimer.ca/sites/default/files/documents/au-jour-le-jour_la-communication.pdf'
+  },
   // ── WHEN THEY GET OLDER SERIES ───────────────────────────────────────────────
   {
     id: 'tr17', type: 'pdf', section: 'wtgo', emoji: '🟢',
@@ -2181,6 +2284,8 @@ function buildCourseCard(c) {
   const doneBtn = done ? t('markUndo') : t('markDone');
   // Encode URL in a data attribute to avoid single-quote issues in onclick
   const safeId  = c.id.replace(/'/g, "\\'");
+  // Use the French version of the resource when one exists and the portal is in French
+  const url     = (currentLang === 'fr' && c.urlFr) ? c.urlFr : c.url;
   return `
     <div class="course-card${done ? ' cc-done' : ''}" style="position:relative">
       ${isPolicyNew ? `<span style="position:absolute;top:10px;right:10px;background:#E53935;color:white;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;z-index:2;letter-spacing:0.05em">NEW</span>` : ''}
@@ -2197,7 +2302,7 @@ function buildCourseCard(c) {
           <div class="course-footer">
             <span class="course-duration">⏱ ${c.dur[currentLang] || c.dur.en}</span>
             <div class="course-actions">
-              <button class="btn-course-open" data-url="${c.url.replace(/"/g,'&quot;')}" data-id="${c.id}" onclick="trainingOpenResource(this.dataset.url, this.dataset.id)">${lbl}</button>
+              <button class="btn-course-open" data-url="${url.replace(/"/g,'&quot;')}" data-id="${c.id}" onclick="trainingOpenResource(this.dataset.url, this.dataset.id)">${lbl}</button>
               <button class="btn-course-done" onclick="trainingToggleDone('${safeId}')">${doneBtn}</button>
             </div>
           </div>
@@ -2214,6 +2319,8 @@ function renderTraining() {
   const pdfs     = TRAINING_COURSES.filter(c => c.type === 'pdf' && !c.section);
   const wtgo     = TRAINING_COURSES.filter(c => c.section === 'wtgo');
   const policies = TRAINING_COURSES.filter(c => c.section === 'policies');
+  const courses  = TRAINING_COURSES.filter(c => c.section === 'courses');
+  const safety   = TRAINING_COURSES.filter(c => c.section === 'safety');
 
   const wGrid = document.getElementById('training-webinar-grid');
   const vGrid = document.getElementById('training-video-grid');
@@ -2225,6 +2332,10 @@ function renderTraining() {
   const pLbl  = document.getElementById('training-pdf-label');
   const gLbl  = document.getElementById('training-wtgo-label');
   const yLbl  = document.getElementById('training-policies-label');
+  const cGrid = document.getElementById('training-courses-grid');
+  const sGrid = document.getElementById('training-safety-grid');
+  const cLbl  = document.getElementById('training-courses-label');
+  const sLbl  = document.getElementById('training-safety-label');
   if (!vGrid) return;
 
   const empty = `<div class="training-empty">${t('trainingEmpty')}</div>`;
@@ -2233,6 +2344,8 @@ function renderTraining() {
   pGrid.innerHTML = pdfs.length     ? pdfs.map(buildCourseCard).join('')     : empty;
   gGrid.innerHTML = wtgo.length     ? wtgo.map(buildCourseCard).join('')     : empty;
   yGrid.innerHTML = policies.length ? policies.map(buildCourseCard).join('') : empty;
+  if (cGrid) cGrid.innerHTML = courses.length ? courses.map(buildCourseCard).join('') : empty;
+  if (sGrid) sGrid.innerHTML = safety.length  ? safety.map(buildCourseCard).join('')  : empty;
 
   const showAll = af === 'all';
   const show = (el, condition) => { if (el) el.style.display = (showAll || condition) ? '' : 'none'; };
@@ -2241,6 +2354,8 @@ function renderTraining() {
   show(pLbl,  af === 'pdf');      show(pGrid, af === 'pdf');
   show(gLbl,  af === 'wtgo');     show(gGrid, af === 'wtgo');
   show(yLbl,  af === 'policies'); show(yGrid, af === 'policies');
+  show(cLbl,  af === 'courses');  show(cGrid, af === 'courses');
+  show(sLbl,  af === 'safety');   show(sGrid, af === 'safety');
 
   // Update pill counts (available = not comingSoon)
   const avail = TRAINING_COURSES.filter(c => !c.comingSoon);
@@ -2250,6 +2365,8 @@ function renderTraining() {
   document.getElementById('tc-pdf').textContent      = avail.filter(c => c.type === 'pdf' && !c.section).length;
   document.getElementById('tc-wtgo').textContent     = avail.filter(c => c.section === 'wtgo').length;
   document.getElementById('tc-policies').textContent = avail.filter(c => c.section === 'policies').length;
+  document.getElementById('tc-courses').textContent  = avail.filter(c => c.section === 'courses').length;
+  document.getElementById('tc-safety').textContent   = avail.filter(c => c.section === 'safety').length;
 
   updateTrainingProgress();
 }

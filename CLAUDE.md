@@ -166,6 +166,9 @@ EMAILJS_TEMPLATE_ID = ''
 - "Mark as done / Undo" per module
 - Content is hardcoded in `TRAINING_COURSES` array — edit there to add/change resources
 - Currently available: tr1 (Mental Health webinar), tr2 (Do's and Don'ts webinar), tr6 (Slide deck)
+- Sections (via `section` field): webinar, policies, courses (free external online courses), safety (elder abuse, falls, self-care), wtgo; no section = Videos / Documents by `type`
+- Optional `urlFr` on a course: French version of the resource, opened when the portal is in French
+- External resources added Oct 2026: tr22–tr24 (online courses), tr25–tr28 (safety & well-being), tr29 (Alzheimer Society communication guide)
 
 ### Bilingual (EN / FR)
 - Toggle button in header switches all UI text
