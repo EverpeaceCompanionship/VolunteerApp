@@ -79,6 +79,8 @@ function doGet(e) {
 
       // Skip anything explicitly marked cancelled in the title
       if (CANCELLED_KEYWORDS.some(kw => title.toLowerCase().includes(kw))) return;
+      // Only real Muslim Senior Visits: webinars, lectures, events, all-day items never show or count
+      if (!isSeniorVisitTitle(title) || ev.isAllDayEvent()) return;
 
       const startTime = ev.getStartTime();
       const endTime   = ev.getEndTime();
@@ -113,6 +115,7 @@ function doGet(e) {
       completedTotal:   completed.length,
       completedThisMonth: thisMonth,
       completedSince:   sinceEnd ? sinceCount : null,
+      visitsOnly:       true,
       since:            sinceEnd ? sinceParam : null,
       recentCompleted:  completed.slice(0, 5)
     }));
@@ -123,6 +126,21 @@ function doGet(e) {
       error:   err.toString()
     }));
   }
+}
+
+// -------------------------------------------------------
+// A calendar event counts as a visit only if its title says "visit"/"visite"
+// and is not a webinar, lecture, event, international day, meeting, training…
+// (same list as isSeniorVisitEvent in visit-counts.js)
+// -------------------------------------------------------
+const NON_VISIT_KEYWORDS = ['webinar', 'webinaire', 'lecture', 'conference', 'conférence', 'international day',
+  'journée', 'day of', 'meeting', 'réunion', 'training', 'formation', 'workshop', 'atelier', 'event', 'événement',
+  'evenement', 'seminar', 'séminaire', 'ceremony', 'cérémonie', 'gala', 'fundraiser', 'collecte', 'interview', 'entrevue',
+  'orientation', 'info session', 'session d'];
+function isSeniorVisitTitle(title) {
+  const t = String(title || '').toLowerCase();
+  if (!/\bvisite?s?\b/.test(t)) return false;
+  return !NON_VISIT_KEYWORDS.some(k => t.includes(k));
 }
 
 // -------------------------------------------------------

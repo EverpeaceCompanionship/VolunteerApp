@@ -210,6 +210,8 @@ EMAILJS_TEMPLATE_ID = ''
 - Matches events where volunteer's email OR phone digits appear **anywhere in the event description**
 - Returns: `{ success, upcoming[], completedTotal, completedThisMonth, recentCompleted[] }`
 
+**Senior visits only:** an event counts/shows only if its title contains "visit"/"visite" and none of the non-visit keywords (webinar, lecture, international day, event, meeting, training…), and it is not all-day. Same rule in `calendar-bridge.gs` (`isSeniorVisitTitle`) and `visit-counts.js` (`isSeniorVisitEvent`, used by the portal). Portal only trusts the bridge's `completedTotal` when the bridge returns `visitsOnly: true` (updated bridge).
+
 **Cancellation logic:**
 - Event deleted from calendar → not returned → not counted ✓
 - Event title contains 'cancel', 'cancelled', 'annulé', 'annulée', 'annule' → excluded ✓

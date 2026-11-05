@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Adopt a Muslim Senior — Volunteer Portal</title>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-<script src="visit-counts.js?v=2"></script>
+<script src="visit-counts.js?v=3"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@500;600&display=swap');
   :root {
@@ -1621,8 +1621,14 @@ async function loadCalendarVisit(container) {
     const data = await res.json();
     if (!data.success) throw new Error(data.error || 'Unknown error');
 
+    // Only real Muslim Senior Visits — webinars, lectures, events, all-day items are dropped
+    if (typeof isSeniorVisitEvent === 'function') {
+      data.upcoming        = (data.upcoming || []).filter(isSeniorVisitEvent);
+      data.recentCompleted = (data.recentCompleted || []).filter(isSeniorVisitEvent);
+    }
     calendarData = data;
-    setVisitCount('calendar', data.completedTotal || 0);
+    // Bridge v2+ returns completedTotal already filtered to senior visits (visitsOnly:true)
+    if (data.visitsOnly) setVisitCount('calendar', data.completedTotal || 0);
     // Bridge versions that support ?since return completedSince (null/absent otherwise)
     if (typeof data.completedSince === 'number') setVisitSince('calendar', data.completedSince);
     updateFirstVisitHint();

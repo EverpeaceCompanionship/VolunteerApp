@@ -24,7 +24,7 @@ const BASELINE_DATE = '2026-11-05';   // counts below include every visit up to 
 // 9 Eid visits (30 May – 7 Jun) name no volunteer and are not assigned to anyone yet.
 const VISIT_BASELINES = [
   // { name: 'Full Legal Name', aliases: ['Other spelling'], email: '', phone: '', visits: 0 },
-  { name: "Nadia Olfa Kebaier", aliases: ["Nadia Kebaier", "Nadia Olfa"], email: '', phone: '', visits: 12 },
+  { name: "Nadia Olfa Kebaier", aliases: ["Nadia Kebaier", "Nadia Olfa"], email: '', phone: '', visits: 20 },   // set by Nadouche (calendar names her on 12)
   { name: "Rai Muhammad Wassay", aliases: ["Rai Mohammad Wassay"], email: '', phone: '', visits: 8 },
   { name: "Lorin Soultan", aliases: [], email: '', phone: '', visits: 7 },
   { name: "Mohammed Abdelghani", aliases: ["Mohamed Abdelghani", "Muhammad Abdelghani"], email: '', phone: '', visits: 7 },
@@ -106,6 +106,23 @@ function findVisitBaseline({ name, email, phone } = {}) {
   const singles = B.filter(b => _vcNames(b).some(x => x === first));
   const sameFirst = B.filter(b => _vcNames(b).some(x => x.split(' ')[0] === first));
   return singles.length === 1 && sameFirst.length === 1 ? singles[0] : null;
+}
+
+// Is a calendar event a real MUSLIM SENIOR VISIT?
+// Must say "visit"/"visite" in the title; webinars, lectures, events,
+// international days, meetings, trainings… and all-day events are excluded.
+const NON_VISIT_KEYWORDS = ['webinar', 'webinaire', 'lecture', 'conference', 'conférence', 'international day',
+  'journée', 'day of', 'meeting', 'réunion', 'training', 'formation', 'workshop', 'atelier', 'event', 'événement',
+  'evenement', 'seminar', 'séminaire', 'ceremony', 'cérémonie', 'gala', 'fundraiser', 'collecte', 'interview', 'entrevue',
+  'orientation', 'info session', 'session d', 'cancel', 'annul'];
+function isSeniorVisitEvent(ev) {
+  const title = String((ev && ev.title) || '').toLowerCase();
+  if (!/\bvisite?s?\b/.test(title)) return false;
+  if (NON_VISIT_KEYWORDS.some(k => title.includes(k))) return false;
+  if (ev.allDay) return false;
+  const start = new Date(ev.start), end = new Date(ev.end);
+  if (!isNaN(start) && !isNaN(end) && (end - start) >= 20 * 3600 * 1000) return false;   // all-day / multi-day
+  return true;
 }
 
 // True when a visit date (YYYY-MM-DD…) is after the baseline day
