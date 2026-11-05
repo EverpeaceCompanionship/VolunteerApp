@@ -21,10 +21,11 @@ const BASELINE_DATE = '2026-11-05';   // counts below include every visit up to 
 
 // Source: Google Calendar export "All the visits till today 2026_11_05" (132 visits, 29 May → 3 Nov 2026).
 // Each volunteer named in a visit gets 1 (a visit by 2 volunteers counts for both).
-// 9 Eid visits (30 May – 7 Jun) name no volunteer and are not assigned to anyone yet.
+// Eid visits (29 May – 7 Jun) assigned from Nadouche's list (5 Nov); Nadia's total = her own list (2 Eid + 20).
+// Still unassigned: Grandpa Daniel Eid visits of 3, 5 and 6 June.
 const VISIT_BASELINES = [
   // { name: 'Full Legal Name', aliases: ['Other spelling'], email: '', phone: '', visits: 0 },
-  { name: "Nadia Olfa Kebaier", aliases: ["Nadia Kebaier", "Nadia Olfa"], email: '', phone: '', visits: 20 },   // set by Nadouche (calendar names her on 12)
+  { name: "Nadia Olfa Kebaier", aliases: ["Nadia Kebaier", "Nadia Olfa"], email: '', phone: '', visits: 22 },
   { name: "Rai Muhammad Wassay", aliases: ["Rai Mohammad Wassay"], email: '', phone: '', visits: 8 },
   { name: "Lorin Soultan", aliases: [], email: '', phone: '', visits: 7 },
   { name: "Mohammed Abdelghani", aliases: ["Mohamed Abdelghani", "Muhammad Abdelghani"], email: '', phone: '', visits: 7 },
@@ -32,29 +33,30 @@ const VISIT_BASELINES = [
   { name: "Nusaybah Elfarawi", aliases: ["Nusayba Elfarawi"], email: '', phone: '', visits: 7 },
   { name: "Abdurrahman Elfarawi", aliases: [], email: '', phone: '', visits: 6 },
   { name: "Omar Badr", aliases: [], email: '', phone: '', visits: 6 },
-  { name: "Roxana Ghoreishi", aliases: [], email: '', phone: '', visits: 6 },
+  { name: "Roxana Ghoreishi", aliases: [], email: '', phone: '', visits: 7 },
   { name: "Muhammad Maahir", aliases: ["Muhammed Maahir", "Mohammed Maahir"], email: '', phone: '', visits: 5 },
   { name: "Muhammad Qasim", aliases: ["Mohammed Qasim", "Mohamed Qasim"], email: '', phone: '', visits: 5 },
   { name: "Thanaa Al Shaibi", aliases: ["Thana Al Shaibi", "Thanaa Al-Shaibi"], email: '', phone: '', visits: 5 },
-  { name: "Naeem Ahmed", aliases: [], email: '', phone: '', visits: 4 },
+  { name: "Naeem Ahmed", aliases: [], email: '', phone: '', visits: 5 },
   { name: "Ryma Iskounene", aliases: [], email: '', phone: '', visits: 5 },
   { name: "Habib Ur Rahman Bharti", aliases: ["Habib-ur-Rahman Bharti", "Habib Rahman Bharti"], email: '', phone: '', visits: 3 },
   { name: "Habiba Hadiri", aliases: [], email: '', phone: '', visits: 3 },
   { name: "Ilham Rahimi", aliases: ["İlham Rahimi"], email: '', phone: '', visits: 3 },
   { name: "Lydia Boumaarafi", aliases: [], email: '', phone: '', visits: 3 },
-  { name: "Malak Beshr", aliases: [], email: '', phone: '', visits: 3 },
+  { name: "Malak Beshr", aliases: [], email: '', phone: '', visits: 4 },
   { name: "Sajeda Almalki", aliases: [], email: '', phone: '', visits: 3 },
   { name: "Sawsan Ibrahim", aliases: ["Sawssan Ibrahim"], email: '', phone: '', visits: 3 },
-  { name: "Zeinab Karbo", aliases: ["Zeineb Karbo"], email: '', phone: '', visits: 3 },
+  { name: "Zeinab Karbo", aliases: ["Zeineb Karbo"], email: '', phone: '', visits: 4 },
   { name: "Zeineb Rais", aliases: ["Zeinab Rais"], email: '', phone: '', visits: 3 },
   { name: "Abdou El Bashtaly", aliases: [], email: '', phone: '', visits: 2 },
   { name: "Aimanete Aboufatma", aliases: [], email: '', phone: '', visits: 2 },
   { name: "Asma Abdisamad", aliases: [], email: '', phone: '', visits: 2 },
   { name: "Hassan Yassin", aliases: ["Hassen Yassin"], email: '', phone: '', visits: 3 },
   { name: "Mohamed Abdel Baky", aliases: ["Mohammed Abdel Baky", "Mohamed Abdelbaky"], email: '', phone: '', visits: 2 },
-  { name: "Randa Hassan", aliases: [], email: '', phone: '', visits: 2 },
+  { name: "Randa Hassan", aliases: [], email: '', phone: '', visits: 3 },
+  { name: "Eman Selim", aliases: [], email: '', phone: '', visits: 1 },
   { name: "Amal Khan", aliases: [], email: '', phone: '', visits: 1 },
-  { name: "Asma Jawed", aliases: [], email: '', phone: '', visits: 1 },
+  { name: "Asma Jawed", aliases: [], email: '', phone: '', visits: 2 },
   { name: "Awa Diop", aliases: [], email: '', phone: '', visits: 1 },
   { name: "Aya Gadi", aliases: [], email: '', phone: '', visits: 1 },
   { name: "Faduma Hagi", aliases: [], email: '', phone: '', visits: 1 },
