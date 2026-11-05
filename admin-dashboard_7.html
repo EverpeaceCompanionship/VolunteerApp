@@ -440,7 +440,7 @@
   </div><!-- /screen-dash -->
 </div><!-- /container -->
 
-<script src="visit-counts.js?v=5"></script>
+<script src="visit-counts.js?v=6"></script>
 <script>
 // ============================================================
 // CONFIG
@@ -1280,6 +1280,9 @@ function visitBelongsTo(rowVol, fullName) {
   const full = String(fullName || '').toLowerCase().replace(/\s+/g, ' ').trim();
   if (!v || !full) return false;
   if (v === full || v.includes(full)) return true;
+  const cv = cleanVolunteerName(v).toLowerCase(), cf = cleanVolunteerName(full).toLowerCase();
+  if (cv && cf && cv.includes(' ') && cv === cf) return true;
+  if (cf.split(' ')[0].length > 1 && cv === cf.split(' ')[0]) return true;
   const first = full.split(' ')[0];
   return first.length > 1 && v === first;
 }
@@ -1335,7 +1338,7 @@ function renderLiveCounts() {
     if (cal === null) bridgeOld = true;
     const portal = portalSinceFor(id.name);
     const calNum = typeof cal === 'number' ? cal : 0;
-    return { name: id.name || 'Unknown', b, cal, portal, live: b ? liveVisitTotal(b.visits, calNum, portal) : null };
+    return { name: cleanVolunteerName(id.name) || 'Unknown', b, cal, portal, former: isFormerVolunteer(id), live: b ? liveVisitTotal(b.visits, calNum, portal) : null };
   }).filter(x => !q || x.name.toLowerCase().includes(q))
     .sort((a, b) => (b.live ?? -1) - (a.live ?? -1) || a.name.localeCompare(b.name));
 
@@ -1348,7 +1351,7 @@ function renderLiveCounts() {
       <thead><tr><th>Volunteer</th><th class="num">Baseline</th><th class="num">Calendar since</th><th class="num">Portal since</th><th class="num">Live total</th></tr></thead>
       <tbody>${rows.map(x => `
         <tr>
-          <td>${esc(x.name)}${x.b && x.b.former ? ' <span class="tag tag-flag">Former · no portal access</span>' : ''}</td>
+          <td>${esc(x.name)}${x.former ? ' <span class="tag tag-flag">Former · no portal access</span>' : ''}</td>
           <td class="num">${x.b ? x.b.visits : '<span class="lc-missing">not set</span>'}</td>
           <td class="num">${calCell(x.cal)}</td>
           <td class="num">${x.portal}</td>

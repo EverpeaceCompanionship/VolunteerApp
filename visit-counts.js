@@ -65,9 +65,9 @@ const VISIT_BASELINES = [
   { name: "Khadija Siddiqi", aliases: [], email: '', phone: '', visits: 1 },
   { name: "Kongling Bai", aliases: [], email: '', phone: '', visits: 1 },
   { name: "Leila Abdi", aliases: [], email: '', phone: '', visits: 1 },
-  { name: "Mandeek", aliases: [], email: '', phone: '', visits: 1 },
+  { name: "Mandeek Mohamud", aliases: [], email: '', phone: '', visits: 1, former: true },
   { name: "Manel", aliases: [], email: '', phone: '', visits: 1 },
-  { name: "Mayar", aliases: [], email: '', phone: '', visits: 1 },
+  { name: "Mayar Ahrir", aliases: ["Mayar Amri"], email: '', phone: '', visits: 1, former: true },
   { name: "Melek Delice", aliases: [], email: '', phone: '', visits: 1 },
   { name: "Nourhan Mohamed", aliases: [], email: '', phone: '', visits: 1 },
   { name: "Oummou Rayan", aliases: [], email: '', phone: '', visits: 1 },
@@ -78,9 +78,18 @@ const VISIT_BASELINES = [
 // Normalise a name: lower case, no accents, no "Sr/Br/Sister/Brother", hyphens → spaces
 function _vcNorm(s) {
   return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ı/g, 'i')
-    .toLowerCase().replace(/[-_.,']/g, ' ')
+    .toLowerCase()
+    .replace(/^\s*\d*\s*-?\s*v\s*-\s*/, '')     // Baserow prefix "6V-", "0V-", "0-V"
+    .replace(/[^a-z0-9 ]/g, ' ')                   // brackets, dashes, dates → spaces
     .replace(/^\s*(sr|br|sister|brother|sheikh|cheikh)\s+/, '')
     .replace(/\s+/g, ' ').trim();
+}
+// Display name from Baserow's "Full Legal Name and DOB" field:
+// "6V-Hadiri Habiba OUT for safety reasons (1969/01/01)" → "Hadiri Habiba"
+function cleanVolunteerName(raw) {
+  let n = String(raw || '').replace(/^\s*\d*\s*-?\s*V\s*-\s*/i, '');
+  n = n.split(/\s+(?:OUT|ÒUT)\b|\s*\(|\s+:\s|\s+-\s/i)[0];
+  return n.replace(/\s+/g, ' ').trim() || String(raw || '').trim();
 }
 function _vcDigits(s) { return String(s || '').replace(/\D/g, '').slice(-10); }
 function _vcNames(b) { return [b.name].concat(b.aliases || []).map(_vcNorm).filter(Boolean); }
@@ -131,7 +140,10 @@ function isSeniorVisitEvent(ev) {
 // Their past visits stay in the counts above. Matched like baselines
 // (email, phone, or full name / alias — never a first name alone).
 const FORMER_VOLUNTEERS = [
-  { name: 'Habiba Hadiri', aliases: ['Sophia Amani'], email: '', phone: '', note: 'Dismissed June 2026' },
+  { name: 'Habiba Hadiri',   aliases: ['Sophia Amani'], email: '', phone: '', note: 'Dismissed June 2026' },
+  { name: 'Mandeek Mohamud', aliases: [],               email: '', phone: '', note: 'Former volunteer (1 visit)' },
+  { name: 'Maryam Maafi',    aliases: [],               email: '', phone: '', note: 'Former volunteer (1 visit)' },
+  { name: 'Mayar Ahrir',     aliases: ['Mayar Amri'],   email: '', phone: '', note: 'Former volunteer (1 visit)' },
 ];
 function isFormerVolunteer({ name, email, phone } = {}) {
   const n = _vcNorm(name), e = String(email || '').toLowerCase().trim(), p = _vcDigits(phone);

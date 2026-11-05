@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Adopt a Muslim Senior — Volunteer Portal</title>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-<script src="visit-counts.js?v=5"></script>
+<script src="visit-counts.js?v=6"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@500;600&display=swap');
   :root {
@@ -899,7 +899,9 @@ function getVolunteerName() {
 
 function firstName(fullName) {
   if (!fullName) return '';
-  return fullName.split(' ')[0];
+  // Baserow names carry prefixes/notes ("3V-Lorin Soultan (DOB)…") — greet with the clean first name
+  const clean = typeof cleanVolunteerName === 'function' ? cleanVolunteerName(fullName) : fullName;
+  return clean.split(' ')[0];
 }
 
 function cleanPhone(p) { return extractVal(p).replace(/\D/g, ''); }
@@ -939,6 +941,13 @@ function rowBelongsToVolunteer(rowVolValue) {
   const full = (getVolunteerName() || '').toLowerCase().replace(/\s+/g, ' ').trim();
   if (!v || !full) return false;
   if (v === full || v.includes(full)) return true;
+  // Same person stored with/without the Baserow prefix & notes ("7V-… (DOB)")
+  if (typeof cleanVolunteerName === 'function') {
+    const cv = cleanVolunteerName(v).toLowerCase(), cf = cleanVolunteerName(full).toLowerCase();
+    if (cv && cf && cv.includes(' ') && cv === cf) return true;
+    const firstClean = cf.split(' ')[0];
+    if (firstClean.length > 1 && cv === firstClean) return true;
+  }
   const first = full.split(' ')[0];
   return first.length > 1 && v === first;
 }
