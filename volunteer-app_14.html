@@ -153,6 +153,60 @@
   .btn-course-done { background: transparent; color: var(--green); border: 1.5px solid var(--green); padding: 5px 11px; border-radius: 8px; font-size: 11px; font-weight: 700; font-family: 'Lato', sans-serif; cursor: pointer; transition: all 0.15s; }
   .btn-course-done:hover { background: var(--green-light); }
   .training-empty { text-align: center; padding: 30px 20px; color: var(--text-secondary); font-size: 13px; }
+  .course-footer { flex-wrap: wrap; gap: 8px; }
+
+  /* ── Training: Mandatory / Recommended sections ── */
+  .tsec { border-radius: 18px; padding: 18px 16px 8px; margin-bottom: 22px; border: 1px solid var(--border); background: var(--white); }
+  .tsec-mandatory { border: 1.5px solid var(--green); background: linear-gradient(180deg, var(--green-light) 0, var(--white) 140px); }
+  .tsec-recommended { border: 1.5px solid var(--gold-light); background: linear-gradient(180deg, #FDF8EC 0, var(--white) 140px); }
+  .tsec-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+  .tsec-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .tsec-mandatory .tsec-icon { background: var(--green-dark); color: var(--gold-light); }
+  .tsec-recommended .tsec-icon { background: var(--gold); color: var(--green-dark); }
+  .tsec-kicker { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+  .tsec-mandatory .tsec-kicker { color: var(--green); }
+  .tsec-recommended .tsec-kicker { color: var(--gold-dark); }
+  .tsec-title { font-family: 'Playfair Display', serif; font-size: 19px; color: var(--green-dark); line-height: 1.25; }
+  .tsec-sub { font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin-top: 3px; }
+  .tsec-progress { display: flex; align-items: center; gap: 10px; margin: 4px 0 6px; }
+  .tsec-progress .training-progress-track { flex: 1; }
+  .tsec-recommended .training-progress-track { background: var(--gold-light); }
+  .tsec-progress-txt { font-size: 11px; font-weight: 700; color: var(--green-dark); white-space: nowrap; }
+  .tsec-status { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; border-radius: 99px; padding: 4px 10px; margin: 2px 0 6px; }
+  .tsec-status.todo { background: #FFF3CD; color: #7A5C00; border: 1px solid #FFE08A; }
+  .tsec-status.ok { background: var(--green); color: #fff; }
+  .tsec .training-section-label { margin-top: 16px; }
+  .req-badge { display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; border-radius: 99px; padding: 2px 8px; margin-left: 6px; vertical-align: middle; }
+  .req-badge.req { background: var(--green-dark); color: var(--gold-light); }
+  .req-badge.rec { background: var(--gold-light); color: var(--gold-dark); }
+  .new-badge { position: absolute; top: 10px; right: 10px; background: #E53935; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; z-index: 2; letter-spacing: 0.05em; }
+
+  /* ── Log Visit: steps + feedback forms ── */
+  .steps { display: flex; gap: 8px; margin-bottom: 14px; }
+  .step { flex: 1; display: flex; align-items: center; gap: 8px; padding: 9px 10px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--white); font-size: 12px; font-weight: 700; color: var(--text-secondary); }
+  .step-n { width: 22px; height: 22px; border-radius: 50%; background: var(--border); color: var(--charcoal); display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+  .step.on { border-color: var(--green); color: var(--green-dark); background: var(--green-light); }
+  .step.on .step-n { background: var(--green); color: #fff; }
+  .step.done .step-n { background: var(--gold); color: var(--green-dark); }
+  .check-row { display: flex; align-items: flex-start; gap: 10px; margin-top: 14px; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--cream); cursor: pointer; }
+  .check-row input { width: 18px; height: 18px; margin-top: 1px; flex-shrink: 0; accent-color: var(--green); }
+  .check-row span { font-size: 13px; color: var(--charcoal); line-height: 1.45; }
+  .check-row small { display: block; font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+  .fb-card { border: 1.5px solid var(--gold); background: linear-gradient(180deg, #FDF8EC 0, var(--white) 120px); }
+  .fb-card.highlight { box-shadow: 0 0 0 4px rgba(201,168,76,0.25); }
+  .fb-option { display: flex; align-items: center; gap: 12px; padding: 14px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--white); margin-top: 10px; text-decoration: none; color: inherit; transition: all 0.2s; }
+  .fb-option:hover { border-color: var(--green); transform: translateY(-1px); }
+  .fb-option.recommended { border-color: var(--green); background: var(--green-light); }
+  .fb-option-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--green-dark); color: var(--gold-light); display: flex; align-items: center; justify-content: center; font-size: 19px; flex-shrink: 0; }
+  .fb-option-body { flex: 1; min-width: 0; }
+  .fb-option-title { font-size: 14px; font-weight: 700; color: var(--green-dark); }
+  .fb-option-sub { font-size: 12px; color: var(--text-secondary); line-height: 1.4; margin-top: 2px; }
+  .fb-tag { display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; background: var(--green); color: #fff; border-radius: 99px; padding: 2px 8px; margin-left: 6px; vertical-align: middle; }
+  .fb-tag.sent { background: var(--gold); color: var(--green-dark); }
+  .fb-arrow { font-size: 18px; color: var(--green); flex-shrink: 0; }
+  .footer-links { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
+  .footer-links a { color: var(--green); font-size: 12px; font-weight: 700; text-decoration: none; }
+  .footer-links a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -366,6 +420,10 @@
 
     <!-- TAB: LOG VISIT -->
     <div id="tab-log" class="tab-content" style="display:none">
+      <div class="steps" aria-label="Visit reporting steps">
+        <div class="step on" id="step-1"><span class="step-n">1</span><span id="step-1-label">Log your visit</span></div>
+        <div class="step" id="step-2"><span class="step-n">2</span><span id="step-2-label">Share your feedback</span></div>
+      </div>
       <div class="card">
         <h3 class="card-title" id="log-title">Log a Completed Visit</h3>
         <p class="card-sub" id="log-sub">Record your visit so we can track progress and retention.</p>
@@ -399,7 +457,35 @@
           <option value="Yes - health">Yes — health concern to flag</option>
           <option value="Yes - family">Yes — family should be notified</option>
         </select>
+        <label class="check-row" for="first-visit-check">
+          <input type="checkbox" id="first-visit-check" onchange="onFirstVisitToggle()">
+          <span><span id="first-visit-label">This was my first visit with Everpeace</span>
+            <small id="first-visit-hint">We'll ask you to complete the first-time volunteer satisfaction survey.</small></span>
+        </label>
         <button class="btn btn-gold" onclick="submitVisitLog()" id="btn-log-visit">Log This Visit</button>
+      </div>
+
+      <!-- STEP 2: POST-VISIT FEEDBACK FORMS -->
+      <div class="card fb-card" id="feedback-card">
+        <h3 class="card-title" id="fb-title">Share Your Feedback</h3>
+        <p class="card-sub" id="fb-sub" style="margin-bottom:4px">After every visit, please complete the matching feedback form. It takes 2–3 minutes and helps us support you and our seniors.</p>
+        <div id="fb-alert"></div>
+        <a class="fb-option" id="fb-first" href="https://forms.gle/xUmDwYpviEaCuQvp8" target="_blank" rel="noopener" onclick="markFeedbackOpened('first')">
+          <span class="fb-option-icon">&#127775;</span>
+          <span class="fb-option-body">
+            <span class="fb-option-title"><span id="fb-first-title">First-Visit Satisfaction Survey</span><span class="fb-tag" id="fb-first-tag" style="display:none"></span></span>
+            <span class="fb-option-sub" style="display:block" id="fb-first-sub">For your very first visit — tell us how it went.</span>
+          </span>
+          <span class="fb-arrow">&#8599;</span>
+        </a>
+        <a class="fb-option" id="fb-regular" href="https://forms.gle/PXTvC8NX9MUT8WbVA" target="_blank" rel="noopener" onclick="markFeedbackOpened('regular')">
+          <span class="fb-option-icon">&#128172;</span>
+          <span class="fb-option-body">
+            <span class="fb-option-title"><span id="fb-regular-title">Regular Visit Feedback</span><span class="fb-tag" id="fb-regular-tag" style="display:none"></span></span>
+            <span class="fb-option-sub" style="display:block" id="fb-regular-sub">For every visit after your first.</span>
+          </span>
+          <span class="fb-arrow">&#8599;</span>
+        </a>
       </div>
 
       <div class="card">
@@ -419,7 +505,7 @@
       <div class="training-progress">
         <div class="training-progress-icon">&#127807;</div>
         <div class="training-progress-text">
-          <div class="training-progress-label" id="training-progress-label">0 of 8 modules completed</div>
+          <div class="training-progress-label" id="training-progress-label">0 of 0 modules completed</div>
           <div class="training-progress-track">
             <div class="training-progress-fill" id="training-progress-fill" style="width:0%"></div>
           </div>
@@ -429,39 +515,59 @@
 
       <div class="training-filter-row">
         <button class="training-pill active" onclick="trainingFilter('all',this)" id="tpill-all">
-          <span id="tpill-all-label">All</span> <span class="tc" id="tc-all">8</span>
+          <span id="tpill-all-label">All</span> <span class="tc" id="tc-all">0</span>
+        </button>
+        <button class="training-pill" onclick="trainingFilter('policies',this)" id="tpill-policies">
+          <span id="tpill-policies-label">&#128203; Policies</span> <span class="tc" id="tc-policies">0</span>
         </button>
         <button class="training-pill" onclick="trainingFilter('webinar',this)" id="tpill-webinar">
-          <span id="tpill-webinar-label">&#127891; Webinars</span> <span class="tc" id="tc-webinar">3</span>
+          <span id="tpill-webinar-label">&#127891; Webinars</span> <span class="tc" id="tc-webinar">0</span>
         </button>
         <button class="training-pill" onclick="trainingFilter('video',this)" id="tpill-video">
           <span id="tpill-video-label">&#9654; Videos</span> <span class="tc" id="tc-video">0</span>
         </button>
         <button class="training-pill" onclick="trainingFilter('pdf',this)" id="tpill-pdf">
-          <span id="tpill-pdf-label">&#128196; Documents</span> <span class="tc" id="tc-pdf">2</span>
+          <span id="tpill-pdf-label">&#128196; Documents</span> <span class="tc" id="tc-pdf">0</span>
         </button>
         <button class="training-pill" onclick="trainingFilter('wtgo',this)" id="tpill-wtgo">
-          <span id="tpill-wtgo-label">&#128218; How to :</span> <span class="tc" id="tc-wtgo">2</span>
-        </button>
-        <button class="training-pill" onclick="trainingFilter('policies',this)" id="tpill-policies">
-          <span id="tpill-policies-label">&#128196; Volunteer Policies</span> <span class="tc" id="tc-policies">3</span>
+          <span id="tpill-wtgo-label">&#128218; How-to Guides</span> <span class="tc" id="tc-wtgo">0</span>
         </button>
       </div>
 
-      <div class="training-section-label" id="training-policies-label">&#128196; VOLUNTEER POLICIES</div>
-      <div id="training-policies-grid"></div>
+      <!-- SECTION 1: MANDATORY -->
+      <section class="tsec tsec-mandatory" id="tsec-mandatory">
+        <div class="tsec-head">
+          <div class="tsec-icon">&#9989;</div>
+          <div>
+            <div class="tsec-kicker" id="tsec-m-kicker">Section 1 · Required</div>
+            <div class="tsec-title" id="tsec-m-title">Mandatory Training</div>
+            <div class="tsec-sub" id="tsec-m-sub">Please complete every item below before your first visit. These cover our policies, safety and the essentials of respectful companionship.</div>
+          </div>
+        </div>
+        <div class="tsec-progress">
+          <div class="training-progress-track"><div class="training-progress-fill" id="tsec-m-fill" style="width:0%"></div></div>
+          <span class="tsec-progress-txt" id="tsec-m-count">0/0</span>
+        </div>
+        <div id="tsec-m-status"></div>
+        <div id="tsec-m-body"></div>
+      </section>
 
-      <div class="training-section-label" id="training-webinar-label">&#127891; WEBINARS</div>
-      <div id="training-webinar-grid"></div>
-
-      <div class="training-section-label" id="training-video-label">&#9654; VIDEO COURSES</div>
-      <div id="training-video-grid"></div>
-
-      <div class="training-section-label" id="training-pdf-label">&#128196; REFERENCE DOCUMENTS</div>
-      <div id="training-pdf-grid"></div>
-
-      <div class="training-section-label" id="training-wtgo-label">&#128218; HOW TO :</div>
-      <div id="training-wtgo-grid"></div>
+      <!-- SECTION 2: RECOMMENDED -->
+      <section class="tsec tsec-recommended" id="tsec-recommended">
+        <div class="tsec-head">
+          <div class="tsec-icon">&#128218;</div>
+          <div>
+            <div class="tsec-kicker" id="tsec-r-kicker">Section 2 · Optional</div>
+            <div class="tsec-title" id="tsec-r-title">Recommended Resources</div>
+            <div class="tsec-sub" id="tsec-r-sub">Deepen your knowledge at your own pace — videos, guides and reference documents on ageing, dementia, communication and Islamic care.</div>
+          </div>
+        </div>
+        <div class="tsec-progress">
+          <div class="training-progress-track"><div class="training-progress-fill" id="tsec-r-fill" style="width:0%"></div></div>
+          <span class="tsec-progress-txt" id="tsec-r-count">0/0</span>
+        </div>
+        <div id="tsec-r-body"></div>
+      </section>
     </div>
 
     <div class="app-footer">
@@ -470,6 +576,10 @@
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px">
         <button class="btn btn-outline" onclick="showChangePassword()" style="width:auto;padding:8px 20px;font-size:12px" id="btn-change-pw">&#128274; Change Password</button>
         <button class="btn btn-outline" onclick="doLogout()" style="width:auto;padding:8px 20px;font-size:12px" id="btn-logout">Sign Out</button>
+      </div>
+      <div class="footer-links">
+        <a href="#" id="link-website" target="_blank" rel="noopener">&#127760; <span id="link-website-label">Everpeace website</span></a>
+        <a href="#" id="link-dashboard" target="_blank" rel="noopener">&#128274; <span id="link-dashboard-label">Coordinator dashboard</span></a>
       </div>
     </div>
   </div>
@@ -496,6 +606,14 @@ const CALENDAR_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwyR_3wuqhI
 const EMAILJS_PUBLIC_KEY  = '';   // e.g. 'hDhIhu8ecr3iL0Y6M'
 const EMAILJS_SERVICE_ID  = '';   // e.g. 'service_qyjnn9o'
 const EMAILJS_TEMPLATE_ID = '';   // e.g. 'template_od7i24m'
+
+// ============================================================
+// CONNECTED LINKS — post-visit forms, dashboard, website
+// ============================================================
+const FORM_FIRST_VISIT   = 'https://forms.gle/xUmDwYpviEaCuQvp8';  // Post first-time visit — volunteer satisfaction survey
+const FORM_REGULAR_VISIT = 'https://forms.gle/PXTvC8NX9MUT8WbVA';  // Post visit — regular volunteer feedback
+const DASHBOARD_URL      = 'https://everpeacecompanionship.github.io/VolunteerApp/admin-dashboard_7.html';
+const WEBSITE_URL        = 'https://claude.ai/artifact/4JicWNpYvmEwa6VoXcMkgo';
 
 // ============================================================
 // STATE
@@ -587,9 +705,37 @@ const T = {
     trainingProgressLabel: (d,t) => `${d} of ${t} modules completed`,
     tpillAll: 'All', tpillVideo: '\u25b6 Videos', tpillDoc: '\u{1F4C4} Documents',
     videoSectionLabel: '\u25b6 VIDEO COURSES', pdfSectionLabel: '\u{1F4C4} REFERENCE DOCUMENTS',
-    webinarSectionLabel: '\u{1F393} WEBINARS', wtgoSectionLabel: '\u{1F4DA} HOW to :',
+    webinarSectionLabel: '\u{1F393} WEBINARS', wtgoSectionLabel: '\u{1F4DA} HOW-TO GUIDES',
     openVideo: '\u25b6 Watch', openPdf: '\u{1F4C4} Open', markDone: '\u2713 Done', markUndo: '\u21a9 Undo',
     trainingEmpty: 'No resources here.',
+    tpillWebinar: '\u{1F393} Webinars', tpillWtgo: '\u{1F4DA} How-to Guides', tpillPolicies: '\u{1F4CB} Policies',
+    policiesSectionLabel: '\u{1F4CB} VOLUNTEER POLICIES',
+    tsecMKicker: 'Section 1 · Required', tsecMTitle: 'Mandatory Training',
+    tsecMSub: 'Please complete every item below before your first visit. These cover our policies, safety and the essentials of respectful companionship.',
+    tsecRKicker: 'Section 2 · Optional', tsecRTitle: 'Recommended Resources',
+    tsecRSub: 'Deepen your knowledge at your own pace — videos, guides and reference documents on ageing, dementia, communication and Islamic care.',
+    tsecTodo: (n) => `⏳ ${n} required item${n!==1?'s':''} left`, tsecOk: '✓ All mandatory training completed',
+    badgeReq: 'Required', badgeRec: 'Recommended', badgeNew: 'NEW', comingSoon: '\u{1F6A7} Coming Soon',
+    linkMissing: 'This resource link has not been set up yet. Contact your coordinator for access.',
+    step1: 'Log your visit', step2: 'Share your feedback',
+    firstVisitLabel: 'This was my first visit with Everpeace',
+    firstVisitHint: "We'll ask you to complete the first-time volunteer satisfaction survey.",
+    regularVisitHint: "We'll ask you to complete the regular visit feedback form.",
+    fbTitle: 'Share Your Feedback',
+    fbSub: 'After every visit, please complete the matching feedback form. It takes 2–3 minutes and helps us support you and our seniors.',
+    fbFirstTitle: 'First-Visit Satisfaction Survey', fbFirstSub: 'For your very first visit — tell us how it went.',
+    fbRegularTitle: 'Regular Visit Feedback', fbRegularSub: 'For every visit after your first.',
+    fbRecommended: 'Your next step', fbOpened: 'Opened',
+    fbAfterLog: '✓ Visit logged. Now please take 2 minutes to complete the feedback form highlighted below.',
+    lblAddress: 'Address', lblDate: 'Date', lblTime: 'Time', lblDuration: 'Duration', lblCoordNotes: 'Coordinator Notes',
+    noCoordNotes: 'There are no special instructions or information for this visit from the coordinator.',
+    noSpecialNotes: 'No special notes.',
+    selectDay: 'Please select at least one day.', saving: 'Saving...',
+    needDate: 'Please enter the visit date.', needSenior: 'Please enter the name of the senior you visited.',
+    futureDate: 'The visit date cannot be in the future.',
+    connError: 'Connection error. Please check your internet and try again.',
+    genericError: 'Something went wrong. Please try again.',
+    linkWebsite: 'Everpeace website', linkDashboard: 'Coordinator dashboard',
   },
   fr: {
     appTitle: 'Adopter un A\u00een\u00e9 Musulman', appSubtitle: 'Portail B\u00e9n\u00e9vole',
@@ -659,9 +805,37 @@ const T = {
     trainingProgressLabel: (d,tot) => `${d} module${d!==1?'s':''} sur ${tot} termin\u00e9${d!==1?'s':''}`,
     tpillAll: 'Tout', tpillVideo: '\u25b6 Vid\u00e9os', tpillDoc: '\u{1F4C4} Documents',
     videoSectionLabel: '\u25b6 COURS EN VID\u00c9O', pdfSectionLabel: '\u{1F4C4} DOCUMENTS DE R\u00c9F\u00c9RENCE',
-    webinarSectionLabel: '\u{1F393} WEBINAIRES', wtgoSectionLabel: '\u{1F4DA} HOW to :',
+    webinarSectionLabel: '\u{1F393} WEBINAIRES', wtgoSectionLabel: '\u{1F4DA} GUIDES PRATIQUES',
     openVideo: '\u25b6 Regarder', openPdf: '\u{1F4C4} Ouvrir', markDone: '\u2713 Termin\u00e9', markUndo: '\u21a9 Annuler',
     trainingEmpty: 'Aucune ressource ici.',
+    tpillWebinar: '\u{1F393} Webinaires', tpillWtgo: '\u{1F4DA} Guides pratiques', tpillPolicies: '\u{1F4CB} Politiques',
+    policiesSectionLabel: '\u{1F4CB} POLITIQUES BÉNÉVOLES',
+    tsecMKicker: 'Section 1 · Obligatoire', tsecMTitle: 'Formation obligatoire',
+    tsecMSub: 'Veuillez compléter chaque élément ci-dessous avant votre première visite. Ils couvrent nos politiques, la sécurité et l’essentiel d’un accompagnement respectueux.',
+    tsecRKicker: 'Section 2 · Facultatif', tsecRTitle: 'Ressources recommandées',
+    tsecRSub: 'Approfondissez vos connaissances à votre rythme — vidéos, guides et documents sur le vieillissement, la démence, la communication et les soins en Islam.',
+    tsecTodo: (n) => `⏳ ${n} élément${n!==1?'s':''} obligatoire${n!==1?'s':''} restant${n!==1?'s':''}`, tsecOk: '✓ Formation obligatoire terminée',
+    badgeReq: 'Obligatoire', badgeRec: 'Recommandé', badgeNew: 'NOUVEAU', comingSoon: '\u{1F6A7} Bientôt disponible',
+    linkMissing: 'Ce lien n’est pas encore configuré. Contactez votre coordinatrice pour y accéder.',
+    step1: 'Journaliser la visite', step2: 'Donner votre avis',
+    firstVisitLabel: 'C’était ma première visite avec Everpeace',
+    firstVisitHint: 'Nous vous demanderons de remplir le sondage de satisfaction de première visite.',
+    regularVisitHint: 'Nous vous demanderons de remplir le formulaire de rétroaction régulier.',
+    fbTitle: 'Donnez votre avis',
+    fbSub: 'Après chaque visite, veuillez remplir le formulaire correspondant. Cela prend 2 à 3 minutes et nous aide à vous soutenir, vous et nos aîné(e)s.',
+    fbFirstTitle: 'Sondage de satisfaction — première visite', fbFirstSub: 'Pour votre toute première visite — dites-nous comment cela s’est passé.',
+    fbRegularTitle: 'Rétroaction — visite régulière', fbRegularSub: 'Pour chaque visite après la première.',
+    fbRecommended: 'Prochaine étape', fbOpened: 'Ouvert',
+    fbAfterLog: '✓ Visite enregistrée. Prenez maintenant 2 minutes pour remplir le formulaire mis en évidence ci-dessous.',
+    lblAddress: 'Adresse', lblDate: 'Date', lblTime: 'Heure', lblDuration: 'Durée', lblCoordNotes: 'Notes de la coordinatrice',
+    noCoordNotes: 'Aucune instruction particulière de la coordinatrice pour cette visite.',
+    noSpecialNotes: 'Aucune note particulière.',
+    selectDay: 'Veuillez sélectionner au moins un jour.', saving: 'Enregistrement...',
+    needDate: 'Veuillez entrer la date.', needSenior: 'Veuillez entrer le nom de l’aîné(e) visité(e).',
+    futureDate: 'La date de visite ne peut pas être dans le futur.',
+    connError: 'Erreur de connexion. Vérifiez votre internet et réessayez.',
+    genericError: 'Une erreur est survenue. Veuillez réessayer.',
+    linkWebsite: 'Site web Everpeace', linkDashboard: 'Tableau de bord coordinatrice',
   }
 };
 
@@ -723,7 +897,51 @@ function firstName(fullName) {
   return fullName.split(' ')[0];
 }
 
-function cleanPhone(p) { return (p || '').replace(/\D/g, ''); }
+function cleanPhone(p) { return extractVal(p).replace(/\D/g, ''); }
+
+// Escape any text coming from Baserow / Calendar before putting it in innerHTML
+function esc(v) {
+  return String(v === null || v === undefined ? '' : v)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// LOCAL date key (YYYY-MM-DD). toISOString() uses UTC, which in Ottawa
+// shifted every date to "tomorrow" after 7 pm (8 pm in summer).
+function localDateKey(d) {
+  const x = d || new Date();
+  return `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`;
+}
+
+// Fetch every row of a table (follows Baserow pagination)
+async function fetchAllRows(tableId, extra = '') {
+  let rows = [], next = `${BASE_URL}/database/rows/table/${tableId}/?user_field_names=true&size=200${extra}`;
+  while (next) {
+    const res = await fetch(next, { headers: { 'Authorization': `Token ${BASEROW_TOKEN}` } });
+    if (!res.ok) throw new Error('Baserow GET ' + res.status);
+    const data = await res.json();
+    rows = rows.concat(data.results || []);
+    next = data.next || null;
+  }
+  return rows;
+}
+
+// Does a Visits-table "Volunteer" value belong to the logged-in volunteer?
+// Full-name match, or a row that stores only the first name. Prevents
+// "Ali" from seeing "Alia"'s visits (privacy rule: own visits only).
+function rowBelongsToVolunteer(rowVolValue) {
+  const v = extractVal(rowVolValue).toLowerCase().replace(/\s+/g, ' ').trim();
+  const full = (getVolunteerName() || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  if (!v || !full) return false;
+  if (v === full || v.includes(full)) return true;
+  const first = full.split(' ')[0];
+  return first.length > 1 && v === first;
+}
+
+function isUpcomingRow(r, statusField) {
+  if (statusField && r[statusField] !== undefined) return extractVal(r[statusField]).toLowerCase() === 'upcoming';
+  return Object.values(r).some(v => extractVal(v).toLowerCase().trim() === 'upcoming');
+}
 
 // ============================================================
 // LANGUAGE
@@ -765,23 +983,34 @@ function applyTranslations() {
     'nav-training-label': 'navTraining',
     'training-eyebrow': 'trainingEyebrow', 'training-title': 'trainingTitle', 'training-subtitle': 'trainingSubtitle',
     'training-video-label': 'videoSectionLabel', 'training-pdf-label': 'pdfSectionLabel',
-    'training-webinar-label': 'webinarSectionLabel', 'training-wtgo-label': 'wtgoSectionLabel'
+    'tsec-m-kicker': 'tsecMKicker', 'tsec-m-title': 'tsecMTitle', 'tsec-m-sub': 'tsecMSub',
+    'tsec-r-kicker': 'tsecRKicker', 'tsec-r-title': 'tsecRTitle', 'tsec-r-sub': 'tsecRSub',
+    'tpill-all-label': 'tpillAll', 'tpill-video-label': 'tpillVideo', 'tpill-pdf-label': 'tpillDoc',
+    'tpill-webinar-label': 'tpillWebinar', 'tpill-wtgo-label': 'tpillWtgo', 'tpill-policies-label': 'tpillPolicies',
+    'step-1-label': 'step1', 'step-2-label': 'step2', 'first-visit-label': 'firstVisitLabel',
+    'fb-title': 'fbTitle', 'fb-sub': 'fbSub', 'fb-first-title': 'fbFirstTitle', 'fb-first-sub': 'fbFirstSub',
+    'fb-regular-title': 'fbRegularTitle', 'fb-regular-sub': 'fbRegularSub',
+    'link-website-label': 'linkWebsite', 'link-dashboard-label': 'linkDashboard',
+    'btn-change-pw': 'btnChangePw', 'btn-cancel-change-pw': 'btnCancelChangePw', 'btn-save-pw': 'btnSavePw',
+    'loading-assignment': 'loadingAssignment'
   };
   Object.entries(ids).forEach(([id, key]) => {
     const el = document.getElementById(id);
     if (el) el.textContent = t(key);
   });
+  document.documentElement.lang = currentLang;
   if (currentVolunteer) {
     document.getElementById('greeting-text').textContent = t('greetingText', firstName(getVolunteerName()));
     document.getElementById('greeting-sub').textContent  = t('greetingSub');
+    const pwName = firstName(getVolunteerName());
+    if (pwName) document.getElementById('pw-welcome-name').textContent = t('greetingText', pwName);
   }
+  updateFirstVisitHint();
+  updateFeedbackCard();
   buildCalendar();
   renderTraining();
-  updateTrainingProgress();
-  // Update filter pill labels
-  document.getElementById('tpill-all-label').textContent   = t('tpillAll');
-  document.getElementById('tpill-video-label').textContent = t('tpillVideo');
-  document.getElementById('tpill-pdf-label').textContent   = t('tpillDoc');
+  // Re-render visit cards so labels/dates follow the language (no refetch needed)
+  if (currentVolunteer && lastAssignmentRender) lastAssignmentRender();
 }
 
 // ============================================================
@@ -817,14 +1046,18 @@ async function baserowUpdate(tableId, rowId, data) {
 }
 
 // Get actual field names from Baserow table
+const _fieldCache = {};
 async function getTableFields(tableId) {
+  if (_fieldCache[tableId]) return _fieldCache[tableId];
   try {
     const res = await fetch(`${BASE_URL}/database/fields/table/${tableId}/`, {
       headers: { 'Authorization': `Token ${BASEROW_TOKEN}` }
     });
     if (!res.ok) return [];
     const data = await res.json();
-    return Array.isArray(data) ? data.map(f => f.name) : [];
+    const names = Array.isArray(data) ? data.map(f => f.name) : [];
+    if (names.length) _fieldCache[tableId] = names;
+    return names;
   } catch(e) {
     return [];
   }
@@ -834,33 +1067,52 @@ async function getTableFields(tableId) {
 // SMART FIELD MAPPING (Q1 Fix)
 // Matches our data keys to whatever column names exist in Baserow
 // ============================================================
-function findBestField(availableFields, candidates) {
-  // Exact match first
+function findBestField(availableFields, candidates, used) {
+  const taken = used || new Set();
+  const free  = (availableFields || []).filter(f => !taken.has(f));
+  // 1) Exact (case-insensitive) match
   for (const c of candidates) {
-    const match = availableFields.find(f => f.toLowerCase() === c.toLowerCase());
+    const match = free.find(f => f.toLowerCase() === c.toLowerCase());
     if (match) return match;
   }
-  // Partial match
+  // 2) Whole-phrase containment ("Visit Date" ⊂ "Visit Date (yyyy)")
   for (const c of candidates) {
-    const words = c.toLowerCase().split(' ');
-    const match = availableFields.find(f => words.some(w => w.length > 2 && f.toLowerCase().includes(w)));
+    const match = free.find(f => f.toLowerCase().includes(c.toLowerCase()) || c.toLowerCase().includes(f.toLowerCase()) && f.length > 3);
     if (match) return match;
   }
-  return candidates[0]; // fallback to first candidate
+  // No column list (fields API unreachable) → keep legacy behaviour
+  if (!availableFields || availableFields.length === 0) return candidates[0];
+  // Column list known but nothing matches → null (caller skips the value;
+  // the old word-level fuzzy match wrote "Senior Mood" into the "Senior" column)
+  return null;
 }
 
-function buildVisitPayload(availableFields, { date, senior, duration, mood, notes, followup }) {
-  const F = (candidates) => findBestField(availableFields, candidates);
-  const data = {};
-  data[F(['Volunteer', 'Volunteer Name', 'Nom Bénévole', 'Bénévole'])]       = getVolunteerName();
-  data[F(['Senior', 'Senior Name', 'Senior Visited', 'Aîné', 'Senior(e)'])]  = senior;
-  data[F(['Date', 'Visit Date', 'Date of Visit', 'Date de Visite'])]          = date;
-  data[F(['Duration', 'Durée', 'Duration (minutes)', 'Time'])]                = duration + ' min';
-  data[F(['Senior Mood', 'Mood', 'How did senior seem', 'Humeur'])]           = mood;
-  data[F(['Notes', 'Visit Notes', 'Notes de Visite', 'Comments'])]            = notes;
-  data[F(['Follow-up needed', 'Follow-up', 'Followup', 'Suivi'])]             = followup;
-  data[F(['Status', 'Statut', 'Visit Status'])]                               = 'Completed';
-  return data;
+// Map several values onto real columns, never writing two values into one column
+function mapToFields(availableFields, spec) {
+  const used = new Set(), out = {};
+  spec.forEach(([candidates, value]) => {
+    if (value === undefined) return;
+    const f = findBestField(availableFields, candidates, used);
+    if (!f || used.has(f)) return;
+    used.add(f); out[f] = value;
+  });
+  return out;
+}
+
+function buildVisitPayload(availableFields, { date, senior, duration, mood, notes, followup, visitType }) {
+  const hasTypeField = (availableFields || []).some(f => /visit type|type de visite|feedback form/i.test(f));
+  const finalNotes = (!hasTypeField && visitType === 'First visit') ? `[First visit] ${notes}`.trim() : notes;
+  return mapToFields(availableFields, [
+    [['Volunteer', 'Volunteer Name', 'Nom Bénévole', 'Bénévole'], getVolunteerName()],
+    [['Senior', 'Senior Name', 'Senior Visited', 'Aîné', 'Senior(e)'], senior],
+    [['Date', 'Visit Date', 'Date of Visit', 'Date de Visite'], date],
+    [['Duration', 'Durée', 'Duration (minutes)'], duration + ' min'],
+    [['Senior Mood', 'Mood', 'Humeur'], mood],
+    [['Notes', 'Visit Notes', 'Notes de Visite', 'Comments'], finalNotes],
+    [['Follow-up needed', 'Follow-up', 'Followup', 'Suivi'], followup],
+    [['Status', 'Statut', 'Visit Status'], 'Completed'],
+    [['Visit Type', 'Type de visite', 'Feedback Form'], hasTypeField ? visitType : undefined],
+  ]);
 }
 
 // ============================================================
@@ -917,14 +1169,7 @@ async function findVolunteer() {
   alertBox.innerHTML = '';
 
   try {
-    let allRows = [], nextUrl = `${BASE_URL}/database/rows/table/${VOLUNTEERS_TABLE}/?user_field_names=true&size=200`;
-    while (nextUrl) {
-      const res = await fetch(nextUrl, { headers: { 'Authorization': `Token ${BASEROW_TOKEN}` }, mode: 'cors' });
-      if (!res.ok) throw new Error('API Error ' + res.status);
-      const data = await res.json();
-      allRows = allRows.concat(data.results || []);
-      nextUrl = data.next || null;
-    }
+    const allRows = await fetchAllRows(VOLUNTEERS_TABLE);
 
     const inputPhoneDigits = cleanPhone(phone);
     let found = null;
@@ -933,16 +1178,17 @@ async function findVolunteer() {
       if (email) {
         for (const key of keys) {
           if (key.toLowerCase().includes('mail') || key.toLowerCase().includes('email')) {
-            if ((row[key] || '').toLowerCase().trim() === email) { found = row; break; }
+            if (extractVal(row[key]).toLowerCase() === email) { found = row; break; }
           }
         }
       }
       if (found) break;
       if (phone && inputPhoneDigits.length >= 7) {
         for (const key of keys) {
-          if (key.toLowerCase().includes('phone') || key.toLowerCase().includes('tel') || key.toLowerCase().includes('number')) {
+          const kl = key.toLowerCase();
+          if (kl.includes('phone') || kl.includes('tel') || kl.includes('mobile') || (kl.includes('number') && !kl.includes('visit'))) {
             const rowLast = cleanPhone(row[key]).slice(-10);
-            if (rowLast && rowLast === inputPhoneDigits.slice(-10)) { found = row; break; }
+            if (rowLast.length >= 7 && rowLast === inputPhoneDigits.slice(-10)) { found = row; break; }
           }
         }
       }
@@ -969,17 +1215,17 @@ async function findVolunteer() {
       document.getElementById('create-pw-sub').textContent  = t('createPwSub');
       document.getElementById('login-step2-create').style.display = 'block';
       document.getElementById('new-password').focus();
-      document.getElementById('new-password').addEventListener('input', e => checkPasswordStrength(e.target.value));
     } else {
       // Returning volunteer — enter password
-      document.getElementById('pw-welcome-name').textContent = name ? `As-salamu alaykum, ${name}!` : '';
+      document.getElementById('pw-welcome-name').textContent = name ? t('greetingText', name) : '';
       document.getElementById('pw-welcome-sub').textContent  = t('pwWelcomeSub');
       document.getElementById('login-step2-password').style.display = 'block';
       document.getElementById('login-password').focus();
     }
 
   } catch(e) {
-    showAlert(alertBox, 'Connection error: ' + e.message, 'error');
+    console.error(e);
+    showAlert(alertBox, t('connError'), 'error');
     btn.textContent = t('btnContinue'); btn.disabled = false;
   }
 }
@@ -1005,7 +1251,7 @@ async function verifyPassword() {
     completeLogin();
   } catch(e) {
     // Ensure button is always re-enabled so volunteer isn't permanently locked out
-    showAlert(alertBox, 'Something went wrong. Please try again.', 'error');
+    showAlert(alertBox, t('genericError'), 'error');
     btn.disabled = false; btn.textContent = t('btnSignIn');
   }
 }
@@ -1044,17 +1290,26 @@ function completeLogin() {
   document.getElementById('screen-main').classList.add('active');
   document.getElementById('greeting-text').textContent = t('greetingText', firstName(getVolunteerName()));
   document.getElementById('greeting-sub').textContent  = t('greetingSub');
-  const isActive = currentVolunteer['Active'] || currentVolunteer['Actif'] || currentVolunteer['active'];
+  const activeRaw = getVolunteerField(currentVolunteer, ['Active', 'Actif']).toLowerCase();
+  const isActive  = !!activeRaw && !['false', 'no', 'non', '0', 'inactive', 'inactif'].includes(activeRaw);
   document.getElementById('stat-status').textContent = isActive ? '\u2713' : '\u2013';
   document.getElementById('stat-status').style.color = isActive ? 'var(--green)' : '#aaa';
   document.getElementById('stat-visits').textContent = '\u2013';
-  document.getElementById('visit-date').value        = new Date().toISOString().split('T')[0];
-  loadMyVisit();
-  loadVisitHistory();
+  document.getElementById('visit-date').value        = localDateKey();
+  document.getElementById('visit-date').max          = localDateKey();
+  document.getElementById('pw-welcome-name').textContent = '';
+  visitCounts = { calendar: null, baserow: null, record: null };
+  lastAssignmentRender = null;
+  // Visit history must run AFTER the calendar call, otherwise calendar
+  // visits never appeared in "Recent Visits" (calendarData was still null).
+  loadMyVisit().finally(() => loadVisitHistory());
   loadVisitCount();
   buildCalendar();
   trainingLoadProgress();
   updateTrainingTabBadge();
+  updateFirstVisitHint();
+  updateFeedbackCard();
+  renderTraining();
 }
 
 // ============================================================
@@ -1254,7 +1509,7 @@ function getPoliciesOpened() {
 
 function markPolicyOpened(id) {
   const opened = getPoliciesOpened();
-  if (!opened.includes(id)) { opened.push(id); localStorage.setItem(getPolicyKey(), JSON.stringify(opened)); }
+  if (!opened.includes(id)) { opened.push(id); try { localStorage.setItem(getPolicyKey(), JSON.stringify(opened)); } catch(e) {} }
 }
 
 function isPolicyRead(id) { return getPoliciesOpened().includes(id); }
@@ -1264,75 +1519,53 @@ function allPoliciesRead() { return POLICY_IDS.every(id => isPolicyRead(id)); }
 function updateTrainingTabBadge() {
   const badge = document.getElementById('training-tab-badge');
   if (!badge) return;
-  badge.style.display = allPoliciesRead() ? 'none' : 'block';
+  if (!currentVolunteer) { badge.style.display = 'none'; return; }
+  const mandatoryDone = typeof mandatoryStats === 'function' ? mandatoryStats().left === 0 : true;
+  badge.style.display = (allPoliciesRead() && mandatoryDone) ? 'none' : 'block';
 }
 // ============================================================
+// ============================================================
+// VISIT COUNTER — deterministic, no race condition.
+// Each source reports its count; the stat shows the HIGHEST reported
+// value (never an undercount), whatever order the requests finish in.
+// ============================================================
+let visitCounts = { calendar: null, baserow: null, record: null };
+let lastAssignmentRender = null;   // re-renders My Visit on language switch
+
+function setVisitCount(source, n) {
+  const num = parseInt(n, 10);
+  visitCounts[source] = isNaN(num) ? null : num;
+  const vals = Object.values(visitCounts).filter(v => v !== null);
+  document.getElementById('stat-visits').textContent = vals.length ? Math.max(...vals) : '–';
+}
+
+function totalKnownVisits() {
+  const vals = Object.values(visitCounts).filter(v => v !== null);
+  return vals.length ? Math.max(...vals) : null;
+}
+
 async function loadVisitCount() {
-  // ALWAYS count from Baserow, regardless of calendar.
-  // Calendar may miss events where email/phone isn't in description.
-  // Baserow captures all visits logged through the app.
-  // We show whichever is higher — never an undercount.
   try {
-    const fullName   = getVolunteerName();
-    const first      = fullName.split(' ')[0];
-    const nameLower  = fullName.toLowerCase();
-    const firstLower = first.toLowerCase();
-
-    const fields = await getTableFields(VISITS_TABLE);
-    const volF   = findBestField(fields, ['Volunteer','Volunteer Name','Bénévole','Nom Bénévole']);
-
-    let all = [], nextUrl =
-      `${BASE_URL}/database/rows/table/${VISITS_TABLE}/?user_field_names=true&size=200&search=${encodeURIComponent(fullName.includes(' ') ? fullName : first)}`;
-
-    while (nextUrl) {
-      const res = await fetch(nextUrl, { headers: { 'Authorization': `Token ${BASEROW_TOKEN}` } });
-      if (!res.ok) break;
-      const data = await res.json();
-      all     = all.concat(data.results || []);
-      nextUrl = data.next || null;
-    }
-
-    // If no results with full name, retry with first name
-    if (all.length === 0 && fullName.includes(' ')) {
-      nextUrl = `${BASE_URL}/database/rows/table/${VISITS_TABLE}/?user_field_names=true&size=200&search=${encodeURIComponent(first)}`;
-      while (nextUrl) {
-        const res = await fetch(nextUrl, { headers: { 'Authorization': `Token ${BASEROW_TOKEN}` } });
-        if (!res.ok) break;
-        const data = await res.json();
-        all     = all.concat(data.results || []);
-        nextUrl = data.next || null;
-      }
-    }
-
-    const baserowCount = all.filter(r => {
-      const rVol    = extractVal(r[volF] || '').toLowerCase();
-      const allVals = Object.values(r).map(v => String(v||'').toLowerCase().trim());
-      // Exclude Upcoming rows — those are future assignments not yet completed
-      if (allVals.some(v => v === 'upcoming')) return false;
-      // Must match this volunteer's name
-      return rVol.includes(nameLower) || (firstLower.length > 2 && rVol.includes(firstLower));
-    }).length;
-
-    // Only update if calendar returned 0 or nothing (meaning it likely failed or found nothing)
-    // This prevents a broken/overcounting calendar result from being locked in permanently
-    const current = parseInt(document.getElementById('stat-visits').textContent) || 0;
-    if (current === 0 && baserowCount > 0) {
-      document.getElementById('stat-visits').textContent = baserowCount;
-    } else if (baserowCount > current && current < 5) {
-      // Only override small calendar counts with Baserow — avoids overriding legitimate high calendar counts
-      document.getElementById('stat-visits').textContent = baserowCount;
-    }
-  } catch(e) { /* keep existing value */ }
+    const fields  = await getTableFields(VISITS_TABLE);
+    const volF    = findBestField(fields, ['Volunteer', 'Volunteer Name', 'Bénévole', 'Nom Bénévole']) || 'Volunteer';
+    const statusF = findBestField(fields, ['Status', 'Statut', 'Visit Status']);
+    const first   = (getVolunteerName().split(' ')[0] || '').trim();
+    if (!first) { setVisitCount('baserow', 0); return; }
+    const rows = await fetchAllRows(VISITS_TABLE, `&search=${encodeURIComponent(first)}`);
+    const count = rows.filter(r => !isUpcomingRow(r, statusF) && rowBelongsToVolunteer(r[volF])).length;
+    setVisitCount('baserow', count);
+  } catch (e) { /* keep other sources */ }
+  updateFirstVisitHint();
 }
 
 // ============================================================
-// MY VISIT TAB — Q2
-// Reads from Google Calendar (via Apps Script) if configured,
-// otherwise falls back to Baserow assignment field.
+// MY VISIT TAB
+// Google Calendar first (official), then Baserow "Upcoming" rows,
+// then the Matched_Senior field on the volunteer record.
 // ============================================================
 async function loadMyVisit() {
   const container = document.getElementById('assignment-container');
-
+  container.innerHTML = `<div class="loading"><div class="spinner"></div><span>${t('loadingAssignment')}</span></div>`;
   if (CALENDAR_SCRIPT_URL) {
     await loadCalendarVisit(container);
   } else {
@@ -1340,10 +1573,7 @@ async function loadMyVisit() {
   }
 }
 
-// — — Calendar-based visit (Q2) — —
 async function loadCalendarVisit(container) {
-  container.innerHTML = `<div class="loading"><div class="spinner"></div><span>${t('loadingAssignment')}</span></div>`;
-
   try {
     const email = getVolunteerEmail();
     const phone = getVolunteerPhone();
@@ -1357,242 +1587,193 @@ async function loadCalendarVisit(container) {
     if (!data.success) throw new Error(data.error || 'Unknown error');
 
     calendarData = data;
-
-    // Q4: update visit counter from calendar
-    document.getElementById('stat-visits').textContent = data.completedTotal || '0';
+    setVisitCount('calendar', data.completedTotal || 0);
+    updateFirstVisitHint();
 
     if (!data.upcoming || data.upcoming.length === 0) {
-      container.innerHTML = buildNoAssignmentCard();
-      document.getElementById('senior-visited').value = '';
+      // Calendar has nothing upcoming — the coordinator may still have sent
+      // the match from the dashboard ("Send to Volunteer Portal"), so check Baserow.
+      await loadBaserowAssignment(container);
       return;
     }
 
-    // Show all upcoming visits (most people have 1–2 at a time)
-    let html = `<div class="calendar-badge">&#128197; ${t('calendarLabel')}</div>`;
-    data.upcoming.forEach((ev, i) => {
-      const startDate  = new Date(ev.start);
-      const endDate    = new Date(ev.end);
-      const dateStr    = startDate.toLocaleDateString(currentLang === 'fr' ? 'fr-CA' : 'en-CA', { weekday:'long', month:'long', day:'numeric' });
-      const startTime  = startDate.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
-      const endTime    = endDate.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
-      const seniorName = ev.seniorName || ev.title;
-
-      if (i === 0 && ev.seniorName) {
-        document.getElementById('senior-visited').value = ev.seniorName;
-      }
-
-      html += `
-        <div class="assignment-card">
-          <div class="assignment-label">${t('assignedLabel')}</div>
-          <div class="assignment-name">${seniorName || '\u2013'}</div>
-          <div class="assignment-detail">&#128197; ${dateStr}</div>
-          <div class="assignment-detail">&#128336; ${startTime} \u2013 ${endTime}</div>
-          ${ev.location ? `<div class="assignment-detail">&#127968; ${ev.location}</div>` : ''}
-        </div>`;
-    });
-
-    container.innerHTML = html;
+    const render = () => {
+      const loc = currentLang === 'fr' ? 'fr-CA' : 'en-CA';
+      let html = `<div class="calendar-badge">&#128197; ${t('calendarLabel')}</div>`;
+      data.upcoming.forEach(ev => {
+        const startDate  = new Date(ev.start);
+        const endDate    = new Date(ev.end);
+        const dateStr    = startDate.toLocaleDateString(loc, { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+        const startTime  = startDate.toLocaleTimeString(loc, { hour:'2-digit', minute:'2-digit' });
+        const endTime    = endDate.toLocaleTimeString(loc, { hour:'2-digit', minute:'2-digit' });
+        const seniorName = ev.seniorName || ev.title || '';
+        const mins = Math.round((endDate - startDate) / 60000);
+        const durDisplay = mins > 0 ? (mins % 60 ? `${Math.floor(mins/60) ? Math.floor(mins/60) + 'h ' : ''}${mins % 60} min` : `${mins/60}h`) : '';
+        html += buildVisitCard({ senName: seniorName, address: ev.location || '', dateDisplay: dateStr,
+                                 timeVal: `${startTime} – ${endTime}`, durDisplay, coordNotes: null });
+      });
+      container.innerHTML = html;
+    };
+    render();
+    lastAssignmentRender = render;
+    const firstEv = data.upcoming[0];
+    if (firstEv && (firstEv.seniorName || firstEv.title)) prefillSenior(firstEv.seniorName || firstEv.title);
 
   } catch(e) {
-    // Calendar failed — fall back to Baserow for both display and count
+    // Calendar failed — fall back to Baserow (display); the Baserow count
+    // already comes from loadVisitCount(), so no duplicate counting here.
     await loadBaserowAssignment(container);
-    // Try Baserow count too since calendar didn't provide it
-    try {
-      const fullName  = getVolunteerName();
-      const first     = fullName.split(' ')[0].toLowerCase();
-      const fields    = await getTableFields(VISITS_TABLE);
-      const volF      = findBestField(fields, ['Volunteer','Volunteer Name','Bénévole']);
-      let all = [], nextUrl = `${BASE_URL}/database/rows/table/${VISITS_TABLE}/?user_field_names=true&size=200&search=${encodeURIComponent(first)}`;
-      while (nextUrl) {
-        const res  = await fetch(nextUrl, { headers: { 'Authorization': `Token ${BASEROW_TOKEN}` } });
-        if (!res.ok) break;
-        const data = await res.json();
-        all = all.concat(data.results || []);
-        nextUrl = data.next || null;
-      }
-      const count = all.filter(r => {
-        const rVol    = extractVal(r[volF] || '').toLowerCase();
-        const allVals = Object.values(r).map(v => String(v||'').toLowerCase().trim());
-        if (allVals.some(v => v === 'upcoming')) return false; // exclude future assignments
-        return rVol.includes(first);
-      }).length;
-      document.getElementById('stat-visits').textContent = count;
-    } catch(e2) { /* keep existing value */ }
   }
 }
 
-// — — Baserow-based assignment (fallback) — —
+// Only pre-fill the Log Visit senior field if the volunteer hasn't typed one
+function prefillSenior(name) {
+  const el = document.getElementById('senior-visited');
+  if (el && !el.value.trim() && name) el.value = name;
+}
+
+function looksLikeAddress(str) {
+  if (!str || str === '–') return false;
+  return /^[A-Z]\d[A-Z]/i.test(str) ||           // postal code (K2J...)
+         /^\d+\s/i.test(str) ||                   // starts with house number
+         /\b(way|street|st|avenue|ave|blvd|boulevard|road|rd|drive|dr|lane|court|ct|place|crescent|cres|private|pvt|rue|chemin)\b/i.test(str);
+}
+
+// Shared visit card (calendar + Baserow) — all values escaped
+function buildVisitCard({ senName, address, dateDisplay, timeVal, durDisplay, coordNotes }) {
+  const row = (icon, label, inner) => `
+    <div style="display:flex;align-items:flex-start;gap:10px">
+      <span style="font-size:20px;flex-shrink:0">${icon}</span>
+      <div>
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold-light);margin-bottom:3px">${label}</div>
+        ${inner}
+      </div>
+    </div>`;
+  let html = `
+    <div class="assignment-card">
+      <div class="assignment-label">${t('assignedLabel')}</div>
+      ${senName ? `<div class="assignment-name" style="font-size:22px;margin-bottom:14px">${esc(senName)}</div>` : ''}
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:${senName ? '0' : '6px'}">
+        ${address ? row('&#127968;', t('lblAddress'), `<a href="https://maps.google.com/?q=${encodeURIComponent(address)}" target="_blank" rel="noopener" style="font-size:13px;font-weight:600;line-height:1.4;color:white;text-decoration:underline;display:block">${esc(address)} &#128205;</a>`) : ''}
+        ${dateDisplay ? row('&#128197;', t('lblDate'), `<div style="font-size:13px;font-weight:600">${esc(dateDisplay)}</div>`) : ''}
+        ${row('&#128336;', t('lblTime'), `<div style="font-size:13px;font-weight:600">${esc(timeVal || '—')}</div>`)}
+        ${row('&#9201;&#65039;', t('lblDuration'), `<div style="font-size:13px;font-weight:600">${esc(durDisplay || '—')}</div>`)}
+      </div>
+    </div>`;
+  if (coordNotes !== null) {
+    html += `
+    <div class="card" style="border-left:4px solid var(--gold);padding:14px 16px;margin-top:-8px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="font-size:18px">&#128221;</span>
+        <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--gold-dark)">${t('lblCoordNotes')}</span>
+      </div>
+      <div style="font-size:13px;color:var(--charcoal);line-height:1.6;white-space:pre-line;font-style:${coordNotes ? 'normal' : 'italic'}">${coordNotes ? esc(coordNotes) : t('noCoordNotes')}</div>
+    </div>`;
+  }
+  return html;
+}
+
+// Baserow-based assignment (admin "Send to Volunteer Portal" → Upcoming rows)
 async function loadBaserowAssignment(container) {
   try {
     const volName = getVolunteerName();
-    const today   = new Date().toISOString().split('T')[0];
+    const today   = localDateKey();
 
-    // ── Step 1: Check visits table for upcoming matches set by coordinator ──
     const visitsFields = await getTableFields(VISITS_TABLE);
-    const volF    = findBestField(visitsFields, ['Volunteer','Volunteer Name','Bénévole']);
-    const senF    = findBestField(visitsFields, ['Senior','Senior Name','Aîné']);
-    const dateF   = findBestField(visitsFields, ['Date','Visit Date']);
-    const statusF = findBestField(visitsFields, ['Status','Statut','Visit Status']);
-    const timeF   = findBestField(visitsFields, ['Time','Visit Time','Heure']);
-    const locF    = findBestField(visitsFields, ['Location','Address','Facility']);
-    const notesF  = findBestField(visitsFields, ['Notes','Coordinator Notes','Comments']);
+    const F = (c) => findBestField(visitsFields, c);
+    const volF    = F(['Volunteer','Volunteer Name','Bénévole']) || 'Volunteer';
+    const senF    = F(['Senior','Senior Name','Aîné']) || 'Senior';
+    const dateF   = F(['Date','Visit Date']) || 'Date';
+    const statusF = F(['Status','Statut','Visit Status']);
+    const timeF   = F(['Time','Visit Time','Heure']);
+    const locF    = F(['Location','Address','Facility']);
+    const notesF  = F(['Notes','Coordinator Notes','Comments']) || 'Notes';
 
-    const visitsData = await baserowGet(VISITS_TABLE, `&search=${encodeURIComponent(volName.split(' ')[0])}&size=20`);
-    const upcoming = (visitsData.results || []).filter(r => {
-      const rVol    = String(r[volF] || '').toLowerCase();
-      const rStatus = String(r[statusF] || '').toLowerCase();
-      const rDate   = String(r[dateF] || '');
-      return rVol.includes(volName.toLowerCase().split(' ')[0]) &&
-             rStatus === 'upcoming' &&
-             rDate >= today;
-    }).sort((a, b) => String(a[dateF] || '').localeCompare(String(b[dateF] || '')));
+    const first = (volName.split(' ')[0] || '').trim();
+    const rows  = first ? await fetchAllRows(VISITS_TABLE, `&search=${encodeURIComponent(first)}`) : [];
+
+    const upcoming = rows.map(v => {
+      const rawNotes = extractVal(v[notesF]);
+      let info = {};
+      try { const parsed = JSON.parse(rawNotes); if (parsed && typeof parsed === 'object') info = parsed; } catch(e) {}
+      return { v, info, date: String(info.date || extractVal(v[dateF]) || '') };
+    }).filter(({ v, date }) =>
+      isUpcomingRow(v, statusF) && rowBelongsToVolunteer(v[volF]) && (!date || date >= today)
+    ).sort((a, b) => a.date.localeCompare(b.date));
 
     if (upcoming.length > 0) {
-      let html = '';
-
-      // Helper: detect if a string looks like an address rather than a person's name
-      function looksLikeAddress(str) {
-        if (!str || str === '–') return false;
-        return /^[A-Z]\d[A-Z]/i.test(str) ||           // postal code (K2J...)
-               /^\d+\s/i.test(str) ||                   // starts with house number
-               /\b(way|street|avenue|ave|blvd|boulevard|road|rd|drive|dr|lane|court|ct|place)\b/i.test(str);
-      }
-
-      upcoming.forEach((v, i) => {
-        // Parse structured info from Notes field first (new format)
-        const rawNotes = extractVal(v[notesF]) || '';
-        let info = {};
-        try { info = JSON.parse(rawNotes); } catch(e) {}
-
-        // Use parsed info, fall back to individual fields
-        let senName    = info.seniorName || extractVal(v[senF])  || '';
-        let address    = info.address    || extractVal(v[locF])  || '';
-        const dateRaw  = info.date       || extractVal(v[dateF]) || '';
-        const timeVal  = info.time       || extractVal(v[timeF]) || '';
-        const duration = info.duration   || '';
-        const coordNotes = info.coordinatorNotes || '';
-
-        // Handle old-format records: if senName looks like an address, move it
-        if (!address && looksLikeAddress(senName)) {
-          address = senName;
-          senName = '';
-        }
-
-        // Format date nicely e.g. "Saturday, August 8, 2026"
-        let dateDisplay = dateRaw;
-        if (dateRaw && dateRaw.includes('-')) {
-          try {
-            const d = new Date(dateRaw + 'T12:00:00');
-            dateDisplay = d.toLocaleDateString(currentLang === 'fr' ? 'fr-CA' : 'en-CA', {
-              weekday:'long', year:'numeric', month:'long', day:'numeric'
-            });
-          } catch(e) {}
-        }
-
-        // Format duration nicely
-        const durMap = { '30min':'30 minutes', '1h':'1 hour', '1.5h':'1 hour 30 minutes', '2h':'2 hours' };
-        const durDisplay = durMap[duration] || duration || '';
-
-        // Google Maps link
-        const mapsUrl = address ? `https://maps.google.com/?q=${encodeURIComponent(address)}` : '';
-
-        if (i === 0) document.getElementById('senior-visited').value = senName || address;
-
-        html += `
-          <div class="assignment-card">
-            <div class="assignment-label">${t('assignedLabel')}</div>
-            ${senName ? `<div class="assignment-name" style="font-size:22px;margin-bottom:14px">${senName}</div>` : ''}
-
-            <div style="display:flex;flex-direction:column;gap:10px;margin-top:${senName ? '0' : '6px'}">
-
-              ${address ? `<div style="display:flex;align-items:flex-start;gap:10px">
-                <span style="font-size:20px;flex-shrink:0">&#127968;</span>
-                <div>
-                  <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold-light);margin-bottom:3px">Address</div>
-                  <a href="https://maps.google.com/?q=${encodeURIComponent(address)}" target="_blank" style="font-size:13px;font-weight:600;line-height:1.4;color:white;text-decoration:underline;display:block">${address} &#128205;</a>
-                </div>
-              </div>` : ''}
-
-              ${dateDisplay ? `<div style="display:flex;align-items:flex-start;gap:10px">
-                <span style="font-size:20px;flex-shrink:0">&#128197;</span>
-                <div>
-                  <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold-light);margin-bottom:3px">Date</div>
-                  <div style="font-size:13px;font-weight:600">${dateDisplay}</div>
-                </div>
-              </div>` : ''}
-
-              <div style="display:flex;align-items:flex-start;gap:10px">
-                <span style="font-size:20px;flex-shrink:0">&#128336;</span>
-                <div>
-                  <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold-light);margin-bottom:3px">Time</div>
-                  <div style="font-size:13px;font-weight:600">${timeVal || '—'}</div>
-                </div>
-              </div>
-
-              <div style="display:flex;align-items:flex-start;gap:10px">
-                <span style="font-size:20px;flex-shrink:0">&#9201;&#65039;</span>
-                <div>
-                  <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold-light);margin-bottom:3px">Duration</div>
-                  <div style="font-size:13px;font-weight:600">${durDisplay || '—'}</div>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          <div class="card" style="border-left:4px solid var(--gold);padding:14px 16px;margin-top:-8px">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-              <span style="font-size:18px">&#128221;</span>
-              <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--gold-dark)">Coordinator Notes</span>
-            </div>
-            <div style="font-size:13px;color:var(--charcoal);line-height:1.6;font-style:${coordNotes ? 'normal' : 'italic'}">
-              ${coordNotes || 'There are no special instructions or information for this visit from the coordinator.'}
-            </div>
-          </div>`;
-      });
-      container.innerHTML = html;
+      const render = () => {
+        const loc = currentLang === 'fr' ? 'fr-CA' : 'en-CA';
+        container.innerHTML = upcoming.map(({ v, info, date }) => {
+          let senName    = info.seniorName || extractVal(v[senF]) || '';
+          let address    = info.address    || (locF ? extractVal(v[locF]) : '') || '';
+          const timeVal  = info.time       || (timeF ? extractVal(v[timeF]) : '') || '';
+          const duration = info.duration   || '';
+          const coordNotes = info.coordinatorNotes || (Object.keys(info).length ? '' : extractVal(v[notesF]));
+          if (!address && looksLikeAddress(senName)) { address = senName; senName = ''; }
+          let dateDisplay = date;
+          if (date && /^\d{4}-\d{2}-\d{2}/.test(date)) {
+            dateDisplay = new Date(date.slice(0, 10) + 'T12:00:00').toLocaleDateString(loc, { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+          }
+          const durMap = currentLang === 'fr'
+            ? { '30min':'30 minutes', '1h':'1 heure', '1.5h':'1 h 30', '2h':'2 heures' }
+            : { '30min':'30 minutes', '1h':'1 hour', '1.5h':'1 hour 30 minutes', '2h':'2 hours' };
+          return buildVisitCard({ senName, address, dateDisplay, timeVal, durDisplay: durMap[duration] || duration, coordNotes: coordNotes || '' });
+        }).join('');
+      };
+      render();
+      lastAssignmentRender = render;
+      const f = upcoming[0];
+      prefillSenior(f.info.seniorName || extractVal(f.v[senF]));
       return;
     }
 
-    // ── Step 2: Fall back to Matched_Senior field on volunteer record ──
-    const seniorField = currentVolunteer['Matched_Senior'] || currentVolunteer['Senior'] ||
-                        currentVolunteer['Assigned Senior'] || null;
+    // ── Fall back to Matched_Senior field on the volunteer record ──
+    const seniorName = ['Matched_Senior', 'Senior', 'Assigned Senior', 'Matched Senior']
+      .map(k => extractVal(currentVolunteer[k])).find(Boolean) || '';
     let senior = null;
-
-    if (seniorField) {
-      const name = typeof seniorField === 'object' ? seniorField.value : seniorField;
-      const data = await baserowGet(SENIORS_TABLE, `&search=${encodeURIComponent(name)}&size=5`);
+    if (seniorName) {
+      const data = await baserowGet(SENIORS_TABLE, `&search=${encodeURIComponent(seniorName)}&size=5`);
       if (data.results && data.results.length > 0) senior = data.results[0];
     }
 
+    const recordCount = getVolunteerField(currentVolunteer, ['Visits_This_Month', 'Total Visits']);
+    if (recordCount) setVisitCount('record', recordCount);
+
     if (senior) {
-      const address  = senior['Address'] || '';
-      const language = senior['languages'] || senior['Languages'] || '';
-      const avail    = senior['Visit availability'] || senior['Availability'] || '';
-      const name     = senior['Name'] || senior['Full Legal Name'] || '';
-
-      document.getElementById('senior-visited').value = name;
-      document.getElementById('stat-visits').textContent =
-        currentVolunteer['Visits_This_Month'] || currentVolunteer['Total Visits'] || '0';
-
-      container.innerHTML = `
-        <div class="assignment-card">
-          <div class="assignment-label">${t('assignedLabel')}</div>
-          <div class="assignment-name">${name || '\u2013'}</div>
-          <div class="assignment-detail">&#127968; ${address || '\u2013'}</div>
-          <div class="assignment-detail">&#128483;&#65039; ${language || '\u2013'}</div>
-          <div class="assignment-detail">&#128197; ${avail || '\u2013'}</div>
-        </div>
-        <div class="alert alert-info">
-          <span class="alert-icon">&#128155;</span>
-          <span>${senior['Participation & Visit Preferences'] || senior['Special accomodation'] || senior['Notes'] || 'No special notes.'}</span>
-        </div>`;
+      const g = (c) => getVolunteerField(senior, c);
+      const address  = g(['Address']);
+      const language = g(['Language spoken', 'languages', 'Languages']);
+      const avail    = g(['Visit availability', 'Availability']);
+      const name     = g(['Name', 'Full Legal Name']);
+      const prefs    = g(['Participation & Visit Preferences', 'Special accomodation', 'Notes']);
+      prefillSenior(name);
+      const render = () => {
+        container.innerHTML = `
+          <div class="assignment-card">
+            <div class="assignment-label">${t('assignedLabel')}</div>
+            <div class="assignment-name">${esc(name || '–')}</div>
+            <div class="assignment-detail">&#127968; ${address ? `<a href="https://maps.google.com/?q=${encodeURIComponent(address)}" target="_blank" rel="noopener" style="color:white;text-decoration:underline">${esc(address)}</a>` : '–'}</div>
+            <div class="assignment-detail">&#128483;&#65039; ${esc(language || '–')}</div>
+            <div class="assignment-detail">&#128197; ${esc(avail || '–')}</div>
+          </div>
+          <div class="alert alert-info">
+            <span class="alert-icon">&#128155;</span>
+            <span>${prefs ? esc(prefs) : t('noSpecialNotes')}</span>
+          </div>`;
+      };
+      render();
+      lastAssignmentRender = render;
     } else {
-      document.getElementById('stat-visits').textContent = '0';
-      container.innerHTML = buildNoAssignmentCard();
+      const render = () => { container.innerHTML = buildNoAssignmentCard(); };
+      render();
+      lastAssignmentRender = render;
     }
   } catch(e) {
-    container.innerHTML = buildNoAssignmentCard();
+    console.error(e);
+    const render = () => { container.innerHTML = buildNoAssignmentCard(); };
+    render();
+    lastAssignmentRender = render;
   }
 }
 
@@ -1618,7 +1799,7 @@ function buildCalendar() {
   const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   const daysFr = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
   const months  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const monthsFr= ['Jan','\u202Av\u202C','Mar','Avr','Mai','Juin','Jul','Ao\u00fbt','Sep','Oct','Nov','D\u00e9c'];
+  const monthsFr= ['Janv','F\u00e9v','Mars','Avr','Mai','Juin','Juil','Ao\u00fbt','Sept','Oct','Nov','D\u00e9c'];
 
   for (let week = 0; week < 2; week++) {
     const wl = document.createElement('div');
@@ -1630,7 +1811,7 @@ function buildCalendar() {
       const date = new Date(today);
       date.setDate(today.getDate() + (week * 7) + d);
       const dow     = date.getDay();
-      const dateKey = date.toISOString().split('T')[0];
+      const dateKey = localDateKey(date);
       const dayName = currentLang === 'fr' ? daysFr[dow] : days[dow];
       const monName = currentLang === 'fr' ? monthsFr[date.getMonth()] : months[date.getMonth()];
 
@@ -1671,36 +1852,33 @@ async function submitAvailability() {
   const freq = document.getElementById('freq-select').value;
 
   if (Object.keys(selectedDays).length === 0) {
-    showAlert(alertBox, currentLang === 'fr' ? 'Veuillez s\u00e9lectionner au moins un jour.' : 'Please select at least one day.', 'error'); return;
+    showAlert(alertBox, t('selectDay'), 'error'); return;
   }
 
-  btn.disabled = true; btn.textContent = currentLang === 'fr' ? 'Enregistrement...' : 'Saving...';
+  btn.disabled = true; btn.textContent = t('saving');
 
+  // ALWAYS saved in the same English format, whatever the UI language —
+  // the coordinator dashboard parses "Mon Nov 10: AM & PM" (month + slot words).
   const dayAbbr = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const lines = Object.entries(selectedDays).map(([date, times]) => {
+  const monAbbr = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const lines = Object.keys(selectedDays).sort().map(date => {
+    const times = selectedDays[date];
     const d = new Date(date + 'T12:00:00');
-    const slots = [times.morning && (currentLang==='fr'?'Matin':'AM'), times.afternoon && (currentLang==='fr'?'Apr\u00e8s-midi':'PM'), times.evening && (currentLang==='fr'?'Soir':'Evening')].filter(Boolean);
-    return `${dayAbbr[d.getDay()]} ${d.toLocaleString('en',{month:'short'})} ${d.getDate()}: ${slots.length ? slots.join(' & ') : 'Any time'}`;
+    const slots = [times.morning && 'AM', times.afternoon && 'PM', times.evening && 'Evening'].filter(Boolean);
+    return `${dayAbbr[d.getDay()]} ${monAbbr[d.getMonth()]} ${d.getDate()}: ${slots.length ? slots.join(' & ') : 'Any time'}`;
   });
   const availText = lines.join('\n') + `\n[Preferred visits: ${freq}]`;
 
   try {
-    // Find the availability field name (flexible)
     const volFields = await getTableFields(VOLUNTEERS_TABLE);
-    const availField = findBestField(volFields, ['Availability Schedule', 'Availability', 'Disponibilit\u00e9', 'Schedule']);
-    const payload = {};
-    payload[availField] = availText;
-
-    const res = await fetch(`${BASE_URL}/database/rows/table/${VOLUNTEERS_TABLE}/${currentVolunteer.id}/?user_field_names=true`, {
-      method: 'PATCH',
-      headers: { 'Authorization': `Token ${BASEROW_TOKEN}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    const result = await res.json();
-    if (!res.ok) { showAlert(alertBox, 'Error ' + res.status + ': ' + JSON.stringify(result).substring(0,200), 'error'); }
-    else { showAlert(alertBox, t('availSuccess'), 'success'); selectedDays = {}; buildCalendar(); }
+    const availField = findBestField(volFields, ['Availability Schedule', 'Availability', 'Disponibilité', 'Schedule']) || 'Availability Schedule';
+    await baserowUpdate(VOLUNTEERS_TABLE, currentVolunteer.id, { [availField]: availText });
+    currentVolunteer[availField] = availText;
+    showAlert(alertBox, t('availSuccess'), 'success');
+    selectedDays = {}; buildCalendar();
   } catch(e) {
-    showAlert(alertBox, 'Network error: ' + e.message, 'error');
+    console.error(e);
+    showAlert(alertBox, `${t('availError')}<br><small style="opacity:0.6">${esc(e.message)}</small>`, 'error');
   }
 
   btn.disabled = false; btn.textContent = t('btnSubmitAvail');
@@ -1713,107 +1891,180 @@ async function submitVisitLog() {
   const alertBox = document.getElementById('log-alert');
   const btn      = document.getElementById('btn-log-visit');
   const date     = document.getElementById('visit-date').value;
-  const senior   = document.getElementById('senior-visited').value;
+  const senior   = document.getElementById('senior-visited').value.trim();
   const duration = document.getElementById('visit-duration').value;
   const mood     = document.getElementById('senior-mood').value;
-  const notes    = document.getElementById('visit-notes').value;
+  const notes    = document.getElementById('visit-notes').value.trim();
   const followup = document.getElementById('followup-needed').value;
+  const isFirst  = document.getElementById('first-visit-check').checked;
 
-  if (!date) {
-    showAlert(alertBox, currentLang === 'fr' ? 'Veuillez entrer la date.' : 'Please enter the visit date.', 'error'); return;
-  }
-  if (!senior.trim()) {
-    showAlert(alertBox, currentLang === 'fr' ? 'Veuillez entrer le nom de l\'aîné(e) visité(e).' : 'Please enter the name of the senior you visited.', 'error'); return;
-  }
+  if (!date)            { showAlert(alertBox, t('needDate'), 'error'); return; }
+  if (date > localDateKey()) { showAlert(alertBox, t('futureDate'), 'error'); return; }
+  if (!senior)          { showAlert(alertBox, t('needSenior'), 'error'); return; }
+  if (btn.disabled) return;   // prevents double-submit (duplicate rows)
 
-  btn.disabled = true; btn.textContent = currentLang === 'fr' ? 'Enregistrement...' : 'Saving...';
+  btn.disabled = true; btn.textContent = t('saving');
 
   try {
-    // Detect actual field names in the visits table (Q1 fix)
     const visitsFields = await getTableFields(VISITS_TABLE);
-    const payload = buildVisitPayload(visitsFields, { date, senior, duration, mood, notes, followup });
-
+    const visitType = isFirst ? 'First visit' : 'Regular visit';
+    const payload = buildVisitPayload(visitsFields, { date, senior, duration, mood, notes, followup, visitType });
     await baserowCreate(VISITS_TABLE, payload);
+
+    // Step 2 — point the volunteer to the right post-visit form
+    pendingFeedback = isFirst ? 'first' : 'regular';
+    saveFeedbackState({ pending: pendingFeedback, date });
+    setVisitCount('baserow', (visitCounts.baserow || 0) + 1);
 
     showAlert(alertBox, t('logSuccess'), 'success');
     document.getElementById('visit-notes').value     = '';
     document.getElementById('followup-needed').value = 'No';
+    document.getElementById('first-visit-check').checked = false;
+    updateFirstVisitHint();
+    updateFeedbackCard(true);
     loadVisitHistory();
-
   } catch(e) {
-    showAlert(alertBox, `${t('logError')}<br><small style="opacity:0.6">${e.message}</small>`, 'error');
+    console.error(e);
+    showAlert(alertBox, `${t('logError')}<br><small style="opacity:0.6">${esc(e.message)}</small>`, 'error');
   }
 
   btn.disabled = false; btn.textContent = t('btnLogVisit');
 }
 
 // ============================================================
-// VISIT HISTORY
-// Shows calendar-based history if available (Q2), then Baserow log
+// POST-VISIT FEEDBACK FORMS (Google Forms)
+// First visit → volunteer satisfaction survey; every other visit → regular feedback.
+// The pending form is remembered per volunteer on this device.
+// ============================================================
+let pendingFeedback = null;   // 'first' | 'regular' | null
+
+function feedbackKey() { return `ep_feedback_${_loginEmail || _loginPhone || (currentVolunteer && currentVolunteer.id) || 'guest'}`; }
+function loadFeedbackState() {
+  try { return JSON.parse(localStorage.getItem(feedbackKey()) || '{}') || {}; } catch(e) { return {}; }
+}
+function saveFeedbackState(patch) {
+  try { localStorage.setItem(feedbackKey(), JSON.stringify(Object.assign(loadFeedbackState(), patch))); } catch(e) {}
+}
+
+// Pre-tick "first visit" when we know of no previous visit for this volunteer
+function updateFirstVisitHint() {
+  const box = document.getElementById('first-visit-check');
+  if (!box) return;
+  if (!box.dataset.touched) {
+    const known = totalKnownVisits();
+    const state = currentVolunteer ? loadFeedbackState() : {};
+    box.checked = known === 0 && !state.firstDone;
+  }
+  const hint = document.getElementById('first-visit-hint');
+  if (hint) hint.textContent = box.checked ? t('firstVisitHint') : t('regularVisitHint');
+}
+function onFirstVisitToggle() {
+  document.getElementById('first-visit-check').dataset.touched = '1';
+  updateFirstVisitHint();
+}
+
+function updateFeedbackCard(justLogged) {
+  const first = document.getElementById('fb-first'), reg = document.getElementById('fb-regular');
+  if (!first || !reg) return;
+  first.href = FORM_FIRST_VISIT; reg.href = FORM_REGULAR_VISIT;
+  const state = currentVolunteer ? loadFeedbackState() : {};
+  if (!pendingFeedback && state.pending) pendingFeedback = state.pending;
+
+  // Recommended form: the pending one, else regular once a first visit exists
+  const rec = pendingFeedback || ((totalKnownVisits() || 0) > 0 || state.firstDone ? 'regular' : 'first');
+  [['first', first], ['regular', reg]].forEach(([k, el]) => {
+    el.classList.toggle('recommended', k === rec);
+    const tag = document.getElementById(`fb-${k}-tag`);
+    const opened = state[`opened_${k}`];
+    if (k === rec && pendingFeedback) { tag.textContent = t('fbRecommended'); tag.className = 'fb-tag'; tag.style.display = 'inline-block'; }
+    else if (opened) { tag.textContent = t('fbOpened') + ' ✓'; tag.className = 'fb-tag sent'; tag.style.display = 'inline-block'; }
+    else tag.style.display = 'none';
+  });
+  // Put the recommended form first
+  if (rec === 'regular' && reg.previousElementSibling !== document.getElementById('fb-alert')) {
+    reg.parentNode.insertBefore(reg, first);
+  } else if (rec === 'first' && first.previousElementSibling !== document.getElementById('fb-alert')) {
+    first.parentNode.insertBefore(first, reg);
+  }
+
+  const card = document.getElementById('feedback-card');
+  card.classList.toggle('highlight', !!pendingFeedback);
+  document.getElementById('step-1').classList.toggle('done', !!pendingFeedback);
+  document.getElementById('step-1').classList.toggle('on', !pendingFeedback);
+  document.getElementById('step-2').classList.toggle('on', !!pendingFeedback);
+  if (justLogged) {
+    showAlert(document.getElementById('fb-alert'), t('fbAfterLog'), 'info');
+    setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'start' }), 250);
+  }
+}
+
+function markFeedbackOpened(kind) {
+  const patch = { [`opened_${kind}`]: localDateKey() };
+  if (kind === 'first') patch.firstDone = true;
+  if (pendingFeedback === kind) { pendingFeedback = null; patch.pending = null; }
+  saveFeedbackState(patch);
+  document.getElementById('fb-alert').innerHTML = '';
+  setTimeout(() => updateFeedbackCard(false), 300);
+}
+
+// ============================================================
+// VISIT HISTORY — calendar visits (gold) + visits logged in the portal (green)
 // ============================================================
 async function loadVisitHistory() {
   const container = document.getElementById('visit-history-container');
+  const loc = currentLang === 'fr' ? 'fr-CA' : 'en-CA';
   let html = '';
 
-  // Calendar-based past visits
   if (calendarData && calendarData.recentCompleted && calendarData.recentCompleted.length > 0) {
     calendarData.recentCompleted.forEach(ev => {
       const d = new Date(ev.start);
-      const dateStr = d.toLocaleDateString(currentLang === 'fr' ? 'fr-CA' : 'en-CA', { month:'short', day:'numeric', year:'numeric' });
-      const time    = d.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+      const dateStr = d.toLocaleDateString(loc, { month:'short', day:'numeric', year:'numeric' });
+      const time    = d.toLocaleTimeString(loc, { hour:'2-digit', minute:'2-digit' });
       html += `
         <div class="visit-history-item">
           <div class="visit-dot calendar"></div>
           <div class="visit-info">
-            <div class="visit-senior">${ev.seniorName || ev.title}</div>
-            <div class="visit-date">&#128197; ${dateStr} &middot; ${time}${ev.location ? ' &middot; ' + ev.location : ''}</div>
+            <div class="visit-senior">${esc(ev.seniorName || ev.title)}</div>
+            <div class="visit-date">&#128197; ${esc(dateStr)} &middot; ${esc(time)}${ev.location ? ' &middot; ' + esc(ev.location) : ''}</div>
           </div>
         </div>`;
     });
   }
 
-  // Baserow-logged visits
   try {
-    const name = getVolunteerName();
-    const data = await baserowGet(VISITS_TABLE, `&search=${encodeURIComponent(name)}&size=20`);
-    const rows = (data.results || []).filter(r => {
-      // Must mention volunteer's first name in any field
-      const first = name.toLowerCase().split(' ')[0];
-      if (!Object.values(r).some(v => String(v||'').toLowerCase().includes(first))) return false;
-      // Exclude Upcoming rows — future assignments, not completed visits
-      const allVals = Object.values(r).map(v => String(v||'').toLowerCase().trim());
-      if (allVals.some(v => v === 'upcoming')) return false;
-      return true;
-    });
-
-    if (rows.length > 0) {
-      rows.forEach(r => {
-        const dateVal  = extractVal(r['Date'] || r['Visit Date'] || r['Date de Visite'] || '');
-        const duration = extractVal(r['Duration'] || r['Dur\u00e9e'] || '');
-        const senior   = extractVal(r['Senior'] || r['Senior Name'] || '');
-        // Parse Notes — JSON format used by admin match; show only coordinatorNotes
-        const rawNotes = extractVal(r['Notes'] || r['Visit Notes'] || '');
-        let notesDisplay = '';
-        try { notesDisplay = JSON.parse(rawNotes).coordinatorNotes || ''; }
-        catch(e) { notesDisplay = rawNotes; }
+    const fields  = await getTableFields(VISITS_TABLE);
+    const F = (c) => findBestField(fields, c);
+    const volF    = F(['Volunteer', 'Volunteer Name', 'Bénévole']) || 'Volunteer';
+    const statusF = F(['Status', 'Statut', 'Visit Status']);
+    const dateF   = F(['Date', 'Visit Date', 'Date de Visite']) || 'Date';
+    const durF    = F(['Duration', 'Durée']) || 'Duration';
+    const senF    = F(['Senior', 'Senior Name']) || 'Senior';
+    const notesF  = F(['Notes', 'Visit Notes']) || 'Notes';
+    const first   = (getVolunteerName().split(' ')[0] || '').trim();
+    const rows = first ? await fetchAllRows(VISITS_TABLE, `&search=${encodeURIComponent(first)}`) : [];
+    rows.filter(r => !isUpcomingRow(r, statusF) && rowBelongsToVolunteer(r[volF]))
+      .sort((a, b) => extractVal(b[dateF]).localeCompare(extractVal(a[dateF])))
+      .slice(0, 20)
+      .forEach(r => {
+        const dateVal  = extractVal(r[dateF]);
+        const duration = extractVal(r[durF]);
+        const senior   = extractVal(r[senF]);
+        const rawNotes = extractVal(r[notesF]);
+        let notesDisplay = rawNotes;
+        try { const j = JSON.parse(rawNotes); if (j && typeof j === 'object') notesDisplay = j.coordinatorNotes || ''; } catch(e) {}
         html += `
           <div class="visit-history-item">
             <div class="visit-dot"></div>
             <div class="visit-info">
-              <div class="visit-senior">${senior || '\u2013'}</div>
-              <div class="visit-date">${dateVal}${duration ? ' &middot; ' + duration : ''}</div>
-              ${notesDisplay ? `<div class="visit-note">${notesDisplay.substring(0,80)}${notesDisplay.length > 80 ? '...' : ''}</div>` : ''}
+              <div class="visit-senior">${esc(senior || '–')}</div>
+              <div class="visit-date">${esc(dateVal)}${duration ? ' &middot; ' + esc(duration) : ''}</div>
+              ${notesDisplay ? `<div class="visit-note">${esc(notesDisplay.substring(0,80))}${notesDisplay.length > 80 ? '...' : ''}</div>` : ''}
             </div>
           </div>`;
       });
-    }
   } catch(e) { /* Baserow log unavailable */ }
 
-  if (!html) {
-    container.innerHTML = `<p style="font-size:13px;color:var(--text-secondary);text-align:center;padding:16px">${t('noVisits')}</p>`;
-  } else {
-    container.innerHTML = html;
-  }
+  container.innerHTML = html || `<p style="font-size:13px;color:var(--text-secondary);text-align:center;padding:16px">${t('noVisits')}</p>`;
 }
 
 // ============================================================
@@ -1838,6 +2089,17 @@ function doLogout() {
   currentVolunteer = null; selectedDays = {}; calendarData = null;
   _loginEmail = ''; _loginPhone = '';
   trainingCompleted = []; trainingActiveFilter = 'all';
+  pendingFeedback = null; lastAssignmentRender = null;
+  visitCounts = { calendar: null, baserow: null, record: null };
+  // Clear the previous volunteer's data from the screen (shared devices)
+  ['senior-visited', 'visit-notes'].forEach(id => { document.getElementById(id).value = ''; });
+  const fv = document.getElementById('first-visit-check'); fv.checked = false; delete fv.dataset.touched;
+  document.getElementById('assignment-container').innerHTML = '';
+  document.getElementById('visit-history-container').innerHTML = '';
+  ['log-alert', 'avail-alert', 'fb-alert'].forEach(id => { document.getElementById(id).innerHTML = ''; });
+  document.getElementById('stat-visits').textContent = '\u2013';
+  document.querySelectorAll('.training-pill').forEach(p => p.classList.toggle('active', p.id === 'tpill-all'));
+  showTab('tab-assignment');
   // Hide all screens, show login
   document.getElementById('screen-main').classList.remove('active');
   document.getElementById('screen-change-password').classList.remove('active');
@@ -1860,20 +2122,32 @@ function doLogout() {
   btn.disabled = false; btn.textContent = t('btnContinue');
 }
 
-// Enter key on login
+// Enter key on login steps
 document.getElementById('login-email').addEventListener('keydown', e => { if (e.key==='Enter') findVolunteer(); });
 document.getElementById('login-phone').addEventListener('keydown', e => { if (e.key==='Enter') findVolunteer(); });
+document.getElementById('login-password').addEventListener('keydown', e => { if (e.key==='Enter') verifyPassword(); });
+document.getElementById('confirm-password').addEventListener('keydown', e => { if (e.key==='Enter') createPassword(); });
+document.getElementById('reset-otp').addEventListener('keydown', e => { if (e.key==='Enter') verifyOTPCode(); });
+document.getElementById('confirm-password-change').addEventListener('keydown', e => { if (e.key==='Enter') doChangePassword(); });
+// Password strength meter — attached ONCE (was re-attached on every lookup)
+document.getElementById('new-password').addEventListener('input', e => checkPasswordStrength(e.target.value));
+// Connected links
+document.getElementById('link-website').href   = WEBSITE_URL;
+document.getElementById('link-dashboard').href = DASHBOARD_URL;
 
 // ============================================================
 // TRAINING TAB
 // To add or update resources, edit the TRAINING_COURSES array below.
+// level: 'mandatory' → shown in Section 1 "Mandatory Training" (required before
+//        the first visit). Anything without level: 'mandatory' is Section 2
+//        "Recommended Resources". Move an item by adding/removing that flag.
 // Videos: paste a YouTube share link as the url.
 // PDFs:   upload to Google Drive → Share → "Anyone with the link" → paste that link.
 // ============================================================
 const TRAINING_COURSES = [
   // ── WEBINARS ─────────────────────────────────────────────────────────────────
   {
-    id: 'tr1', type: 'video', section: 'webinar', emoji: '🧠',
+    id: 'tr1', level: 'mandatory', type: 'video', section: 'webinar', emoji: '🧠',
     cat:   { en: 'Wellbeing',        fr: 'Bien-être' },
     title: { en: 'Mental Health and Its Importance',
              fr: 'La santé mentale et son importance' },
@@ -1883,7 +2157,7 @@ const TRAINING_COURSES = [
     url: 'https://drive.google.com/file/d/1iFk-j60YdUWmK7jCpMwQtRM25kJxWhBE/view?usp=sharing'
   },
   {
-    id: 'tr2', type: 'video', section: 'webinar', emoji: '🤝',
+    id: 'tr2', level: 'mandatory', type: 'video', section: 'webinar', emoji: '🤝',
     cat:   { en: 'Best Practices',   fr: 'Meilleures pratiques' },
     title: { en: 'The Do\'s and Don\'ts with Elders as a Volunteer',
              fr: 'Les bonnes et mauvaises pratiques avec les aîné(e)s' },
@@ -1893,7 +2167,7 @@ const TRAINING_COURSES = [
     url: 'https://drive.google.com/file/d/1kbQOk5OYVVvhS_fHREUc8qUSJ6iRhAHV/view?usp=sharing'
   },
   {
-    id: 'tr6', type: 'pdf', section: 'webinar', emoji: '📊', typeLabel: 'SLIDES',
+    id: 'tr6', level: 'mandatory', type: 'pdf', section: 'webinar', emoji: '📊', typeLabel: 'SLIDES',
     cat:   { en: 'Best Practices',   fr: 'Meilleures pratiques' },
     title: { en: 'The DO\'s AND DO\'s NOT APPROACH with ELDERLY AS A VOLUNTEER',
              fr: 'L\'approche des CHOSES À FAIRE ET À NE PAS FAIRE avec les aîné(e)s en tant que bénévole' },
@@ -1904,7 +2178,7 @@ const TRAINING_COURSES = [
   },
   // ── VOLUNTEER POLICIES ───────────────────────────────────────────────────────
   {
-    id: 'tr19', type: 'pdf', section: 'policies', emoji: '📋',
+    id: 'tr19', level: 'mandatory', type: 'pdf', section: 'policies', emoji: '📋',
     cat:   { en: 'Volunteer Policies', fr: 'Politiques bénévoles' },
     title: { en: 'Volunteer Agreement',
              fr: 'Accord bénévole' },
@@ -1914,7 +2188,7 @@ const TRAINING_COURSES = [
     url: './volunteer-agreement.pdf'
   },
   {
-    id: 'tr20', type: 'pdf', section: 'policies', emoji: '🛡️',
+    id: 'tr20', level: 'mandatory', type: 'pdf', section: 'policies', emoji: '🛡️',
     cat:   { en: 'Volunteer Policies', fr: 'Politiques bénévoles' },
     title: { en: 'Volunteer Waiver and Release',
              fr: 'Décharge et renonciation bénévole' },
@@ -1924,7 +2198,7 @@ const TRAINING_COURSES = [
     url: './volunteer-waiver.pdf'
   },
   {
-    id: 'tr21', type: 'pdf', section: 'policies', emoji: '📜',
+    id: 'tr21', level: 'mandatory', type: 'pdf', section: 'policies', emoji: '📜',
     cat:   { en: 'Volunteer Policies', fr: 'Politiques bénévoles' },
     title: { en: 'Volunteer Code of Conduct',
              fr: 'Code de conduite bénévole' },
@@ -1954,7 +2228,7 @@ const TRAINING_COURSES = [
     url: 'https://youtu.be/gEAWJBzerzw?si=DK1-UyhtnmUtaPD7'
   },
   {
-    id: 'tr5', type: 'video', emoji: '📋', comingSoon: true,
+    id: 'tr5', level: 'mandatory', type: 'video', emoji: '📋', comingSoon: true,
     cat:   { en: 'Portal Guide',     fr: 'Guide du portail' },
     title: { en: 'How to Log a Visit in the Portal',
              fr: 'Comment enregistrer une visite dans le portail' },
@@ -1965,7 +2239,7 @@ const TRAINING_COURSES = [
   },
   // ── AVAILABLE DOCUMENTS ─────────────────────────────────────────────────────
   {
-    id: 'tr9', type: 'pdf', emoji: '💬',
+    id: 'tr9', level: 'mandatory', type: 'pdf', emoji: '💬',
     cat:   { en: 'Communication',    fr: 'Communication' },
     title: { en: 'Age-Friendly Communication',
              fr: 'Communication adaptée aux aîné(e)s' },
@@ -2035,7 +2309,7 @@ const TRAINING_COURSES = [
   },
   // ── COMING SOON — DOCUMENTS ─────────────────────────────────────────────────
   {
-    id: 'tr7', type: 'pdf', emoji: '🛡️', comingSoon: true,
+    id: 'tr7', level: 'mandatory', type: 'pdf', emoji: '🛡️', comingSoon: true,
     cat:   { en: 'Safety',           fr: 'Sécurité' },
     title: { en: 'Volunteer Safety Protocols',
              fr: 'Protocoles de sécurité pour les bénévoles' },
@@ -2118,16 +2392,14 @@ function trainingToggleDone(id) {
   } else {
     trainingCompleted.push(id);
   }
-  localStorage.setItem(trainingStorageKey(), JSON.stringify(trainingCompleted));
+  try { localStorage.setItem(trainingStorageKey(), JSON.stringify(trainingCompleted)); } catch(e) {}
   renderTraining();
   updateTrainingProgress();
 }
 
 function trainingOpenResource(url, courseId) {
-  if (url.includes('REPLACE_WITH_REAL_LINK')) {
-    alert(currentLang === 'en'
-      ? 'This resource link has not been set up yet. Contact your coordinator for access.'
-      : 'Ce lien n\'est pas encore configuré. Contactez votre coordinatrice pour y accéder.');
+  if (!url || url.includes('REPLACE_WITH_REAL_LINK')) {
+    alert(t('linkMissing'));
     return;
   }
   window.open(url, '_blank', 'noopener');
@@ -2137,6 +2409,22 @@ function trainingOpenResource(url, courseId) {
     updateTrainingTabBadge();
     renderTraining();
   }
+}
+
+const isMandatory = c => c.level === 'mandatory';
+
+// Which filter pill / sub-group a course belongs to
+function trainingGroup(c) {
+  if (c.section === 'policies') return 'policies';
+  if (c.section === 'webinar')  return 'webinar';
+  if (c.section === 'wtgo')     return 'wtgo';
+  return c.type === 'video' ? 'video' : 'pdf';
+}
+
+function mandatoryStats() {
+  const req  = TRAINING_COURSES.filter(c => isMandatory(c) && !c.comingSoon);
+  const done = req.filter(c => trainingCompleted.includes(c.id)).length;
+  return { done, total: req.length, left: req.length - done };
 }
 
 function updateTrainingProgress() {
@@ -2150,6 +2438,23 @@ function updateTrainingProgress() {
   if (fillEl) fillEl.style.width = pct + '%';
   if (pctEl)  pctEl.textContent  = pct + '%';
   if (lblEl)  lblEl.textContent  = t('trainingProgressLabel', done, total);
+
+  // Per-section progress
+  const m = mandatoryStats();
+  const recAvail = available.filter(c => !isMandatory(c));
+  const recDone  = recAvail.filter(c => trainingCompleted.includes(c.id)).length;
+  const setBar = (fillId, countId, d, tot) => {
+    const f = document.getElementById(fillId), c = document.getElementById(countId);
+    if (f) f.style.width = (tot ? Math.round(d / tot * 100) : 0) + '%';
+    if (c) c.textContent = `${d}/${tot}`;
+  };
+  setBar('tsec-m-fill', 'tsec-m-count', m.done, m.total);
+  setBar('tsec-r-fill', 'tsec-r-count', recDone, recAvail.length);
+  const st = document.getElementById('tsec-m-status');
+  if (st) st.innerHTML = m.left === 0
+    ? `<span class="tsec-status ok">${t('tsecOk')}</span>`
+    : `<span class="tsec-status todo">${t('tsecTodo', m.left)}</span>`;
+  updateTrainingTabBadge();
 }
 
 function buildCourseCard(c) {
@@ -2157,9 +2462,12 @@ function buildCourseCard(c) {
   const isVideo      = c.type === 'video';
   const typeStr      = c.typeLabel || (isVideo ? 'VIDEO' : 'PDF');
   const isPolicyNew  = c.section === 'policies' && !isPolicyRead(c.id);
+  const lvlBadge     = isMandatory(c)
+    ? `<span class="req-badge req">${t('badgeReq')}</span>`
+    : `<span class="req-badge rec">${t('badgeRec')}</span>`;
+  const L = (o) => esc((o && (o[currentLang] || o.en)) || '');
 
   if (c.comingSoon) {
-    const soonLabel = currentLang === 'fr' ? '🚧 Bientôt disponible' : '🚧 Coming Soon';
     return `
       <div class="course-card cc-soon">
         <div class="course-card-inner">
@@ -2168,10 +2476,10 @@ function buildCourseCard(c) {
             <div class="course-type-badge">${typeStr}</div>
           </div>
           <div class="course-body">
-            <div class="cc-soon-badge">${soonLabel}</div>
-            <div class="course-cat">${c.cat[currentLang] || c.cat.en}</div>
-            <div class="course-name">${c.title[currentLang] || c.title.en}</div>
-            <div class="course-desc">${c.desc[currentLang] || c.desc.en}</div>
+            <div class="cc-soon-badge">${t('comingSoon')}</div>
+            <div class="course-cat">${L(c.cat)}${lvlBadge}</div>
+            <div class="course-name">${L(c.title)}</div>
+            <div class="course-desc">${L(c.desc)}</div>
           </div>
         </div>
       </div>`;
@@ -2179,11 +2487,9 @@ function buildCourseCard(c) {
 
   const lbl     = isVideo ? t('openVideo') : t('openPdf');
   const doneBtn = done ? t('markUndo') : t('markDone');
-  // Encode URL in a data attribute to avoid single-quote issues in onclick
-  const safeId  = c.id.replace(/'/g, "\\'");
   return `
     <div class="course-card${done ? ' cc-done' : ''}" style="position:relative">
-      ${isPolicyNew ? `<span style="position:absolute;top:10px;right:10px;background:#E53935;color:white;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;z-index:2;letter-spacing:0.05em">NEW</span>` : ''}
+      ${isPolicyNew ? `<span class="new-badge">${t('badgeNew')}</span>` : ''}
       <div class="course-card-inner">
         <div class="course-thumb${isVideo ? '' : ' pdf-bg'}">
           <div class="course-emoji">${c.emoji}</div>
@@ -2191,14 +2497,14 @@ function buildCourseCard(c) {
           ${done ? '<div class="cc-done-mark">✓</div>' : ''}
         </div>
         <div class="course-body">
-          <div class="course-cat">${c.cat[currentLang] || c.cat.en}</div>
-          <div class="course-name">${c.title[currentLang] || c.title.en}</div>
-          <div class="course-desc">${c.desc[currentLang] || c.desc.en}</div>
+          <div class="course-cat">${L(c.cat)}${lvlBadge}</div>
+          <div class="course-name">${L(c.title)}</div>
+          ${L(c.desc) ? `<div class="course-desc">${L(c.desc)}</div>` : ''}
           <div class="course-footer">
-            <span class="course-duration">⏱ ${c.dur[currentLang] || c.dur.en}</span>
+            <span class="course-duration">${L(c.dur)}</span>
             <div class="course-actions">
-              <button class="btn-course-open" data-url="${c.url.replace(/"/g,'&quot;')}" data-id="${c.id}" onclick="trainingOpenResource(this.dataset.url, this.dataset.id)">${lbl}</button>
-              <button class="btn-course-done" onclick="trainingToggleDone('${safeId}')">${doneBtn}</button>
+              <button class="btn-course-open" data-url="${esc(c.url)}" data-id="${esc(c.id)}" onclick="trainingOpenResource(this.dataset.url, this.dataset.id)">${lbl}</button>
+              <button class="btn-course-done" data-id="${esc(c.id)}" onclick="trainingToggleDone(this.dataset.id)">${doneBtn}</button>
             </div>
           </div>
         </div>
@@ -2206,50 +2512,44 @@ function buildCourseCard(c) {
     </div>`;
 }
 
-function renderTraining() {
+const TRAINING_GROUPS = [
+  ['policies', 'policiesSectionLabel'],
+  ['webinar',  'webinarSectionLabel'],
+  ['video',    'videoSectionLabel'],
+  ['pdf',      'pdfSectionLabel'],
+  ['wtgo',     'wtgoSectionLabel'],
+];
+
+function renderTrainingSection(bodyId, sectionEl, courses) {
   const af = trainingActiveFilter;
+  const body = document.getElementById(bodyId);
+  if (!body) return;
+  let html = '';
+  TRAINING_GROUPS.forEach(([g, labelKey]) => {
+    if (af !== 'all' && af !== g) return;
+    const items = courses.filter(c => trainingGroup(c) === g)
+      // available first, coming-soon last
+      .sort((a, b) => (a.comingSoon ? 1 : 0) - (b.comingSoon ? 1 : 0));
+    if (!items.length) return;
+    html += `<div class="training-section-label">${t(labelKey)}</div>` + items.map(buildCourseCard).join('');
+  });
+  body.innerHTML = html || `<div class="training-empty">${t('trainingEmpty')}</div>`;
+  // Hide a whole section when a filter leaves it empty (except "All")
+  if (sectionEl) sectionEl.style.display = (html || af === 'all') ? '' : 'none';
+}
 
-  const webinars = TRAINING_COURSES.filter(c => c.section === 'webinar');
-  const videos   = TRAINING_COURSES.filter(c => c.type === 'video' && !c.section);
-  const pdfs     = TRAINING_COURSES.filter(c => c.type === 'pdf' && !c.section);
-  const wtgo     = TRAINING_COURSES.filter(c => c.section === 'wtgo');
-  const policies = TRAINING_COURSES.filter(c => c.section === 'policies');
+function renderTraining() {
+  if (!document.getElementById('tsec-m-body')) return;
+  renderTrainingSection('tsec-m-body', document.getElementById('tsec-mandatory'), TRAINING_COURSES.filter(isMandatory));
+  renderTrainingSection('tsec-r-body', document.getElementById('tsec-recommended'), TRAINING_COURSES.filter(c => !isMandatory(c)));
 
-  const wGrid = document.getElementById('training-webinar-grid');
-  const vGrid = document.getElementById('training-video-grid');
-  const pGrid = document.getElementById('training-pdf-grid');
-  const gGrid = document.getElementById('training-wtgo-grid');
-  const yGrid = document.getElementById('training-policies-grid');
-  const wLbl  = document.getElementById('training-webinar-label');
-  const vLbl  = document.getElementById('training-video-label');
-  const pLbl  = document.getElementById('training-pdf-label');
-  const gLbl  = document.getElementById('training-wtgo-label');
-  const yLbl  = document.getElementById('training-policies-label');
-  if (!vGrid) return;
-
-  const empty = `<div class="training-empty">${t('trainingEmpty')}</div>`;
-  wGrid.innerHTML = webinars.length ? webinars.map(buildCourseCard).join('') : empty;
-  vGrid.innerHTML = videos.length   ? videos.map(buildCourseCard).join('')   : empty;
-  pGrid.innerHTML = pdfs.length     ? pdfs.map(buildCourseCard).join('')     : empty;
-  gGrid.innerHTML = wtgo.length     ? wtgo.map(buildCourseCard).join('')     : empty;
-  yGrid.innerHTML = policies.length ? policies.map(buildCourseCard).join('') : empty;
-
-  const showAll = af === 'all';
-  const show = (el, condition) => { if (el) el.style.display = (showAll || condition) ? '' : 'none'; };
-  show(wLbl,  af === 'webinar');  show(wGrid, af === 'webinar');
-  show(vLbl,  af === 'video');    show(vGrid, af === 'video');
-  show(pLbl,  af === 'pdf');      show(pGrid, af === 'pdf');
-  show(gLbl,  af === 'wtgo');     show(gGrid, af === 'wtgo');
-  show(yLbl,  af === 'policies'); show(yGrid, af === 'policies');
-
-  // Update pill counts (available = not comingSoon)
+  // Pill counts (available = not comingSoon)
   const avail = TRAINING_COURSES.filter(c => !c.comingSoon);
-  document.getElementById('tc-all').textContent      = avail.length;
-  document.getElementById('tc-webinar').textContent  = avail.filter(c => c.section === 'webinar').length;
-  document.getElementById('tc-video').textContent    = avail.filter(c => c.type === 'video' && !c.section).length;
-  document.getElementById('tc-pdf').textContent      = avail.filter(c => c.type === 'pdf' && !c.section).length;
-  document.getElementById('tc-wtgo').textContent     = avail.filter(c => c.section === 'wtgo').length;
-  document.getElementById('tc-policies').textContent = avail.filter(c => c.section === 'policies').length;
+  document.getElementById('tc-all').textContent = avail.length;
+  ['policies', 'webinar', 'video', 'pdf', 'wtgo'].forEach(g => {
+    const el = document.getElementById('tc-' + g);
+    if (el) el.textContent = avail.filter(c => trainingGroup(c) === g).length;
+  });
 
   updateTrainingProgress();
 }
@@ -2257,11 +2557,19 @@ function renderTraining() {
 // Training tab is rendered on demand via renderTraining(), called from showTab below
 
 window.addEventListener('unhandledrejection', e => {
+  console.error(e.reason);
+  // Only surface it on the login screen, and never leave a login button stuck
+  if (!document.getElementById('screen-login').classList.contains('active')) return;
   const ab = document.getElementById('login-alert');
-  if (ab) showAlert(ab, 'Error: ' + (e.reason?.message || String(e.reason)), 'error');
-  const btn = document.getElementById('btn-login');
-  if (btn) { btn.disabled = false; btn.textContent = 'Sign In'; }
+  if (ab) showAlert(ab, t('genericError'), 'error');
+  [['btn-continue', 'btnContinue'], ['btn-verify-pw', 'btnSignIn'], ['btn-create-pw', 'btnCreatePassword']].forEach(([id, key]) => {
+    const b = document.getElementById(id);
+    if (b) { b.disabled = false; b.textContent = t(key); }
+  });
 });
+
+// Initial render (login screen language + training cards)
+applyTranslations();
 </script>
 </body>
 </html>

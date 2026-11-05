@@ -139,6 +139,28 @@
   .cal-day-header { text-align: center; padding: 6px 2px; font-size: 11px; font-weight: 700; border-radius: 6px; cursor: pointer; }
   .cal-day-header:hover { background: var(--green-light); }
   .cal-slot-label { padding: 6px 4px; font-size: 11px; font-weight: 700; color: var(--text-secondary); display: flex; align-items: center; }
+  /* ── Visit Log & Feedback panel ── */
+  .links-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+  .qlink { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--white); text-decoration: none; color: var(--charcoal); transition: all 0.2s; }
+  .qlink:hover { border-color: var(--green); background: var(--green-light); }
+  .qlink b { display: block; font-size: 13px; color: var(--green-dark); }
+  .qlink small { font-size: 11px; color: var(--text-secondary); }
+  .qlink-ic { font-size: 20px; flex-shrink: 0; }
+  .vlog-item { border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; background: var(--cream); }
+  .vlog-item.flag { border-color: #E57373; background: #FFF5F5; }
+  .vlog-top { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; align-items: flex-start; }
+  .vlog-who { font-size: 14px; font-weight: 700; color: var(--green-dark); }
+  .vlog-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .vlog-notes { font-size: 12px; color: var(--charcoal); margin-top: 6px; line-height: 1.5; white-space: pre-line; }
+  .tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.04em; border-radius: 20px; padding: 2px 9px; margin: 2px 4px 0 0; text-decoration: none; }
+  .tag-first { background: var(--gold); color: var(--green-dark); }
+  .tag-reg { background: var(--green-light); color: var(--green-dark); border: 1px solid #A8D5BC; }
+  .tag-flag { background: #FDECEA; color: var(--red); border: 1px solid #F5C6C1; }
+  .tag-mood { background: var(--white); color: var(--charcoal); border: 1px solid var(--border); }
+  .vlog-stats { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .vlog-stat { flex: 1; min-width: 110px; border: 1px solid var(--border); border-radius: 10px; padding: 10px; text-align: center; background: var(--white); }
+  .vlog-stat b { display: block; font-size: 20px; color: var(--green); }
+  .vlog-stat span { font-size: 11px; color: var(--text-secondary); }
 </style>
 </head>
 <body>
@@ -194,9 +216,10 @@
 
     <!-- Tabs -->
     <div class="nav-tabs">
-      <button class="nav-tab active" onclick="showPanel('panel-avail')">&#128197; Availability</button>
-      <button class="nav-tab"        onclick="showPanel('panel-seniors')">&#128116; Seniors</button>
-      <button class="nav-tab"        onclick="showPanel('panel-match')">&#129309; Match Builder</button>
+      <button class="nav-tab active" onclick="showPanel('panel-avail', this)">&#128197; Availability</button>
+      <button class="nav-tab"        onclick="showPanel('panel-seniors', this)">&#128116; Seniors</button>
+      <button class="nav-tab"        onclick="showPanel('panel-match', this)">&#129309; Match Builder</button>
+      <button class="nav-tab"        onclick="showPanel('panel-visits', this)">&#9997;&#65039; Visit Log &amp; Feedback</button>
     </div>
 
     <!-- PANEL: AVAILABILITY -->
@@ -354,6 +377,41 @@
       </div>
     </div>
 
+    <!-- PANEL: VISIT LOG & FEEDBACK -->
+    <div class="tab-panel" id="panel-visits">
+      <div class="card">
+        <h3 class="card-title">&#128279; Connected Tools</h3>
+        <p class="card-sub">Everything volunteers use after a visit, in one place.</p>
+        <div class="links-grid">
+          <a class="qlink" id="ql-portal" target="_blank" rel="noopener"><span class="qlink-ic">&#128100;</span><span><b>Volunteer Portal</b><small>What volunteers see</small></span></a>
+          <a class="qlink" id="ql-first" target="_blank" rel="noopener"><span class="qlink-ic">&#127775;</span><span><b>First-Visit Satisfaction Survey</b><small>Google Form · after a first visit</small></span></a>
+          <a class="qlink" id="ql-regular" target="_blank" rel="noopener"><span class="qlink-ic">&#128172;</span><span><b>Regular Visit Feedback</b><small>Google Form · every other visit</small></span></a>
+          <a class="qlink" id="ql-website" target="_blank" rel="noopener"><span class="qlink-ic">&#127760;</span><span><b>Everpeace Website</b><small>Public site</small></span></a>
+        </div>
+        <p style="font-size:11px;color:var(--text-secondary);margin-top:10px">Form answers are in each Google Form&rsquo;s <strong>Responses</strong> tab (open the form in Google Forms while signed in as the owner).</p>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">&#9997;&#65039; Visits Logged by Volunteers</h3>
+        <p class="card-sub">Every visit submitted from the portal&rsquo;s <strong>Log Visit</strong> tab, newest first, with the feedback form the volunteer was sent to.</p>
+        <div class="vlog-stats">
+          <div class="vlog-stat"><b id="vl-total">–</b><span>Logged visits</span></div>
+          <div class="vlog-stat"><b id="vl-first">–</b><span>First visits</span></div>
+          <div class="vlog-stat"><b id="vl-flags" style="color:var(--red)">–</b><span>Follow-ups needed</span></div>
+        </div>
+        <div class="filter-row">
+          <button class="filter-btn vl-filter active" onclick="filterVisitLog('all', this)">All</button>
+          <button class="filter-btn vl-filter" onclick="filterVisitLog('flag', this)">&#9888;&#65039; Follow-up needed</button>
+          <button class="filter-btn vl-filter" onclick="filterVisitLog('first', this)">&#127775; First visits</button>
+        </div>
+        <div class="search-bar">
+          <span class="search-icon">&#128269;</span>
+          <input type="text" id="vl-search" placeholder="Search volunteer or senior..." oninput="renderVisitLog()">
+        </div>
+        <div id="vl-list"><div class="loading"><div class="spinner"></div>Loading visits...</div></div>
+      </div>
+    </div>
+
   </div><!-- /screen-dash -->
 </div><!-- /container -->
 
@@ -375,6 +433,21 @@ const VISITS_TABLE     = 917197;
 // Visits done before the app was set up — added to the total count
 const HISTORICAL_VISITS = 25;
 
+// Connected tools
+const PORTAL_URL         = 'https://everpeacecompanionship.github.io/VolunteerApp/volunteer-app_14.html';
+const FORM_FIRST_VISIT   = 'https://forms.gle/xUmDwYpviEaCuQvp8';  // Post first-time visit — volunteer satisfaction survey
+const FORM_REGULAR_VISIT = 'https://forms.gle/PXTvC8NX9MUT8WbVA';  // Post visit — regular volunteer feedback
+const WEBSITE_URL        = 'https://claude.ai/artifact/4JicWNpYvmEwa6VoXcMkgo';
+
+// LOCAL date key — toISOString() is UTC and shifted evening dates to "tomorrow"
+function localISO(d) {
+  const x = d || new Date();
+  return `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`;
+}
+function esc(v) {
+  return String(v === null || v === undefined ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
 // ── Field detection helpers ──────────────────────────────────
 async function getTableFieldsAdmin(tableId) {
   try {
@@ -386,17 +459,21 @@ async function getTableFieldsAdmin(tableId) {
   } catch(e) { return []; }
 }
 
-function findBestFieldAdmin(fields, candidates) {
+// Exact match first, then whole-phrase match. Never word-level fuzzy: the old
+// version mapped 'The senior housing facility' onto the 'Senior' column and
+// overwrote the senior's name with the address.
+function findBestFieldAdmin(fields, candidates, used) {
+  const free = (fields || []).filter(f => !(used && used.has(f)));
   for (const c of candidates) {
-    const m = fields.find(f => f.toLowerCase() === c.toLowerCase());
+    const m = free.find(f => f.toLowerCase() === c.toLowerCase());
     if (m) return m;
   }
   for (const c of candidates) {
-    const words = c.toLowerCase().split(' ');
-    const m = fields.find(f => words.some(w => w.length > 2 && f.toLowerCase().includes(w)));
+    const m = free.find(f => f.toLowerCase().includes(c.toLowerCase()));
     if (m) return m;
   }
-  return candidates[0];
+  if (!fields || fields.length === 0) return candidates[0];
+  return null;
 }
 
 // ============================================================
@@ -406,6 +483,9 @@ let allVolunteers    = [];
 let allSeniors       = [];
 let proposedMatches  = [];
 let currentFilter    = 'all';
+let allVisits        = [];
+let visitFields      = [];
+let visitLogFilter   = 'all';
 
 // ============================================================
 // LOGIN
@@ -418,7 +498,7 @@ function doLogin() {
     document.getElementById('screen-dash').classList.add('active');
     document.getElementById('coord-badge').style.display = 'inline';
     document.getElementById('btn-signout').style.display = 'inline';
-    document.getElementById('match-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('match-date').value = localISO();
     loadAll();
   } else {
     alertBox.innerHTML = '<div class="alert alert-error"><span>&#10005;</span><span>Incorrect PIN. Please try again.</span></div>';
@@ -435,9 +515,12 @@ document.getElementById('pin-input').addEventListener('keydown', e => { if (e.ke
 // LOAD DATA
 // ============================================================
 async function loadAll() {
+  [['ql-portal', PORTAL_URL], ['ql-first', FORM_FIRST_VISIT], ['ql-regular', FORM_REGULAR_VISIT], ['ql-website', WEBSITE_URL]]
+    .forEach(([id, url]) => { document.getElementById(id).href = url; });
   await Promise.all([loadVolunteers(), loadSeniors()]);
   renderCalendar(); // Build calendar once both datasets are ready
-  loadTotalVisits();
+  await loadTotalVisits();
+  renderVisitLog();
 }
 
 // ── Total Visits Counter ─────────────────────────────────────
@@ -449,10 +532,13 @@ async function loadTotalVisits() {
     let all = [], next = `${BASE_URL}/database/rows/table/${VISITS_TABLE}/?user_field_names=true&size=200`;
     while (next) {
       const res  = await fetch(next, { headers: { 'Authorization': `Token ${BASEROW_TOKEN}` } });
+      if (!res.ok) throw new Error('Baserow ' + res.status);
       const data = await res.json();
       all  = all.concat(data.results || []);
       next = data.next || null;
     }
+    allVisits = all;
+    visitFields = await getTableFieldsAdmin(VISITS_TABLE);
 
     // Count all rows that are NOT upcoming — flexible: scans every field value
     const count = all.filter(r => {
@@ -752,6 +838,8 @@ function generateMatch() {
   document.getElementById('copy-confirm').style.display = 'none';
   document.getElementById('save-confirm').style.display = 'none';
   document.getElementById('save-error').style.display   = 'none';
+  const sendBtn = document.getElementById('btn-save-portal');
+  sendBtn.disabled = false; sendBtn.innerHTML = '&#128228; Send to Volunteer Portal';
 
   // Add to session list
   proposedMatches.unshift({ vol: volName, senior: senName, date: dateStr, time: startTime + ' – ' + endTime });
@@ -773,20 +861,24 @@ async function saveMatchToPortal() {
     // Get actual field names from visits table
     const fields = await getTableFieldsAdmin(VISITS_TABLE);
 
-    const F = (candidates) => findBestFieldAdmin(fields, candidates);
-
-    const payload = {};
-    payload[F(['Volunteer','Volunteer Name','Bénévole','Nom Bénévole'])]           = m.volName;
-    payload[F(['Senior','Senior Name','Senior Visited','Aîné'])]                   = m.senName;
-    payload[F(['Date','Visit Date','Date de Visite'])]                             = m.date;
-    payload[F(['Duration','Durée'])]                                               = m.duration;
-    payload[F(['Status','Statut','Visit Status'])]                                 = 'Upcoming';
-    payload[F(['Notes','Visit Notes','Coordinator Notes','Comments'])]             = m.notes || '';
-    payload[F(['Location','Address','Facility','The senior housing facility'])]    = m.senFacility || '';
-    // Store time in a "Time" field if it exists, otherwise append to notes
-    if (fields.some(f => f.toLowerCase().includes('time'))) {
-      payload[F(['Time','Visit Time','Heure'])] = `${m.startTime} – ${m.endTime}`;
-    }
+    const used = new Set(), payload = {};
+    const put = (candidates, value) => {
+      const f = findBestFieldAdmin(fields, candidates, used);
+      if (f && !used.has(f)) { used.add(f); payload[f] = value; }
+    };
+    const timeStr = `${m.startTime} – ${m.endTime}`;
+    put(['Volunteer','Volunteer Name','Bénévole','Nom Bénévole'], m.volName);
+    put(['Senior','Senior Name','Senior Visited','Aîné'],        m.senName);
+    put(['Date','Visit Date','Date de Visite'],                  m.date);
+    put(['Duration','Durée'],                                    m.duration);
+    put(['Status','Statut','Visit Status'],                      'Upcoming');
+    // Notes = JSON (CLAUDE.md rule) — the volunteer portal's My Visit reads this
+    put(['Notes','Visit Notes','Coordinator Notes','Comments'], JSON.stringify({
+      seniorName: m.senName, address: m.senFacility || '', date: m.date,
+      time: timeStr, duration: m.duration, coordinatorNotes: m.notes || ''
+    }));
+    put(['Location','Address','Facility'], m.senFacility || '');
+    put(['Time','Visit Time','Heure'],     timeStr);
 
     const res = await fetch(`${BASE_URL}/database/rows/table/${VISITS_TABLE}/?user_field_names=true`, {
       method: 'POST',
@@ -893,7 +985,7 @@ function buildCalAvailMap() {
         const candidate = new Date(y, m, d);
         // If date is more than 60 days in the past, assume next year
         if (candidate < new Date(now.getTime() - 60 * 86400000)) y++;
-        return new Date(y, m, d).toISOString().split('T')[0];
+        return localISO(new Date(y, m, d));
       }
     }
     return null;
@@ -948,7 +1040,7 @@ function buildCalAvailMap() {
           const d = new Date(now);
           d.setDate(now.getDate() + i);
           if (matchedDays.includes(d.getDay())) {
-            addEntry(d.toISOString().split('T')[0], name, 'senior', []);
+            addEntry(localISO(d), name, 'senior', []);
           }
         }
       } else {
@@ -957,7 +1049,7 @@ function buildCalAvailMap() {
         for (let i = 0; i < 14; i++) {
           const d = new Date(now);
           d.setDate(now.getDate() + i);
-          addEntry(d.toISOString().split('T')[0], name, 'senior', []);
+          addEntry(localISO(d), name, 'senior', []);
         }
       }
     }
@@ -975,7 +1067,7 @@ function renderCalendar() {
 function renderCalMonth() {
   const year  = calDate.getFullYear();
   const month = calDate.getMonth();
-  const today = new Date().toISOString().split('T')[0];
+  const today = localISO();
   const firstDow  = new Date(year, month, 1).getDay();
   const daysInMon = new Date(year, month + 1, 0).getDate();
 
@@ -1019,7 +1111,7 @@ function renderCalMonth() {
 
 // ── WEEK VIEW ───────────────────────────────────────────────
 function renderCalWeek() {
-  const today = new Date().toISOString().split('T')[0];
+  const today = localISO();
 
   // Start of week (Sunday)
   const start = new Date(calDate);
@@ -1045,7 +1137,7 @@ function renderCalWeek() {
   for (let i = 0; i < 7; i++) {
     const d = new Date(start);
     d.setDate(start.getDate() + i);
-    const ds = d.toISOString().split('T')[0];
+    const ds = localISO(d);
     const isT = ds === today;
     html += `<div class="cal-day-header" onclick="selectCalDay('${ds}')"
       style="color:${isT ? 'white' : 'var(--charcoal)'};background:${isT ? 'var(--green)' : 'transparent'}">
@@ -1060,7 +1152,7 @@ function renderCalWeek() {
     for (let i = 0; i < 7; i++) {
       const d = new Date(start);
       d.setDate(start.getDate() + i);
-      const ds = d.toISOString().split('T')[0];
+      const ds = localISO(d);
       const entries = (calAvailMap[ds] || []).filter(e =>
         e.slots.length === 0 ||
         e.slots.some(s => keywords.some(kw => s.toLowerCase().includes(kw)))
@@ -1079,7 +1171,7 @@ function renderCalWeek() {
 
 // ── DAY VIEW ────────────────────────────────────────────────
 function renderCalDay() {
-  const ds      = calDate.toISOString().split('T')[0];
+  const ds      = localISO(calDate);
   const entries = calAvailMap[ds] || [];
   const vols    = entries.filter(e => e.type === 'volunteer');
   const seniors = entries.filter(e => e.type === 'senior');
@@ -1140,13 +1232,85 @@ function selectCalDay(ds) {
 }
 
 // ============================================================
+// VISIT LOG & FEEDBACK — visits logged from the volunteer portal
+// ============================================================
+function filterVisitLog(type, btn) {
+  visitLogFilter = type;
+  document.querySelectorAll('.vl-filter').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderVisitLog();
+}
+
+function renderVisitLog() {
+  const list = document.getElementById('vl-list');
+  if (!list) return;
+  const F = (c) => findBestFieldAdmin(visitFields, c);
+  const volF = F(['Volunteer','Volunteer Name','Bénévole']) || 'Volunteer';
+  const senF = F(['Senior','Senior Name']) || 'Senior';
+  const dateF = F(['Date','Visit Date']) || 'Date';
+  const durF = F(['Duration','Durée']) || 'Duration';
+  const moodF = F(['Senior Mood','Mood','Humeur']);
+  const notesF = F(['Notes','Visit Notes']) || 'Notes';
+  const fuF = F(['Follow-up needed','Follow-up','Followup','Suivi']);
+  const typeF = F(['Visit Type','Type de visite','Feedback Form']);
+  const statusF = F(['Status','Statut','Visit Status']);
+
+  const isUpcoming = r => statusF ? extractVal(r[statusF]).toLowerCase() === 'upcoming'
+                                  : Object.values(r).some(v => extractVal(v).toLowerCase() === 'upcoming');
+  const rows = allVisits.filter(r => !isUpcoming(r)).map(r => {
+    const notes = extractVal(r[notesF]);
+    const typeVal = typeF ? extractVal(r[typeF]) : '';
+    const first = /first/i.test(typeVal) || /^\[first visit\]/i.test(notes);
+    const fu = fuF ? extractVal(r[fuF]) : '';
+    return {
+      vol: extractVal(r[volF]), sen: extractVal(r[senF]), date: extractVal(r[dateF]),
+      dur: extractVal(r[durF]), mood: moodF ? extractVal(r[moodF]) : '',
+      notes: notes.replace(/^\[first visit\]\s*/i, ''), first,
+      flag: !!fu && !/^no\b/i.test(fu), fu
+    };
+  }).sort((a, b) => b.date.localeCompare(a.date));
+
+  document.getElementById('vl-total').textContent = rows.length;
+  document.getElementById('vl-first').textContent = rows.filter(r => r.first).length;
+  document.getElementById('vl-flags').textContent = rows.filter(r => r.flag).length;
+
+  const q = (document.getElementById('vl-search').value || '').toLowerCase();
+  let shown = rows;
+  if (visitLogFilter === 'flag')  shown = shown.filter(r => r.flag);
+  if (visitLogFilter === 'first') shown = shown.filter(r => r.first);
+  if (q) shown = shown.filter(r => (r.vol + ' ' + r.sen).toLowerCase().includes(q));
+
+  if (!shown.length) { list.innerHTML = '<div class="no-avail-note">No logged visits match.</div>'; return; }
+  list.innerHTML = shown.slice(0, 300).map(r => `
+    <div class="vlog-item${r.flag ? ' flag' : ''}">
+      <div class="vlog-top">
+        <div>
+          <div class="vlog-who">${esc(r.vol || '–')} <span style="color:var(--text-secondary);font-weight:400">visited</span> ${esc(r.sen || '–')}</div>
+          <div class="vlog-meta">&#128197; ${esc(r.date || '–')}${r.dur ? ' &middot; ' + esc(r.dur) : ''}</div>
+        </div>
+        <div>
+          ${r.first
+            ? `<a class="tag tag-first" href="${FORM_FIRST_VISIT}" target="_blank" rel="noopener">&#127775; First visit · satisfaction survey</a>`
+            : `<a class="tag tag-reg" href="${FORM_REGULAR_VISIT}" target="_blank" rel="noopener">&#128172; Regular feedback form</a>`}
+        </div>
+      </div>
+      <div style="margin-top:6px">
+        ${r.mood ? `<span class="tag tag-mood">${esc(r.mood)}</span>` : ''}
+        ${r.flag ? `<span class="tag tag-flag">&#9888;&#65039; ${esc(r.fu)}</span>` : ''}
+      </div>
+      ${r.notes ? `<div class="vlog-notes">${esc(r.notes)}</div>` : ''}
+    </div>`).join('');
+}
+
+// ============================================================
 // UI
 // ============================================================
-function showPanel(panelId) {
+function showPanel(panelId, btn) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById(panelId).classList.add('active');
-  event.target.classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (panelId === 'panel-visits') renderVisitLog();
 
   // Refresh renders when switching tabs
   if (panelId === 'panel-avail') {

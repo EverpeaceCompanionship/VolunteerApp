@@ -19,7 +19,7 @@ This system has two components:
 
 | File | URL | Who uses it |
 |------|-----|-------------|
-| `volunteer-app_14_1.html` | `everpeacecompanionship.github.io/VolunteerApp/volunteer-app_14_1.html` | All volunteers |
+| `volunteer-app_14.html` | `everpeacecompanionship.github.io/VolunteerApp/volunteer-app_14.html` (linked from the website — keep this filename) | All volunteers |
 | `admin-dashboard_7.html` (or latest) | `everpeacecompanionship.github.io/VolunteerApp/admin-dashboard_7.html` | Nadouche only |
 | `calendar-bridge.gs` | Deployed at Google Apps Script (see Section 7) | Server-side bridge |
 
@@ -152,14 +152,24 @@ EMAILJS_TEMPLATE_ID = ''
 - Uses `findBestField()` to find the right column name
 
 ### Tab: Log Visit
-- Fields: Date, Senior Name (editable), Duration, Senior Mood, Notes, Follow-up needed
+- 2-step flow shown at top: **1. Log your visit → 2. Share your feedback**
+- "This was my first visit" checkbox — pre-ticked automatically when no previous visit is known (calendar + Baserow), volunteer can override
+- After saving, the matching Google Form is highlighted ("Your next step"):
+  - First visit → `FORM_FIRST_VISIT` https://forms.gle/xUmDwYpviEaCuQvp8 (volunteer satisfaction survey)
+  - Every other visit → `FORM_REGULAR_VISIT` https://forms.gle/PXTvC8NX9MUT8WbVA (regular feedback)
+  - Pending/opened state kept in localStorage `ep_feedback_{email|phone}`
+- Visit type saved to a `Visit Type` column if one exists; otherwise Notes is prefixed with `[First visit]` (the dashboard reads either)
+- Fields: Date (cannot be in the future), Senior Name (editable), Duration, Senior Mood, Notes, Follow-up needed
 - Senior name auto-fills from My Visit if available
 - Uses `buildVisitPayload()` with `getTableFields()` + `findBestField()` for smart field detection
 - Saves to Visits table with Status: 'Completed'
 - ⚠️ Does NOT increment a counter — visit count comes from calendar
 
 ### Tab: Training
-- 8 modules: 5 video, 3 PDF (2 available, 6 coming soon)
+- **Two sections:** Section 1 "Mandatory Training" (items with `level: 'mandatory'` in `TRAINING_COURSES`) and Section 2 "Recommended Resources" (everything else). Each section has its own progress bar; Mandatory shows "x required items left" / "All mandatory training completed".
+- Mandatory today: tr19 Agreement, tr20 Waiver, tr21 Code of Conduct, tr1 Mental Health webinar, tr2 Do's & Don'ts webinar, tr6 slides, tr9 Age-Friendly Communication, + coming soon tr5, tr7
+- Inside each section, items are grouped: Policies / Webinars / Videos / Documents / How-to Guides; filter pills apply to both sections
+- Red dot on the Training tab = a policy not yet opened OR mandatory items not marked done
 - Progress tracked in **localStorage** scoped to volunteer's email: `ep_training_done_{email}`
 - Filter by: All / Videos / Documents
 - Progress bar + percentage
@@ -235,6 +245,11 @@ EMAILJS_TEMPLATE_ID = ''
 - Shows all seniors with: Name, 📍 Address, 📞 Phone (clickable tel: link), 📧 Email, 🗣️ Language, 📅 Availability, ⏰ Preferred time, 💡 Notes
 - Search by name or address
 
+### Tab: Visit Log & Feedback
+- Connected Tools: Volunteer Portal, First-Visit survey, Regular feedback form, Website
+- List of every Completed visit logged from the portal, newest first: volunteer, senior, date, duration, mood, follow-up flag (red), first/regular badge linking to the right form
+- Filters: All / Follow-up needed / First visits + search
+
 ### Tab: Match Builder
 - Select volunteer + senior from dropdowns
 - Set date, start time, duration, language
@@ -290,6 +305,14 @@ EMAILJS_TEMPLATE_ID = ''
 
 6. **Senior field names:** After Nadouche confirmed exact column names, all admin dashboard getters use exact matches first: `'Name'`, `'Address'`, `'Phone number'`, `'Visit availability'`.
 
+7. **(Nov 2026) Dates shifted to tomorrow after 7 pm:** every `toISOString().split('T')[0]` replaced by local-date helpers (`localDateKey()` in portal, `localISO()` in dashboard).
+
+8. **(Nov 2026) Fuzzy field mapping overwrote columns:** word-level matching sent "Senior Mood" and "The senior housing facility" into the `Senior` column. Now exact → whole-phrase only, never two values in one column, unmatched values skipped (`mapToFields`, `findBestFieldAdmin(fields, c, used)`).
+
+9. **(Nov 2026) Send to Volunteer Portal saved plain notes:** dashboard now writes the JSON Notes format again. Button re-enables for each new match.
+
+10. **(Nov 2026) Portal:** visit counter = max of calendar/Baserow/record counts (deterministic); Recent Visits loads after the calendar; other volunteers with the same first name no longer appear (privacy); Baserow select/object values handled everywhere; French availability saved in the English format the dashboard parses (Feb was garbage); all Baserow text HTML-escaped; Enter key on all login steps; password-strength listener attached once; logout clears the previous volunteer's data; error handler no longer references a missing button.
+
 ---
 
 ## 11. BUSINESS RULES (MUST PRESERVE IN ALL FUTURE CODE)
@@ -330,6 +353,8 @@ EMAILJS_TEMPLATE_ID = ''
 - The **"Send to Volunteer Portal" button** in Match Builder
 - The **HISTORICAL_VISITS = 25** offset in admin total visits counter
 - The **JSON Notes field format** for Upcoming visits — changing this breaks My Visit display
+- The **two post-visit Google Forms** in Log Visit and the **Mandatory / Recommended** split in Training
+- The **Visit Log & Feedback** panel in the dashboard
 
 ---
 
