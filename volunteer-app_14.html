@@ -208,6 +208,23 @@
   .footer-links { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
   .footer-links a { color: var(--green); font-size: 12px; font-weight: 700; text-decoration: none; }
   .footer-links a:hover { text-decoration: underline; }
+  /* ── Log Visit: integrated feedback ── */
+  .form-sec { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold-dark); margin: 22px 0 2px; padding-bottom: 6px; border-bottom: 1px solid var(--gold-light); }
+  .form-sec:first-of-type { margin-top: 8px; }
+  .rate-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .rate-pill { margin: 0; text-transform: none; letter-spacing: 0; flex: 1; min-width: 44px; }
+  .rate-pill.wide { flex: 1 1 140px; }
+  .rate-pill input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .rate-pill span { display: flex; align-items: center; justify-content: center; min-height: 44px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--cream); font-size: 14px; font-weight: 700; color: var(--charcoal); cursor: pointer; transition: all 0.15s; padding: 0 8px; text-align: center; }
+  .rate-pill input:checked + span { background: var(--green); border-color: var(--green); color: #fff; }
+  .rate-pill input:focus-visible + span { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .rate-ends { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+  .q-hint { display: block; font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+  .opt { font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--text-secondary); }
+  .rate-error span { border-color: var(--red); }
+  .check-row, .check-row span, .check-row small { text-transform: none; letter-spacing: 0; }
+  .check-row > span > span { font-weight: 700; }
+  #fb-inline > label { text-transform: none; letter-spacing: 0; font-size: 13px; line-height: 1.4; margin-top: 16px; }
 </style>
 </head>
 <body>
@@ -422,18 +439,23 @@
     <!-- TAB: LOG VISIT -->
     <div id="tab-log" class="tab-content" style="display:none">
       <div class="steps" aria-label="Visit reporting steps">
-        <div class="step on" id="step-1"><span class="step-n">1</span><span id="step-1-label">Log your visit</span></div>
-        <div class="step" id="step-2"><span class="step-n">2</span><span id="step-2-label">Share your feedback</span></div>
+        <div class="step on" id="step-1"><span class="step-n">1</span><span id="step-1-label">Visit &amp; feedback</span></div>
+        <div class="step" id="step-2"><span class="step-n">2</span><span id="step-2-label">Done</span></div>
       </div>
       <div class="card">
         <h3 class="card-title" id="log-title">Log a Completed Visit</h3>
-        <p class="card-sub" id="log-sub">Record your visit so we can track progress and retention.</p>
+        <p class="card-sub" id="log-sub">One short form: your visit and your feedback are sent together.</p>
         <div id="log-alert"></div>
-        <label id="label-visit-date">Date of Visit</label>
+
+        <div class="form-sec" id="sec-visit-label">The visit</div>
+        <label for="visit-date" id="label-visit-date">Date of Visit</label>
         <input type="date" id="visit-date">
-        <label id="label-senior-visited">Senior Visited</label>
-        <input type="text" id="senior-visited" placeholder="Senior's name">
-        <label id="label-duration">Duration</label>
+        <label for="senior-select" id="label-senior-visited">Senior Visited</label>
+        <select id="senior-select" onchange="onSeniorSelect()">
+          <option value="" id="senior-placeholder">Select the senior…</option>
+        </select>
+        <input type="text" id="senior-visited" placeholder="Senior's name" style="display:none;margin-top:8px">
+        <label for="visit-duration" id="label-duration">Duration</label>
         <select id="visit-duration">
           <option value="30">30 minutes</option>
           <option value="60" selected>1 hour</option>
@@ -441,7 +463,14 @@
           <option value="120">2 hours</option>
           <option value="120+">More than 2 hours</option>
         </select>
-        <label id="label-mood">How did the senior seem today?</label>
+        <label class="check-row" for="first-visit-check">
+          <input type="checkbox" id="first-visit-check" onchange="onFirstVisitToggle()">
+          <span><span id="first-visit-label">This was my first visit with Everpeace</span>
+            <small id="first-visit-hint">We'll ask you to complete the first-time volunteer satisfaction survey.</small></span>
+        </label>
+
+        <div class="form-sec" id="sec-senior-label">About the senior</div>
+        <label for="senior-mood" id="label-mood">How did the senior seem today?</label>
         <select id="senior-mood">
           <option value="Very happy">&#128522; Very happy and engaged</option>
           <option value="Good">&#128578; Good spirits</option>
@@ -449,27 +478,44 @@
           <option value="Sad">&#128532; Seemed sad or lonely</option>
           <option value="Unwell">&#129314; Not feeling well</option>
         </select>
-        <label id="label-notes">Visit Notes</label>
-        <textarea id="visit-notes" placeholder="What did you talk about? Any concerns to flag?"></textarea>
-        <label id="label-followup">Does this senior need a follow-up?</label>
+        <label for="followup-needed" id="label-followup">Does this senior need a follow-up?</label>
         <select id="followup-needed">
           <option value="No">No — everything was fine</option>
           <option value="Yes - coordinator">Yes — please contact coordinator</option>
           <option value="Yes - health">Yes — health concern to flag</option>
           <option value="Yes - family">Yes — family should be notified</option>
         </select>
-        <label class="check-row" for="first-visit-check">
-          <input type="checkbox" id="first-visit-check" onchange="onFirstVisitToggle()">
-          <span><span id="first-visit-label">This was my first visit with Everpeace</span>
-            <small id="first-visit-hint">We'll ask you to complete the first-time volunteer satisfaction survey.</small></span>
-        </label>
-        <button class="btn btn-gold" onclick="submitVisitLog()" id="btn-log-visit">Log This Visit</button>
+        <label for="visit-notes" id="label-notes">Visit Notes</label>
+        <textarea id="visit-notes" placeholder="What did you talk about? Any concerns to flag?"></textarea>
+
+        <!-- Regular feedback (sent automatically to the "Post visit - Regular volunteer feedback" Google Form) -->
+        <div id="fb-inline">
+          <div class="form-sec" id="sec-feedback-label">Your feedback</div>
+          <label id="q-experience">How would you rate your overall experience during this visit?</label>
+          <div class="rate-row" role="radiogroup"><label class="rate-pill"><input type="radio" name="fb-experience" value="1"><span>1</span></label><label class="rate-pill"><input type="radio" name="fb-experience" value="2"><span>2</span></label><label class="rate-pill"><input type="radio" name="fb-experience" value="3"><span>3</span></label><label class="rate-pill"><input type="radio" name="fb-experience" value="4"><span>4</span></label><label class="rate-pill"><input type="radio" name="fb-experience" value="5"><span>5</span></label></div><div class="rate-ends"><span id="q-experience-lo">Very poor</span><span id="q-experience-hi">Excellent</span></div>
+          <label id="q-happy">Did you feel the senior was happy to receive you?</label>
+          <div class="rate-row" role="radiogroup"><label class="rate-pill"><input type="radio" name="fb-happy" value="1"><span>1</span></label><label class="rate-pill"><input type="radio" name="fb-happy" value="2"><span>2</span></label><label class="rate-pill"><input type="radio" name="fb-happy" value="3"><span>3</span></label><label class="rate-pill"><input type="radio" name="fb-happy" value="4"><span>4</span></label><label class="rate-pill"><input type="radio" name="fb-happy" value="5"><span>5</span></label><label class="rate-pill"><input type="radio" name="fb-happy" value="N/A"><span>N/A</span></label></div><div class="rate-ends"><span id="q-happy-lo">Very unhappy</span><span id="q-happy-hi">Very happy</span></div>
+          <small class="q-hint" id="q-happy-hint">Choose N/A if the senior isn't able to converse.</small>
+          <label id="q-meaningful">Did you feel the visit was meaningful and impactful?</label>
+          <div class="rate-row" role="radiogroup"><label class="rate-pill"><input type="radio" name="fb-meaningful" value="1"><span>1</span></label><label class="rate-pill"><input type="radio" name="fb-meaningful" value="2"><span>2</span></label><label class="rate-pill"><input type="radio" name="fb-meaningful" value="3"><span>3</span></label><label class="rate-pill"><input type="radio" name="fb-meaningful" value="4"><span>4</span></label><label class="rate-pill"><input type="radio" name="fb-meaningful" value="5"><span>5</span></label></div><div class="rate-ends"><span id="q-meaningful-lo">Not meaningful</span><span id="q-meaningful-hi">Very meaningful</span></div>
+          <label id="q-ltc">Do you think we need a Muslim long-term care home in Ottawa?</label>
+          <div class="rate-row choice" role="radiogroup">
+            <label class="rate-pill wide"><input type="radio" name="fb-ltc" value="Yes, definitely"><span id="q-ltc-yes">Yes, definitely</span></label>
+            <label class="rate-pill wide"><input type="radio" name="fb-ltc" value="No"><span id="q-ltc-no">No</span></label>
+          </div>
+          <label for="fb-moment" id="q-moment">A moment you'd like to share? <span class="opt" id="q-optional">(optional)</span></label>
+          <textarea id="fb-moment" placeholder="A memory, a smile, a conversation — anything that stood out."></textarea>
+        </div>
+
+        <div class="alert alert-info" id="fv-note" style="display:none;margin-top:14px"><span class="alert-icon">&#127775;</span><span id="fv-note-text">First visit: after saving, you'll complete the short first-visit satisfaction survey instead of the questions above.</span></div>
+
+        <button class="btn btn-gold" onclick="submitVisitLog()" id="btn-log-visit">Submit Visit &amp; Feedback</button>
       </div>
 
-      <!-- STEP 2: POST-VISIT FEEDBACK FORMS -->
-      <div class="card fb-card" id="feedback-card">
-        <h3 class="card-title" id="fb-title">Share Your Feedback</h3>
-        <p class="card-sub" id="fb-sub" style="margin-bottom:4px">After every visit, please complete the matching feedback form. It takes 2–3 minutes and helps us support you and our seniors.</p>
+      <!-- STEP 2 (first visit only, or fallback): Google Form links -->
+      <div class="card fb-card" id="feedback-card" style="display:none">
+        <h3 class="card-title" id="fb-title">One last step</h3>
+        <p class="card-sub" id="fb-sub" style="margin-bottom:4px">Please complete this short survey. It takes 2–3 minutes and helps us support you and our seniors.</p>
         <div id="fb-alert"></div>
         <a class="fb-option" id="fb-first" href="https://forms.gle/xUmDwYpviEaCuQvp8" target="_blank" rel="noopener" onclick="markFeedbackOpened('first')">
           <span class="fb-option-icon">&#127775;</span>
@@ -613,6 +659,14 @@ const EMAILJS_TEMPLATE_ID = '';   // e.g. 'template_od7i24m'
 // ============================================================
 const FORM_FIRST_VISIT   = 'https://forms.gle/xUmDwYpviEaCuQvp8';  // Post first-time visit — volunteer satisfaction survey
 const FORM_REGULAR_VISIT = 'https://forms.gle/PXTvC8NX9MUT8WbVA';  // Post visit — regular volunteer feedback
+// "Post visit - Regular volunteer feedback" — answers from Log Visit are sent here automatically
+// (entry ids read from the live form on 5 Nov 2026; if a question is changed in Google Forms, update its id here)
+const REGULAR_FORM_POST = 'https://docs.google.com/forms/d/e/1FAIpQLSecfqTb9kCsn--EDIZIG1JLlfFCmP0WkOLlQ5KqLla47nCugA/formResponse';
+const REGULAR_FORM_ENTRIES = {
+  name: 'entry.1799182697', senior: 'entry.1547985899', date: 'entry.1727074780',
+  experience: 'entry.42050814', happy: 'entry.485321556', meaningful: 'entry.737164471',
+  ltc: 'entry.1983630373', moment: 'entry.1436627195'
+};
 const DASHBOARD_URL      = 'https://everpeacecompanionship.github.io/VolunteerApp/admin-dashboard_7.html';
 const WEBSITE_URL        = 'https://claude.ai/artifact/4JicWNpYvmEwa6VoXcMkgo';
 
@@ -690,7 +744,7 @@ const T = {
     labelVisitDate: 'Date of Visit', labelSeniorVisited: 'Senior Visited',
     labelDuration: 'Duration', labelMood: 'How did the senior seem today?',
     labelNotes: 'Visit Notes', labelFollowup: 'Does this senior need a follow-up?',
-    btnLogVisit: 'Log This Visit', historyTitle: 'Recent Visits', noVisits: 'No visits logged yet.',
+    btnLogVisit: 'Submit Visit & Feedback', historyTitle: 'Recent Visits', noVisits: 'No visits logged yet.',
     logSuccess: 'Visit logged successfully. Barakallah feek!', logError: 'Could not log visit. Please try again.',
     loadingAssignment: 'Loading your visit...', assignedLabel: 'Your confirmed visit',
     calendarLabel: 'From your coordinator\'s calendar',
@@ -718,7 +772,7 @@ const T = {
     tsecTodo: (n) => `⏳ ${n} required item${n!==1?'s':''} left`, tsecOk: '✓ All mandatory training completed',
     badgeReq: 'Required', badgeRec: 'Recommended', badgeNew: 'NEW', comingSoon: '\u{1F6A7} Coming Soon',
     linkMissing: 'This resource link has not been set up yet. Contact your coordinator for access.',
-    step1: 'Log your visit', step2: 'Share your feedback',
+    step1: 'Visit & feedback', step2: 'Done',
     firstVisitLabel: 'This was my first visit with Everpeace',
     firstVisitHint: "We'll ask you to complete the first-time volunteer satisfaction survey.",
     regularVisitHint: "We'll ask you to complete the regular visit feedback form.",
@@ -738,6 +792,25 @@ const T = {
     genericError: 'Something went wrong. Please try again.',
     linkWebsite: 'Everpeace website', linkDashboard: 'Coordinator dashboard',
     liveCountTip: (d) => `Exact total up to ${d}, plus every visit since — updated automatically`,
+    seniorPlaceholder: 'Select the senior…', seniorOther: 'Other — type the name',
+    secVisit: 'The visit', secSenior: 'About the senior', secFeedback: 'Your feedback',
+    logSubNew: 'One short form: your visit and your feedback are sent together.',
+    qExperience: 'How would you rate your overall experience during this visit?', qExpLo: 'Very poor', qExpHi: 'Excellent',
+    qHappy: 'Did you feel the senior was happy to receive you?', qHappyLo: 'Very unhappy', qHappyHi: 'Very happy',
+    qHappyHint: "Choose N/A if the senior isn't able to converse.",
+    qMeaningful: 'Did you feel the visit was meaningful and impactful?', qMeanLo: 'Not meaningful', qMeanHi: 'Very meaningful',
+    qLtc: 'Do you think we need a Muslim long-term care home in Ottawa?', qLtcYes: 'Yes, definitely', qLtcNo: 'No',
+    qMoment: "A moment you'd like to share?", qOptional: '(optional)',
+    qMomentPh: 'A memory, a smile, a conversation — anything that stood out.',
+    fvNote: "First visit: after saving, you'll complete the short first-visit satisfaction survey instead of the questions above.",
+    btnLogFirst: 'Log Visit & Continue to Survey',
+    needFeedback: 'Please answer the 4 feedback questions (the shared moment is optional).',
+    logSuccessAll: 'Thank you! Your visit and your feedback were both submitted. Barakallah feek!',
+    logSuccessFirst: 'Visit logged. One last step: please complete the first-visit survey below.',
+    logSuccessNoForm: 'Visit logged. We could not send your feedback automatically — please use the form below.',
+    step2Done: 'Done', step2First: 'First-visit survey', step2Form: 'Feedback form',
+    fbLastTitle: 'One last step',
+    fbLastSub: 'Please complete this short survey. It takes 2–3 minutes and helps us support you and our seniors.',
     accessRemoved: 'This account no longer has access to the volunteer portal. Please contact the coordinator if you think this is a mistake.',
   },
   fr: {
@@ -793,7 +866,7 @@ const T = {
     labelVisitDate: 'Date de la Visite', labelSeniorVisited: 'A\u00een\u00e9(e) Visit\u00e9(e)',
     labelDuration: 'Dur\u00e9e', labelMood: 'Comment \u00e9tait l\'a\u00een\u00e9(e)?',
     labelNotes: 'Notes de Visite', labelFollowup: 'Un suivi est-il n\u00e9cessaire?',
-    btnLogVisit: 'Enregistrer la Visite', historyTitle: 'Visites R\u00e9centes', noVisits: 'Aucune visite enregistr\u00e9e.',
+    btnLogVisit: 'Envoyer la visite et la r\u00e9troaction', historyTitle: 'Visites R\u00e9centes', noVisits: 'Aucune visite enregistr\u00e9e.',
     logSuccess: 'Visite enregistr\u00e9e. Barakallah feek!', logError: 'Impossible d\'enregistrer. Veuillez r\u00e9essayer.',
     loadingAssignment: 'Chargement...', assignedLabel: 'Votre visite confirm\u00e9e',
     calendarLabel: 'Du calendrier de votre coordinatrice',
@@ -820,7 +893,7 @@ const T = {
     tsecTodo: (n) => `⏳ ${n} élément${n!==1?'s':''} obligatoire${n!==1?'s':''} restant${n!==1?'s':''}`, tsecOk: '✓ Formation obligatoire terminée',
     badgeReq: 'Obligatoire', badgeRec: 'Recommandé', badgeNew: 'NOUVEAU', comingSoon: '\u{1F6A7} Bientôt disponible',
     linkMissing: 'Ce lien n’est pas encore configuré. Contactez votre coordinatrice pour y accéder.',
-    step1: 'Journaliser la visite', step2: 'Donner votre avis',
+    step1: 'Visite et r\u00e9troaction', step2: 'Termin\u00e9',
     firstVisitLabel: 'C’était ma première visite avec Everpeace',
     firstVisitHint: 'Nous vous demanderons de remplir le sondage de satisfaction de première visite.',
     regularVisitHint: 'Nous vous demanderons de remplir le formulaire de rétroaction régulier.',
@@ -840,6 +913,25 @@ const T = {
     genericError: 'Une erreur est survenue. Veuillez réessayer.',
     linkWebsite: 'Site web Everpeace', linkDashboard: 'Tableau de bord coordinatrice',
     liveCountTip: (d) => `Total exact jusqu\u2019au ${d}, plus chaque visite depuis \u2014 mis \u00e0 jour automatiquement`,
+    seniorPlaceholder: 'S\u00e9lectionnez l\u2019a\u00een\u00e9(e)\u2026', seniorOther: 'Autre \u2014 saisir le nom',
+    secVisit: 'La visite', secSenior: '\u00c0 propos de l\u2019a\u00een\u00e9(e)', secFeedback: 'Votre r\u00e9troaction',
+    logSubNew: 'Un seul court formulaire : votre visite et votre r\u00e9troaction sont envoy\u00e9es ensemble.',
+    qExperience: 'Comment \u00e9valuez-vous votre exp\u00e9rience globale lors de cette visite ?', qExpLo: 'Tr\u00e8s mauvaise', qExpHi: 'Excellente',
+    qHappy: 'Avez-vous senti que l\u2019a\u00een\u00e9(e) \u00e9tait heureux(se) de vous recevoir ?', qHappyLo: 'Tr\u00e8s malheureux(se)', qHappyHi: 'Tr\u00e8s heureux(se)',
+    qHappyHint: 'Choisissez N/A si l\u2019a\u00een\u00e9(e) ne peut pas converser.',
+    qMeaningful: 'Avez-vous senti que la visite \u00e9tait significative et utile ?', qMeanLo: 'Peu significative', qMeanHi: 'Tr\u00e8s significative',
+    qLtc: 'Pensez-vous qu\u2019Ottawa a besoin d\u2019un centre de soins de longue dur\u00e9e musulman ?', qLtcYes: 'Oui, absolument', qLtcNo: 'Non',
+    qMoment: 'Un moment que vous aimeriez partager ?', qOptional: '(facultatif)',
+    qMomentPh: 'Un souvenir, un sourire, une conversation \u2014 tout ce qui vous a marqu\u00e9.',
+    fvNote: 'Premi\u00e8re visite : apr\u00e8s l\u2019enregistrement, vous remplirez le court sondage de premi\u00e8re visite au lieu des questions ci-dessus.',
+    btnLogFirst: 'Enregistrer et passer au sondage',
+    needFeedback: 'Veuillez r\u00e9pondre aux 4 questions de r\u00e9troaction (le moment partag\u00e9 est facultatif).',
+    logSuccessAll: 'Merci ! Votre visite et votre r\u00e9troaction ont bien \u00e9t\u00e9 envoy\u00e9es. Barakallah feek!',
+    logSuccessFirst: 'Visite enregistr\u00e9e. Derni\u00e8re \u00e9tape : remplissez le sondage de premi\u00e8re visite ci-dessous.',
+    logSuccessNoForm: 'Visite enregistr\u00e9e. Votre r\u00e9troaction n\u2019a pas pu \u00eatre envoy\u00e9e automatiquement \u2014 utilisez le formulaire ci-dessous.',
+    step2Done: 'Termin\u00e9', step2First: 'Sondage 1re visite', step2Form: 'Formulaire',
+    fbLastTitle: 'Derni\u00e8re \u00e9tape',
+    fbLastSub: 'Veuillez remplir ce court sondage. Cela prend 2 \u00e0 3 minutes et nous aide \u00e0 vous soutenir, vous et nos a\u00een\u00e9(e)s.',
     accessRemoved: 'Ce compte n\u2019a plus acc\u00e8s au portail des b\u00e9n\u00e9voles. Veuillez contacter la coordinatrice si vous pensez qu\u2019il s\u2019agit d\u2019une erreur.',
   }
 };
@@ -1004,6 +1096,12 @@ function applyTranslations() {
     'step-1-label': 'step1', 'step-2-label': 'step2', 'first-visit-label': 'firstVisitLabel',
     'fb-title': 'fbTitle', 'fb-sub': 'fbSub', 'fb-first-title': 'fbFirstTitle', 'fb-first-sub': 'fbFirstSub',
     'fb-regular-title': 'fbRegularTitle', 'fb-regular-sub': 'fbRegularSub',
+    'sec-visit-label': 'secVisit', 'sec-senior-label': 'secSenior', 'sec-feedback-label': 'secFeedback',
+    'log-sub': 'logSubNew', 'q-experience': 'qExperience', 'q-experience-lo': 'qExpLo', 'q-experience-hi': 'qExpHi',
+    'q-happy': 'qHappy', 'q-happy-lo': 'qHappyLo', 'q-happy-hi': 'qHappyHi', 'q-happy-hint': 'qHappyHint',
+    'q-meaningful': 'qMeaningful', 'q-meaningful-lo': 'qMeanLo', 'q-meaningful-hi': 'qMeanHi',
+    'q-ltc': 'qLtc', 'q-ltc-yes': 'qLtcYes', 'q-ltc-no': 'qLtcNo', 'fv-note-text': 'fvNote',
+    'fb-title': 'fbLastTitle', 'fb-sub': 'fbLastSub',
     'link-website-label': 'linkWebsite', 'link-dashboard-label': 'linkDashboard',
     'btn-change-pw': 'btnChangePw', 'btn-cancel-change-pw': 'btnCancelChangePw', 'btn-save-pw': 'btnSavePw',
     'loading-assignment': 'loadingAssignment'
@@ -1021,6 +1119,10 @@ function applyTranslations() {
   }
   updateFirstVisitHint();
   updateFeedbackCard();
+  const qm = document.getElementById('q-moment');
+  if (qm) qm.innerHTML = `${esc(t('qMoment'))} <span class="opt">${esc(t('qOptional'))}</span>`;
+  const fm = document.getElementById('fb-moment'); if (fm) fm.placeholder = t('qMomentPh');
+  renderSeniorOptions();
   buildCalendar();
   renderTraining();
   // Re-render visit cards so labels/dates follow the language (no refetch needed)
@@ -1330,6 +1432,7 @@ function completeLogin() {
   // visits never appeared in "Recent Visits" (calendarData was still null).
   loadMyVisit().finally(() => loadVisitHistory());
   loadVisitCount();
+  loadSeniorOptions();
   buildCalendar();
   trainingLoadProgress();
   updateTrainingTabBadge();
@@ -1690,10 +1793,77 @@ async function loadCalendarVisit(container) {
   }
 }
 
-// Only pre-fill the Log Visit senior field if the volunteer hasn't typed one
+// ============================================================
+// SENIOR PICKER (Log Visit) — names from the Seniors table, so every
+// logged visit uses the same spelling; "Other" allows a free-text name.
+// ============================================================
+let seniorNames = [];          // clean names from the Seniors table
+let pendingSeniorHint = '';    // calendar/assignment text waiting for the list to load
+
+async function loadSeniorOptions() {
+  try {
+    const rows = await fetchAllRows(SENIORS_TABLE);
+    const names = rows.map(r => {
+      const raw = getVolunteerField(r, ['Name', 'Full Legal Name', 'Nom']);
+      return typeof cleanVolunteerName === 'function' ? cleanVolunteerName(raw) : raw;
+    }).filter(Boolean);
+    seniorNames = Array.from(new Set(names)).sort((a, b) => a.localeCompare(b));
+  } catch (e) { seniorNames = []; }
+  renderSeniorOptions();
+  if (pendingSeniorHint) prefillSenior(pendingSeniorHint);
+}
+
+function renderSeniorOptions() {
+  const sel = document.getElementById('senior-select');
+  if (!sel) return;
+  const keep = sel.value;
+  sel.innerHTML = `<option value="">${esc(t('seniorPlaceholder'))}</option>` +
+    seniorNames.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('') +
+    `<option value="__other">${esc(t('seniorOther'))}</option>`;
+  if (keep && Array.from(sel.options).some(o => o.value === keep)) sel.value = keep;
+  onSeniorSelect();
+}
+
+function onSeniorSelect() {
+  const sel = document.getElementById('senior-select');
+  const other = document.getElementById('senior-visited');
+  const isOther = sel.value === '__other';
+  other.style.display = isOther ? 'block' : 'none';
+  if (isOther) other.focus();
+}
+
+function getSeniorValue() {
+  const sel = document.getElementById('senior-select');
+  return sel.value === '__other' ? document.getElementById('senior-visited').value.trim() : sel.value;
+}
+
+// Find the senior a calendar title / assignment refers to, e.g.
+// "Grandpa Daniel Muslim Senior Visit by Sr Lorin" → "Daniel Godkin"
+function matchSeniorName(text) {
+  if (!text || !seniorNames.length) return '';
+  const norm = v => String(v).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9 ]/g, ' ');
+  let part = norm(text).split(/\b(?:muslim|visit|visite|by|par)\b/)[0];      // ignore the volunteer part
+  part = part.replace(/\b(pod \d+|eid|grandpa|grandma|br|sr|sister|brother|mr|mrs|ms)\b/g, ' ');
+  const words = part.split(/\s+/).filter(w => w.length >= 3);
+  if (!words.length) return '';
+  let best = '', bestScore = 0;
+  seniorNames.forEach(n => {
+    const toks = norm(n).split(/\s+/).filter(w => w.length >= 3);
+    const score = words.filter(w => toks.includes(w)).length;
+    if (score > bestScore) { best = n; bestScore = score; }
+  });
+  return best;
+}
+
+// Pre-select the senior from My Visit, unless the volunteer already chose one
 function prefillSenior(name) {
-  const el = document.getElementById('senior-visited');
-  if (el && !el.value.trim() && name) el.value = name;
+  const sel = document.getElementById('senior-select');
+  if (!sel || !name || sel.value) return;
+  if (!seniorNames.length) { pendingSeniorHint = name; return; }
+  pendingSeniorHint = '';
+  const exact = seniorNames.find(n => n.toLowerCase() === String(name).toLowerCase().trim());
+  const match = exact || matchSeniorName(name);
+  if (match) { sel.value = match; onSeniorSelect(); }
 }
 
 function looksLikeAddress(str) {
@@ -1955,45 +2125,110 @@ async function submitVisitLog() {
   const alertBox = document.getElementById('log-alert');
   const btn      = document.getElementById('btn-log-visit');
   const date     = document.getElementById('visit-date').value;
-  const senior   = document.getElementById('senior-visited').value.trim();
+  const senior   = getSeniorValue();
   const duration = document.getElementById('visit-duration').value;
   const mood     = document.getElementById('senior-mood').value;
   const notes    = document.getElementById('visit-notes').value.trim();
   const followup = document.getElementById('followup-needed').value;
   const isFirst  = document.getElementById('first-visit-check').checked;
+  const fb       = readInlineFeedback();
 
-  if (!date)            { showAlert(alertBox, t('needDate'), 'error'); return; }
+  document.querySelectorAll('.rate-row.rate-error').forEach(r => r.classList.remove('rate-error'));
+  if (!date)                 { showAlert(alertBox, t('needDate'), 'error'); return; }
   if (date > localDateKey()) { showAlert(alertBox, t('futureDate'), 'error'); return; }
-  if (!senior)          { showAlert(alertBox, t('needSenior'), 'error'); return; }
+  if (!senior)               { showAlert(alertBox, t('needSenior'), 'error'); return; }
+  if (!isFirst) {
+    const missing = ['experience', 'happy', 'meaningful', 'ltc'].filter(k => !fb[k]);
+    if (missing.length) {
+      missing.forEach(k => { const r = document.querySelector(`input[name="fb-${k}"]`); if (r) r.closest('.rate-row').classList.add('rate-error'); });
+      showAlert(alertBox, t('needFeedback'), 'error');
+      document.getElementById('fb-inline').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+  }
   if (btn.disabled) return;   // prevents double-submit (duplicate rows)
 
   btn.disabled = true; btn.textContent = t('saving');
 
   try {
+    // 1) Visit record → Baserow (the feedback summary is kept with the visit notes)
     const visitsFields = await getTableFields(VISITS_TABLE);
     const visitType = isFirst ? 'First visit' : 'Regular visit';
-    const payload = buildVisitPayload(visitsFields, { date, senior, duration, mood, notes, followup, visitType });
+    const fbSummary = isFirst ? '' :
+      `[Feedback] experience ${fb.experience}/5 · senior happy ${fb.happy}${fb.happy === 'N/A' ? '' : '/5'} · meaningful ${fb.meaningful}/5 · Muslim LTC: ${fb.ltc}` +
+      (fb.moment ? ` · moment: ${fb.moment}` : '');
+    const allNotes = [notes, fbSummary].filter(Boolean).join('\n');
+    const payload = buildVisitPayload(visitsFields, { date, senior, duration, mood, notes: allNotes, followup, visitType });
     await baserowCreate(VISITS_TABLE, payload);
 
-    // Step 2 — point the volunteer to the right post-visit form
-    pendingFeedback = isFirst ? 'first' : 'regular';
-    saveFeedbackState({ pending: pendingFeedback, date });
     setVisitCount('baserow', (visitCounts.baserow || 0) + 1);
     if (typeof isAfterBaseline === 'function' && isAfterBaseline(date)) setVisitSince('baserow', (visitSince.baserow || 0) + 1);
 
-    showAlert(alertBox, t('logSuccess'), 'success');
-    document.getElementById('visit-notes').value     = '';
-    document.getElementById('followup-needed').value = 'No';
-    document.getElementById('first-visit-check').checked = false;
-    updateFirstVisitHint();
-    updateFeedbackCard(true);
+    // 2) Feedback → Google Form (regular visits), or the first-visit survey link
+    let fbSent = false;
+    if (isFirst) {
+      pendingFeedback = 'first';
+      saveFeedbackState({ pending: 'first', date });
+    } else {
+      fbSent = await sendRegularFeedback({ senior, date, fb });
+      pendingFeedback = fbSent ? null : 'regular';
+      saveFeedbackState({ pending: pendingFeedback, date, ...(fbSent ? { lastFeedback: date } : {}) });
+    }
+
+    showAlert(alertBox, isFirst ? t('logSuccessFirst') : (fbSent ? t('logSuccessAll') : t('logSuccessNoForm')), 'success');
+    resetLogForm();
+    updateFeedbackCard(isFirst || !fbSent);
     loadVisitHistory();
   } catch(e) {
     console.error(e);
     showAlert(alertBox, `${t('logError')}<br><small style="opacity:0.6">${esc(e.message)}</small>`, 'error');
   }
 
-  btn.disabled = false; btn.textContent = t('btnLogVisit');
+  btn.disabled = false; btn.textContent = btnLogLabel();
+}
+
+function readInlineFeedback() {
+  const v = n => (document.querySelector(`input[name="fb-${n}"]:checked`) || {}).value || '';
+  return { experience: v('experience'), happy: v('happy'), meaningful: v('meaningful'), ltc: v('ltc'),
+           moment: (document.getElementById('fb-moment').value || '').trim() };
+}
+
+function resetLogForm() {
+  document.getElementById('visit-notes').value     = '';
+  document.getElementById('followup-needed').value = 'No';
+  document.getElementById('senior-mood').selectedIndex = 0;
+  document.getElementById('fb-moment').value = '';
+  document.querySelectorAll('#fb-inline input[type=radio]').forEach(r => { r.checked = false; });
+  const fv = document.getElementById('first-visit-check'); fv.checked = false; delete fv.dataset.touched;
+  updateFirstVisitHint();
+}
+
+// Sends the answers to the "Post visit - Regular volunteer feedback" Google Form.
+// Google Forms does not let a page read the reply (no-cors), so success = request delivered.
+async function sendRegularFeedback({ senior, date, fb }) {
+  const email = (getVolunteerField(currentVolunteer, ['Email', 'E-mail', 'Mail']) || _loginEmail || '').trim();
+  if (!email || !email.includes('@')) return false;          // the form requires an email
+  const E = REGULAR_FORM_ENTRIES;
+  const [y, m, d] = date.split('-');
+  const body = new URLSearchParams();
+  body.append('emailAddress', email);
+  body.append(E.name, typeof cleanVolunteerName === 'function' ? cleanVolunteerName(getVolunteerName()) : getVolunteerName());
+  body.append(E.senior, senior);
+  body.append(`${E.date}_year`, y); body.append(`${E.date}_month`, String(+m)); body.append(`${E.date}_day`, String(+d));
+  body.append(E.experience, fb.experience);
+  body.append(E.happy, fb.happy);
+  body.append(E.meaningful, fb.meaningful);
+  body.append(E.ltc, fb.ltc);
+  if (fb.moment) body.append(E.moment, fb.moment);
+  try {
+    await fetch(REGULAR_FORM_POST, { method: 'POST', mode: 'no-cors', body });
+    return true;
+  } catch (e) { console.error('Feedback form', e); return false; }
+}
+
+function btnLogLabel() {
+  const fv = document.getElementById('first-visit-check');
+  return fv && fv.checked ? t('btnLogFirst') : t('btnLogVisit');
 }
 
 // ============================================================
@@ -2022,6 +2257,13 @@ function updateFirstVisitHint() {
   }
   const hint = document.getElementById('first-visit-hint');
   if (hint) hint.textContent = box.checked ? t('firstVisitHint') : t('regularVisitHint');
+  // First visit → separate first-time survey; otherwise the feedback questions are part of this form
+  document.getElementById('fb-inline').style.display = box.checked ? 'none' : '';
+  document.getElementById('fv-note').style.display   = box.checked ? 'flex' : 'none';
+  const btn = document.getElementById('btn-log-visit');
+  if (btn && !btn.disabled) btn.textContent = btnLogLabel();
+  const s2 = document.getElementById('step-2-label');
+  if (s2 && !pendingFeedback) s2.textContent = box.checked ? t('step2First') : t('step2Done');
 }
 function onFirstVisitToggle() {
   document.getElementById('first-visit-check').dataset.touched = '1';
@@ -2053,7 +2295,14 @@ function updateFeedbackCard(justLogged) {
   }
 
   const card = document.getElementById('feedback-card');
+  // Regular feedback is now inside Log Visit — this card only appears for the
+  // first-visit survey, or as a fallback if the automatic send wasn't possible.
+  card.style.display = pendingFeedback ? '' : 'none';
+  first.style.display = pendingFeedback === 'regular' ? 'none' : '';
+  reg.style.display   = pendingFeedback === 'regular' ? '' : 'none';
   card.classList.toggle('highlight', !!pendingFeedback);
+  const s2 = document.getElementById('step-2-label');
+  if (s2) s2.textContent = pendingFeedback === 'first' ? t('step2First') : pendingFeedback === 'regular' ? t('step2Form') : t('step2Done');
   document.getElementById('step-1').classList.toggle('done', !!pendingFeedback);
   document.getElementById('step-1').classList.toggle('on', !pendingFeedback);
   document.getElementById('step-2').classList.toggle('on', !!pendingFeedback);
@@ -2158,7 +2407,10 @@ function doLogout() {
   visitCounts = { calendar: null, baserow: null, record: null };
   visitSince  = { calendar: null, baserow: null };
   // Clear the previous volunteer's data from the screen (shared devices)
-  ['senior-visited', 'visit-notes'].forEach(id => { document.getElementById(id).value = ''; });
+  ['senior-visited', 'visit-notes', 'fb-moment'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('senior-select').value = ''; onSeniorSelect(); pendingSeniorHint = '';
+  document.querySelectorAll('#fb-inline input[type=radio]').forEach(r => { r.checked = false; });
+  document.getElementById('feedback-card').style.display = 'none';
   const fv = document.getElementById('first-visit-check'); fv.checked = false; delete fv.dataset.touched;
   document.getElementById('assignment-container').innerHTML = '';
   document.getElementById('visit-history-container').innerHTML = '';
@@ -2187,6 +2439,11 @@ function doLogout() {
   const btn = document.getElementById('btn-continue');
   btn.disabled = false; btn.textContent = t('btnContinue');
 }
+
+// Clear the red outline on a feedback question as soon as it is answered
+document.getElementById('fb-inline').addEventListener('change', e => {
+  const row = e.target.closest('.rate-row'); if (row) row.classList.remove('rate-error');
+});
 
 // Enter key on login steps
 document.getElementById('login-email').addEventListener('keydown', e => { if (e.key==='Enter') findVolunteer(); });

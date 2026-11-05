@@ -157,7 +157,10 @@ EMAILJS_TEMPLATE_ID = ''
 - Uses `findBestField()` to find the right column name
 
 ### Tab: Log Visit
-- 2-step flow shown at top: **1. Log your visit → 2. Share your feedback**
+- **ONE form (Nov 2026):** visit details + the 4 regular-feedback questions (+ optional moment). On submit: Baserow Visits row (Notes gets a `[Feedback] …` summary line) AND a background POST to the "Post visit - Regular volunteer feedback" Google Form (`REGULAR_FORM_POST`, `REGULAR_FORM_ENTRIES`; email from the volunteer record). If the form questions change in Google Forms, update the entry ids.
+- "This was my first visit" → feedback questions hidden; after saving, the first-visit survey link card appears (unchanged Google Form).
+- Senior Visited = dropdown of clean names from the Seniors table (+ "Other — type the name"); pre-selected from the calendar title (e.g. "Grandpa Daniel …" → Daniel Godkin) via `matchSeniorName()`.
+- 2-step indicator: **1. Visit & feedback → 2. Done / First-visit survey**
 - "This was my first visit" checkbox — pre-ticked automatically when no previous visit is known (calendar + Baserow), volunteer can override
 - After saving, the matching Google Form is highlighted ("Your next step"):
   - First visit → `FORM_FIRST_VISIT` https://forms.gle/xUmDwYpviEaCuQvp8 (volunteer satisfaction survey)
