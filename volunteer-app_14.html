@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Adopt a Muslim Senior — Volunteer Portal</title>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script src="visit-counts.js?v=1"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@500;600&display=swap');
   :root {
@@ -736,6 +737,7 @@ const T = {
     connError: 'Connection error. Please check your internet and try again.',
     genericError: 'Something went wrong. Please try again.',
     linkWebsite: 'Everpeace website', linkDashboard: 'Coordinator dashboard',
+    liveCountTip: (d) => `Exact total up to ${d}, plus every visit since — updated automatically`,
   },
   fr: {
     appTitle: 'Adopter un A\u00een\u00e9 Musulman', appSubtitle: 'Portail B\u00e9n\u00e9vole',
@@ -836,6 +838,7 @@ const T = {
     connError: 'Erreur de connexion. Vérifiez votre internet et réessayez.',
     genericError: 'Une erreur est survenue. Veuillez réessayer.',
     linkWebsite: 'Site web Everpeace', linkDashboard: 'Tableau de bord coordinatrice',
+    liveCountTip: (d) => `Total exact jusqu\u2019au ${d}, plus chaque visite depuis \u2014 mis \u00e0 jour automatiquement`,
   }
 };
 
@@ -1299,7 +1302,9 @@ function completeLogin() {
   document.getElementById('visit-date').max          = localDateKey();
   document.getElementById('pw-welcome-name').textContent = '';
   visitCounts = { calendar: null, baserow: null, record: null };
+  visitSince  = { calendar: null, baserow: null };
   lastAssignmentRender = null;
+  renderVisitStat();   // a listed volunteer sees their baseline immediately
   // Visit history must run AFTER the calendar call, otherwise calendar
   // visits never appeared in "Recent Visits" (calendarData was still null).
   loadMyVisit().finally(() => loadVisitHistory());
@@ -1530,18 +1535,43 @@ function updateTrainingTabBadge() {
 // value (never an undercount), whatever order the requests finish in.
 // ============================================================
 let visitCounts = { calendar: null, baserow: null, record: null };
+// LIVE COUNTER (visit-counts.js): exact baseline + new visits after BASELINE_DATE
+let visitSince  = { calendar: null, baserow: null };
 let lastAssignmentRender = null;   // re-renders My Visit on language switch
+
+function getMyBaseline() {
+  if (typeof findVisitBaseline !== 'function' || !currentVolunteer) return null;
+  return findVisitBaseline({
+    name:  getVolunteerName(),
+    email: getVolunteerField(currentVolunteer, ['Email', 'E-mail', 'Mail']) || _loginEmail,
+    phone: getVolunteerField(currentVolunteer, ['Phone', 'Tel', 'Phone Number', 'Mobile']) || _loginPhone
+  });
+}
+
+function totalKnownVisits() {
+  const b = getMyBaseline();
+  if (b) return liveVisitTotal(b.visits, visitSince.calendar, visitSince.baserow);
+  const vals = Object.values(visitCounts).filter(v => v !== null);
+  return vals.length ? Math.max(...vals) : null;
+}
+
+function renderVisitStat() {
+  const el = document.getElementById('stat-visits');
+  const total = totalKnownVisits();
+  el.textContent = total === null ? '\u2013' : total;
+  el.title = getMyBaseline() ? t('liveCountTip', BASELINE_DATE) : '';
+}
 
 function setVisitCount(source, n) {
   const num = parseInt(n, 10);
   visitCounts[source] = isNaN(num) ? null : num;
-  const vals = Object.values(visitCounts).filter(v => v !== null);
-  document.getElementById('stat-visits').textContent = vals.length ? Math.max(...vals) : '–';
+  renderVisitStat();
 }
 
-function totalKnownVisits() {
-  const vals = Object.values(visitCounts).filter(v => v !== null);
-  return vals.length ? Math.max(...vals) : null;
+function setVisitSince(source, n) {
+  const num = parseInt(n, 10);
+  visitSince[source] = isNaN(num) ? null : num;
+  renderVisitStat();
 }
 
 async function loadVisitCount() {
@@ -1551,9 +1581,13 @@ async function loadVisitCount() {
     const statusF = findBestField(fields, ['Status', 'Statut', 'Visit Status']);
     const first   = (getVolunteerName().split(' ')[0] || '').trim();
     if (!first) { setVisitCount('baserow', 0); return; }
+    const dateF   = findBestField(fields, ['Date', 'Visit Date', 'Date of Visit', 'Date de Visite']) || 'Date';
     const rows = await fetchAllRows(VISITS_TABLE, `&search=${encodeURIComponent(first)}`);
-    const count = rows.filter(r => !isUpcomingRow(r, statusF) && rowBelongsToVolunteer(r[volF])).length;
-    setVisitCount('baserow', count);
+    const mine = rows.filter(r => !isUpcomingRow(r, statusF) && rowBelongsToVolunteer(r[volF]));
+    setVisitCount('baserow', mine.length);
+    if (typeof isAfterBaseline === 'function') {
+      setVisitSince('baserow', mine.filter(r => isAfterBaseline(extractVal(r[dateF]))).length);
+    }
   } catch (e) { /* keep other sources */ }
   updateFirstVisitHint();
 }
@@ -1580,7 +1614,8 @@ async function loadCalendarVisit(container) {
     const name  = getVolunteerName();
     if (!email && phone.length < 7 && name.length < 3) throw new Error('No identifier');
 
-    const url = `${CALENDAR_SCRIPT_URL}?email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}&name=${encodeURIComponent(name)}`;
+    const since = typeof BASELINE_DATE === 'string' ? `&since=${BASELINE_DATE}` : '';
+    const url = `${CALENDAR_SCRIPT_URL}?email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}&name=${encodeURIComponent(name)}${since}`;
     const res  = await fetch(url);
     if (!res.ok) throw new Error('Script error ' + res.status);
     const data = await res.json();
@@ -1588,6 +1623,8 @@ async function loadCalendarVisit(container) {
 
     calendarData = data;
     setVisitCount('calendar', data.completedTotal || 0);
+    // Bridge versions that support ?since return completedSince (null/absent otherwise)
+    if (typeof data.completedSince === 'number') setVisitSince('calendar', data.completedSince);
     updateFirstVisitHint();
 
     if (!data.upcoming || data.upcoming.length === 0) {
@@ -1915,6 +1952,7 @@ async function submitVisitLog() {
     pendingFeedback = isFirst ? 'first' : 'regular';
     saveFeedbackState({ pending: pendingFeedback, date });
     setVisitCount('baserow', (visitCounts.baserow || 0) + 1);
+    if (typeof isAfterBaseline === 'function' && isAfterBaseline(date)) setVisitSince('baserow', (visitSince.baserow || 0) + 1);
 
     showAlert(alertBox, t('logSuccess'), 'success');
     document.getElementById('visit-notes').value     = '';
@@ -2091,6 +2129,7 @@ function doLogout() {
   trainingCompleted = []; trainingActiveFilter = 'all';
   pendingFeedback = null; lastAssignmentRender = null;
   visitCounts = { calendar: null, baserow: null, record: null };
+  visitSince  = { calendar: null, baserow: null };
   // Clear the previous volunteer's data from the screen (shared devices)
   ['senior-visited', 'visit-notes'].forEach(id => { document.getElementById(id).value = ''; });
   const fv = document.getElementById('first-visit-check'); fv.checked = false; delete fv.dataset.touched;

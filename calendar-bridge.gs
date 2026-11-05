@@ -6,7 +6,10 @@
 //   2. Paste this entire file (replacing the default function)
 //   3. Click Deploy → New Deployment → Web App
 //   4. Execute as: Me | Who has access: Anyone
-//   5. Copy the URL → paste into volunteer-app_13.html as CALENDAR_SCRIPT_URL
+//   5. Copy the URL → paste into volunteer-app_14.html as CALENDAR_SCRIPT_URL
+//
+// UPDATING (keeps the same URL — do NOT create a "New deployment"):
+//   Deploy → Manage deployments → ✏️ Edit → Version: "New version" → Deploy
 // ============================================================
 
 const COMPLETED_THRESHOLD_HOURS = 36; // hours after visit before it counts as "confirmed done"
@@ -20,6 +23,12 @@ function doGet(e) {
     const email  = (e.parameter.email  || '').toLowerCase().trim();
     const rawPhone = e.parameter.phone || '';
     const phone  = rawPhone.replace(/\D/g, '');
+    // Optional ?since=YYYY-MM-DD → also count confirmed visits AFTER that day
+    // (used by the live visit counter: baseline + new visits since baseline date)
+    const sinceParam = (e.parameter.since || '').trim();
+    const sinceEnd   = /^\d{4}-\d{2}-\d{2}$/.test(sinceParam)
+      ? new Date(Number(sinceParam.slice(0,4)), Number(sinceParam.slice(5,7)) - 1, Number(sinceParam.slice(8,10)) + 1)  // start of next day, script time zone
+      : null;
 
     if (!email && phone.length < 7) {
       return output.setContent(JSON.stringify({
@@ -63,6 +72,7 @@ function doGet(e) {
     const upcoming  = [];
     const completed = [];
     let   thisMonth = 0;
+    let   sinceCount = 0;
 
     matched.forEach(ev => {
       const title = ev.getTitle() || '';
@@ -86,6 +96,7 @@ function doGet(e) {
         // Past confirmed visit
         completed.push(eventData);
         if (startTime >= monthStart) thisMonth++;
+        if (sinceEnd && startTime >= sinceEnd) sinceCount++;
       } else {
         // Upcoming or very recent
         upcoming.push(eventData);
@@ -101,6 +112,8 @@ function doGet(e) {
       upcoming:         upcoming.slice(0, 10),
       completedTotal:   completed.length,
       completedThisMonth: thisMonth,
+      completedSince:   sinceEnd ? sinceCount : null,
+      since:            sinceEnd ? sinceParam : null,
       recentCompleted:  completed.slice(0, 5)
     }));
 

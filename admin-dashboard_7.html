@@ -161,6 +161,14 @@
   .vlog-stat { flex: 1; min-width: 110px; border: 1px solid var(--border); border-radius: 10px; padding: 10px; text-align: center; background: var(--white); }
   .vlog-stat b { display: block; font-size: 20px; color: var(--green); }
   .vlog-stat span { font-size: 11px; color: var(--text-secondary); }
+  .lc-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .lc-table th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-secondary); padding: 8px 6px; border-bottom: 2px solid var(--border); white-space: nowrap; }
+  .lc-table td { padding: 9px 6px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .lc-table td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .lc-table th.num { text-align: right; }
+  .lc-total { font-size: 16px; font-weight: 700; color: var(--green); }
+  .lc-missing { font-size: 11px; color: var(--gold-dark); font-style: italic; }
+  .lc-wrap { overflow-x: auto; }
 </style>
 </head>
 <body>
@@ -392,6 +400,23 @@
       </div>
 
       <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+          <h3 class="card-title" style="margin:0">&#128200; Live Visit Counter &mdash; per Volunteer</h3>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-outline btn-sm" onclick="refreshLiveCounts()" id="lc-refresh">&#8635; Refresh from Google Calendar</button>
+            <button class="btn btn-outline btn-sm" onclick="copyBaselineTemplate()">&#128203; Copy list for baselines</button>
+          </div>
+        </div>
+        <p class="card-sub" id="lc-sub" style="margin-top:6px">Exact total up to the baseline date + every visit since, counted automatically (confirmed Google Calendar visits or visits logged in the portal &mdash; whichever is higher, so nothing is counted twice). This is the same number each volunteer sees in their portal.</p>
+        <div id="lc-copied" style="font-size:12px;color:var(--green);margin-bottom:8px;display:none">&#10003; Volunteer list copied &mdash; add each person&rsquo;s exact visit total and send it back.</div>
+        <div class="search-bar">
+          <span class="search-icon">&#128269;</span>
+          <input type="text" id="lc-search" placeholder="Search volunteer..." oninput="renderLiveCounts()">
+        </div>
+        <div class="lc-wrap" id="lc-list"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+      </div>
+
+      <div class="card">
         <h3 class="card-title">&#9997;&#65039; Visits Logged by Volunteers</h3>
         <p class="card-sub">Every visit submitted from the portal&rsquo;s <strong>Log Visit</strong> tab, newest first, with the feedback form the volunteer was sent to.</p>
         <div class="vlog-stats">
@@ -415,6 +440,7 @@
   </div><!-- /screen-dash -->
 </div><!-- /container -->
 
+<script src="visit-counts.js?v=1"></script>
 <script>
 // ============================================================
 // CONFIG
@@ -521,6 +547,7 @@ async function loadAll() {
   renderCalendar(); // Build calendar once both datasets are ready
   await loadTotalVisits();
   renderVisitLog();
+  renderLiveCounts();
 }
 
 // ── Total Visits Counter ─────────────────────────────────────
@@ -1232,6 +1259,120 @@ function selectCalDay(ds) {
 }
 
 // ============================================================
+// LIVE VISIT COUNTER — per volunteer (same formula as the portal)
+//   live = baseline (visit-counts.js) + max(calendar since, portal logs since)
+// ============================================================
+const CALENDAR_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwyR_3wuqhI1XHRmIq1PkL2R3Q3sosSqk1dg00WTL4oIoUQ-KBJRlzrQuLQTUSfBe-nZg/exec';
+let calSinceByVol = {};     // volunteer row id → number | null (bridge not updated) | 'err'
+let lcLoading = false;
+
+function volIdentity(r) {
+  return {
+    name:  getVolField(r, ['Full Legal Name','Name','Nom']),
+    email: getVolField(r, ['Email','E-mail','Mail']),
+    phone: getVolField(r, ['Phone','Tel','Phone Number','Mobile'])
+  };
+}
+
+// Same rule as the portal: full-name match, or a row that stores only the first name
+function visitBelongsTo(rowVol, fullName) {
+  const v = extractVal(rowVol).toLowerCase().replace(/\s+/g, ' ').trim();
+  const full = String(fullName || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  if (!v || !full) return false;
+  if (v === full || v.includes(full)) return true;
+  const first = full.split(' ')[0];
+  return first.length > 1 && v === first;
+}
+
+function portalSinceFor(fullName) {
+  const F = (c) => findBestFieldAdmin(visitFields, c);
+  const volF = F(['Volunteer','Volunteer Name','Bénévole']) || 'Volunteer';
+  const dateF = F(['Date','Visit Date']) || 'Date';
+  const statusF = F(['Status','Statut','Visit Status']);
+  return allVisits.filter(r => {
+    if (statusF && extractVal(r[statusF]).toLowerCase() === 'upcoming') return false;
+    return visitBelongsTo(r[volF], fullName) && isAfterBaseline(extractVal(r[dateF]));
+  }).length;
+}
+
+async function refreshLiveCounts() {
+  if (lcLoading) return;
+  lcLoading = true;
+  const btn = document.getElementById('lc-refresh');
+  btn.disabled = true; btn.textContent = 'Checking calendar...';
+  const queue = allVolunteers.slice();
+  const worker = async () => {
+    while (queue.length) {
+      const r = queue.shift();
+      const id = volIdentity(r);
+      const phone = String(id.phone || '').replace(/\D/g, '');
+      if (!id.email && phone.length < 7) { calSinceByVol[r.id] = 'err'; continue; }
+      try {
+        const res = await fetch(`${CALENDAR_SCRIPT_URL}?email=${encodeURIComponent((id.email||'').toLowerCase())}&phone=${encodeURIComponent(phone)}&since=${BASELINE_DATE}`);
+        const data = await res.json();
+        calSinceByVol[r.id] = !data.success ? 'err' : (typeof data.completedSince === 'number' ? data.completedSince : null);
+      } catch (e) { calSinceByVol[r.id] = 'err'; }
+      renderLiveCounts();
+    }
+  };
+  await Promise.all([worker(), worker(), worker(), worker()]);
+  lcLoading = false;
+  btn.disabled = false; btn.innerHTML = '&#8635; Refresh from Google Calendar';
+  renderLiveCounts();
+}
+
+function renderLiveCounts() {
+  const list = document.getElementById('lc-list');
+  if (!list) return;
+  document.getElementById('lc-sub').innerHTML =
+    `Exact total up to <strong>${esc(BASELINE_DATE)}</strong> + every visit since, counted automatically (confirmed Google Calendar visits or visits logged in the portal &mdash; whichever is higher, so nothing is counted twice). This is the same number each volunteer sees in their portal.`;
+  const q = (document.getElementById('lc-search').value || '').toLowerCase();
+  let bridgeOld = false;
+  const rows = allVolunteers.map(r => {
+    const id = volIdentity(r);
+    const b = findVisitBaseline(id);
+    const cal = calSinceByVol[r.id];
+    if (cal === null) bridgeOld = true;
+    const portal = portalSinceFor(id.name);
+    const calNum = typeof cal === 'number' ? cal : 0;
+    return { name: id.name || 'Unknown', b, cal, portal, live: b ? liveVisitTotal(b.visits, calNum, portal) : null };
+  }).filter(x => !q || x.name.toLowerCase().includes(q))
+    .sort((a, b) => (b.live ?? -1) - (a.live ?? -1) || a.name.localeCompare(b.name));
+
+  const calCell = c => c === undefined ? '<span style="color:#bbb">…</span>'
+                    : c === null ? '<span title="Update the calendar bridge to enable">n/a</span>'
+                    : c === 'err' ? '<span title="No email/phone or calendar error">–</span>' : c;
+  const sumLive = rows.reduce((t, x) => t + (x.live || 0), 0);
+  list.innerHTML = `
+    <table class="lc-table">
+      <thead><tr><th>Volunteer</th><th class="num">Baseline</th><th class="num">Calendar since</th><th class="num">Portal since</th><th class="num">Live total</th></tr></thead>
+      <tbody>${rows.map(x => `
+        <tr>
+          <td>${esc(x.name)}</td>
+          <td class="num">${x.b ? x.b.visits : '<span class="lc-missing">not set</span>'}</td>
+          <td class="num">${calCell(x.cal)}</td>
+          <td class="num">${x.portal}</td>
+          <td class="num">${x.live !== null ? `<span class="lc-total">${x.live}</span>` : '<span class="lc-missing">add baseline</span>'}</td>
+        </tr>`).join('')}
+      </tbody>
+      <tfoot><tr><td><strong>Total (volunteers with a baseline)</strong></td><td></td><td></td><td></td><td class="num"><span class="lc-total">${sumLive}</span></td></tr></tfoot>
+    </table>
+    ${bridgeOld ? '<p class="lc-missing" style="margin-top:8px">Calendar "since" counts need the updated calendar bridge (see setup note). Until then, new visits are counted from portal logs.</p>' : ''}`;
+}
+
+async function copyBaselineTemplate() {
+  const lines = allVolunteers.map(r => {
+    const id = volIdentity(r);
+    const b = findVisitBaseline(id);
+    const phone = String(id.phone || '').replace(/\D/g, '');
+    return `  { name: ${JSON.stringify(id.name || '')}, email: ${JSON.stringify((id.email || '').toLowerCase())}, phone: ${JSON.stringify(phone)}, visits: ${b ? b.visits : '?'} },`;
+  });
+  const text = `// Visit totals up to ${BASELINE_DATE} — replace each ? with the exact number\n` + lines.join('\n');
+  try { await navigator.clipboard.writeText(text); } catch (e) { prompt('Copy this list:', text); }
+  document.getElementById('lc-copied').style.display = 'block';
+}
+
+// ============================================================
 // VISIT LOG & FEEDBACK — visits logged from the volunteer portal
 // ============================================================
 function filterVisitLog(type, btn) {
@@ -1310,7 +1451,11 @@ function showPanel(panelId, btn) {
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById(panelId).classList.add('active');
   if (btn) btn.classList.add('active');
-  if (panelId === 'panel-visits') renderVisitLog();
+  if (panelId === 'panel-visits') {
+    renderVisitLog();
+    renderLiveCounts();
+    if (!Object.keys(calSinceByVol).length) refreshLiveCounts();
+  }
 
   // Refresh renders when switching tabs
   if (panelId === 'panel-avail') {

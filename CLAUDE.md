@@ -22,6 +22,7 @@ This system has two components:
 | `volunteer-app_14.html` | `everpeacecompanionship.github.io/VolunteerApp/volunteer-app_14.html` (linked from the website — keep this filename) | All volunteers |
 | `admin-dashboard_7.html` (or latest) | `everpeacecompanionship.github.io/VolunteerApp/admin-dashboard_7.html` | Nadouche only |
 | `calendar-bridge.gs` | Deployed at Google Apps Script (see Section 7) | Server-side bridge |
+| `visit-counts.js` | loaded by both pages | Per-volunteer visit baselines + live-count formula |
 
 **GitHub Repo:** `github.com/EverpeaceCompanionship/VolunteerApp` (public)
 
@@ -133,7 +134,11 @@ EMAILJS_TEMPLATE_ID = ''
 > ⚠️ EmailJS is NOT configured yet (keys are empty strings). Forgot password flow shows "not configured" message and tells volunteer to contact coordinator.
 
 ### Stats Bar
-- **Total Visits:** From Google Calendar (calendar bridge) — count of past events mentioning volunteer's email/phone
+- **Total Visits — LIVE COUNTER (`visit-counts.js`, shared with the dashboard):**
+  - Volunteer listed in `VISIT_BASELINES` → **baseline + max(calendar confirmed visits after `BASELINE_DATE`, portal-logged visits dated after `BASELINE_DATE`)**. Max (not sum) so a visit in both sources counts once.
+  - Not listed → previous behaviour: highest of calendar total / Baserow logged / record field
+  - Calendar "since" count needs the updated `calendar-bridge.gs` (`?since=YYYY-MM-DD` → `completedSince`). Old bridge → portal logs only for the "since" part.
+  - To change a baseline: edit `visit-counts.js` only (bump `?v=` in both HTML files so browsers reload it)
 - **Status:** ✓ or – from `Active` field in Baserow
 
 ### Tab: My Visit
@@ -246,6 +251,7 @@ EMAILJS_TEMPLATE_ID = ''
 - Search by name or address
 
 ### Tab: Visit Log & Feedback
+- **Live Visit Counter — per Volunteer** table: Baseline / Calendar since / Portal since / Live total (same formula as the portal). Calls the calendar bridge per volunteer (4 at a time) when the tab opens; "Copy list for baselines" copies every volunteer in `visit-counts.js` format
 - Connected Tools: Volunteer Portal, First-Visit survey, Regular feedback form, Website
 - List of every Completed visit logged from the portal, newest first: volunteer, senior, date, duration, mood, follow-up flag (red), first/regular badge linking to the right form
 - Filters: All / Follow-up needed / First visits + search
@@ -355,6 +361,7 @@ EMAILJS_TEMPLATE_ID = ''
 - The **JSON Notes field format** for Upcoming visits — changing this breaks My Visit display
 - The **two post-visit Google Forms** in Log Visit and the **Mandatory / Recommended** split in Training
 - The **Visit Log & Feedback** panel in the dashboard
+- The **live visit counter** (`visit-counts.js`) — portal and dashboard must use the same formula
 
 ---
 
