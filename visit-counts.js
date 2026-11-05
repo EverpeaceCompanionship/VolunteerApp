@@ -186,6 +186,14 @@ function isFormerVolunteer({ name, email, phone } = {}) {
   });
 }
 
+// ── Organisation total (website "Live counter" + dashboard "Total Visits ✓") ──
+// Distinct VISITS (a visit by 2 volunteers to the same senior counts ONCE),
+// unlike the per-volunteer totals above (which add up to more).
+const ORG_VISITS_BASELINE = 133;   // exact total of distinct visits up to and including BASELINE_DATE (Nadouche, 5 Nov 2026)
+function liveOrgTotal(calendarSince, portalSince) {
+  return ORG_VISITS_BASELINE + Math.max(Number(calendarSince) || 0, Number(portalSince) || 0);
+}
+
 // True when a visit date (YYYY-MM-DD…) is after the baseline day
 function isAfterBaseline(dateStr) {
   const d = String(dateStr || '').slice(0, 10);

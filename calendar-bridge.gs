@@ -30,6 +30,22 @@ function doGet(e) {
       ? new Date(Number(sinceParam.slice(0,4)), Number(sinceParam.slice(5,7)) - 1, Number(sinceParam.slice(8,10)) + 1)  // start of next day, script time zone
       : null;
 
+    // ?all=1&since=YYYY-MM-DD → organisation total: distinct confirmed senior visits after that day
+    if (e.parameter.all === '1' && sinceEnd) {
+      const calAll = CalendarApp.getDefaultCalendar();
+      const nowAll = new Date();
+      const cutoff = new Date(nowAll.getTime() - COMPLETED_THRESHOLD_HOURS * 60 * 60 * 1000);
+      const seen = {};
+      calAll.getEvents(sinceEnd, cutoff).forEach(ev => {
+        const title = ev.getTitle() || '';
+        if (CANCELLED_KEYWORDS.some(kw => title.toLowerCase().includes(kw))) return;
+        if (!isSeniorVisitTitle(title) || ev.isAllDayEvent()) return;
+        if (ev.getStartTime() < sinceEnd) return;
+        seen[title.toLowerCase().trim() + '|' + ev.getStartTime().getTime()] = true;
+      });
+      return output.setContent(JSON.stringify({ success: true, visitsOnly: true, since: sinceParam, orgCompletedSince: Object.keys(seen).length }));
+    }
+
     if (!email && phone.length < 7) {
       return output.setContent(JSON.stringify({
         success: false,

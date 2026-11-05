@@ -238,7 +238,8 @@ EMAILJS_TEMPLATE_ID = ''
 1. **Volunteers** — count from Volunteers table
 2. **Seniors** — count from Seniors table
 3. **Submitted Availability** — count of volunteers with non-empty Availability Schedule
-4. **Total Visits ✓** — count of Visits table rows NOT marked 'Upcoming' + `HISTORICAL_VISITS = 25` offset (pre-app visits)
+4. **Total Visits ✓** — EXACT organisation total of DISTINCT visits (a visit by 2 volunteers to the same senior counts once) = `ORG_VISITS_BASELINE` (133 as of 2026-11-05, in visit-counts.js) + max(calendar distinct visits since via bridge `?all=1&since=` → `orgCompletedSince`, portal-logged visits since deduped by senior+date). Must match the website's "Live counter". Old formula (non-Upcoming rows + `HISTORICAL_VISITS = 25`) kept only as fallback if visit-counts.js fails to load.
+   - The per-volunteer table total (e.g. 162) is "volunteer-visits" and is bigger on purpose.
 
 ### Tab: Availability
 - **Volunteer List** with filter (All / Has Availability / No Availability Yet) and search

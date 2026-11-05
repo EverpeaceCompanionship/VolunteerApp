@@ -472,7 +472,7 @@
   </div><!-- /screen-dash -->
 </div><!-- /container -->
 
-<script src="visit-counts.js?v=10"></script>
+<script src="visit-counts.js?v=11"></script>
 <script>
 // ============================================================
 // CONFIG
@@ -582,6 +582,40 @@ async function loadAll() {
   renderLiveCounts();
 }
 
+// ── Organisation total helpers ───────────────────────────────
+let orgCalendarSince = null;   // distinct confirmed calendar visits after BASELINE_DATE (updated bridge)
+
+// Visits logged in the portal after BASELINE_DATE, one per senior per day
+function distinctPortalVisitsSince() {
+  const F = (c) => findBestFieldAdmin(visitFields, c);
+  const senF = F(['Senior','Senior Name']) || 'Senior';
+  const dateF = F(['Date','Visit Date']) || 'Date';
+  const statusF = F(['Status','Statut','Visit Status']);
+  const keys = new Set();
+  allVisits.forEach(r => {
+    if (statusF && extractVal(r[statusF]).toLowerCase() === 'upcoming') return;
+    const d = extractVal(r[dateF]).slice(0, 10);
+    if (!isAfterBaseline(d)) return;
+    keys.add(cleanVolunteerName(extractVal(r[senF])).toLowerCase() + '|' + d);
+  });
+  return keys.size;
+}
+
+async function loadOrgCalendarSince() {
+  if (orgCalendarSince !== null) return;
+  try {
+    const res = await fetch(`${CALENDAR_SCRIPT_URL}?all=1&since=${BASELINE_DATE}`);
+    const data = await res.json();
+    if (data && data.success && typeof data.orgCompletedSince === 'number') {
+      orgCalendarSince = data.orgCompletedSince;
+      const el = document.getElementById('stat-total-visits');
+      const portalSince = distinctPortalVisitsSince();
+      el.textContent = liveOrgTotal(orgCalendarSince, portalSince);
+      el.title = `${ORG_VISITS_BASELINE} visits up to ${BASELINE_DATE} + ${Math.max(orgCalendarSince, portalSince)} since (a visit by 2 volunteers counts once)`;
+    }
+  } catch (e) { /* old bridge: portal logs only */ }
+}
+
 // ── Total Visits Counter ─────────────────────────────────────
 async function loadTotalVisits() {
   try {
@@ -607,7 +641,17 @@ async function loadTotalVisits() {
       return !allValues.some(v => v === 'upcoming');
     }).length;
 
-    el.textContent = count + HISTORICAL_VISITS;
+    // Exact organisation total (same number as the website):
+    // ORG_VISITS_BASELINE (distinct visits up to BASELINE_DATE) + new distinct visits since,
+    // from the calendar (updated bridge) or from portal logs — whichever is higher.
+    if (typeof liveOrgTotal === 'function') {
+      const portalSince = distinctPortalVisitsSince();
+      el.textContent = liveOrgTotal(orgCalendarSince, portalSince);
+      el.title = `${ORG_VISITS_BASELINE} visits up to ${BASELINE_DATE} + ${Math.max(orgCalendarSince || 0, portalSince)} since (a visit by 2 volunteers counts once)`;
+      loadOrgCalendarSince();
+    } else {
+      el.textContent = count + HISTORICAL_VISITS;   // fallback if visit-counts.js didn't load
+    }
   } catch(e) {
     document.getElementById('stat-total-visits').textContent = '–';
   }
@@ -1390,7 +1434,7 @@ function renderLiveCounts() {
           <td class="num">${x.live !== null ? `<span class="lc-total">${x.live}</span>` : '<span class="lc-missing">add baseline</span>'}</td>
         </tr>`).join('')}
       </tbody>
-      <tfoot><tr><td><strong>Total (volunteers with a baseline)</strong></td><td></td><td></td><td></td><td class="num"><span class="lc-total">${sumLive}</span></td></tr></tfoot>
+      <tfoot><tr><td><strong>Volunteer-visits</strong> <span style="font-size:11px;color:var(--text-secondary)">(a visit by 2 volunteers counts for each — the organisation total, where it counts once, is “Total Visits ✓” at the top)</span></td><td></td><td></td><td></td><td class="num"><span class="lc-total">${sumLive}</span></td></tr></tfoot>
     </table>
     ${bridgeOld ? '<p class="lc-missing" style="margin-top:8px">Calendar "since" counts need the updated calendar bridge (see setup note). Until then, new visits are counted from portal logs.</p>' : ''}`;
 }
