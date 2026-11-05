@@ -19,21 +19,93 @@
 
 const BASELINE_DATE = '2026-11-05';   // counts below include every visit up to and including this day
 
+// Source: Google Calendar export "All the visits till today 2026_11_05" (132 visits, 29 May → 3 Nov 2026).
+// Each volunteer named in a visit gets 1 (a visit by 2 volunteers counts for both).
+// 9 Eid visits (30 May – 7 Jun) name no volunteer and are not assigned to anyone yet.
 const VISIT_BASELINES = [
-  // { name: 'Full Legal Name', email: 'name@example.com', phone: '6135550000', visits: 0 },
+  // { name: 'Full Legal Name', aliases: ['Other spelling'], email: '', phone: '', visits: 0 },
+  { name: "Nadia Olfa Kebaier", aliases: ["Nadia Kebaier", "Nadia Olfa"], email: '', phone: '', visits: 12 },
+  { name: "Rai Muhammad Wassay", aliases: ["Rai Mohammad Wassay"], email: '', phone: '', visits: 8 },
+  { name: "Lorin Soultan", aliases: [], email: '', phone: '', visits: 7 },
+  { name: "Mohammed Abdelghani", aliases: ["Mohamed Abdelghani", "Muhammad Abdelghani"], email: '', phone: '', visits: 7 },
+  { name: "Muaad Ali Saleh Al-Shaibi", aliases: ["Muaad Al-Shaibi", "Muaad Al Shaibi"], email: '', phone: '', visits: 7 },
+  { name: "Nusaybah Elfarawi", aliases: ["Nusayba Elfarawi"], email: '', phone: '', visits: 7 },
+  { name: "Abdurrahman Elfarawi", aliases: [], email: '', phone: '', visits: 6 },
+  { name: "Omar Badr", aliases: [], email: '', phone: '', visits: 6 },
+  { name: "Roxana Ghoreishi", aliases: [], email: '', phone: '', visits: 6 },
+  { name: "Muhammad Maahir", aliases: ["Muhammed Maahir", "Mohammed Maahir"], email: '', phone: '', visits: 5 },
+  { name: "Muhammad Qasim", aliases: ["Mohammed Qasim", "Mohamed Qasim"], email: '', phone: '', visits: 5 },
+  { name: "Thanaa Al Shaibi", aliases: ["Thana Al Shaibi", "Thanaa Al-Shaibi"], email: '', phone: '', visits: 5 },
+  { name: "Naeem Ahmed", aliases: [], email: '', phone: '', visits: 4 },
+  { name: "Ryma Iskounene", aliases: [], email: '', phone: '', visits: 5 },
+  { name: "Habib Ur Rahman Bharti", aliases: ["Habib-ur-Rahman Bharti", "Habib Rahman Bharti"], email: '', phone: '', visits: 3 },
+  { name: "Habiba Hadiri", aliases: [], email: '', phone: '', visits: 3 },
+  { name: "Ilham Rahimi", aliases: ["İlham Rahimi"], email: '', phone: '', visits: 3 },
+  { name: "Lydia Boumaarafi", aliases: [], email: '', phone: '', visits: 3 },
+  { name: "Malak Beshr", aliases: [], email: '', phone: '', visits: 3 },
+  { name: "Sajeda Almalki", aliases: [], email: '', phone: '', visits: 3 },
+  { name: "Sawsan Ibrahim", aliases: ["Sawssan Ibrahim"], email: '', phone: '', visits: 3 },
+  { name: "Zeinab Karbo", aliases: ["Zeineb Karbo"], email: '', phone: '', visits: 3 },
+  { name: "Zeineb Rais", aliases: ["Zeinab Rais"], email: '', phone: '', visits: 3 },
+  { name: "Abdou El Bashtaly", aliases: [], email: '', phone: '', visits: 2 },
+  { name: "Aimanete Aboufatma", aliases: [], email: '', phone: '', visits: 2 },
+  { name: "Asma Abdisamad", aliases: [], email: '', phone: '', visits: 2 },
+  { name: "Hassan Yassin", aliases: ["Hassen Yassin"], email: '', phone: '', visits: 3 },
+  { name: "Mohamed Abdel Baky", aliases: ["Mohammed Abdel Baky", "Mohamed Abdelbaky"], email: '', phone: '', visits: 2 },
+  { name: "Randa Hassan", aliases: [], email: '', phone: '', visits: 2 },
+  { name: "Amal Khan", aliases: [], email: '', phone: '', visits: 1 },
+  { name: "Asma Jawed", aliases: [], email: '', phone: '', visits: 1 },
+  { name: "Awa Diop", aliases: [], email: '', phone: '', visits: 1 },
+  { name: "Aya Gadi", aliases: [], email: '', phone: '', visits: 1 },
+  { name: "Faduma Hagi", aliases: [], email: '', phone: '', visits: 1 },
+  { name: "Faiza Ahmed-Hassan", aliases: [], email: '', phone: '', visits: 1 },
+  { name: "Hosai Zurmati-Halim", aliases: [], email: '', phone: '', visits: 1 },
+  { name: "Khadija Siddiqi", aliases: [], email: '', phone: '', visits: 1 },
+  { name: "Kongling Bai", aliases: [], email: '', phone: '', visits: 1 },
+  { name: "Leila Abdi", aliases: [], email: '', phone: '', visits: 1 },
+  { name: "Mandeek", aliases: [], email: '', phone: '', visits: 1 },
+  { name: "Manel", aliases: [], email: '', phone: '', visits: 1 },
+  { name: "Mayar", aliases: [], email: '', phone: '', visits: 1 },
+  { name: "Melek Delice", aliases: [], email: '', phone: '', visits: 1 },
+  { name: "Nourhan Mohamed", aliases: [], email: '', phone: '', visits: 1 },
+  { name: "Oummou Rayan", aliases: [], email: '', phone: '', visits: 1 },
+  { name: "Wafa", aliases: [], email: '', phone: '', visits: 1 },
 ];
 
 // ── Helpers (shared) ────────────────────────────────────────
-function _vcNorm(s)   { return String(s || '').toLowerCase().replace(/\s+/g, ' ').trim(); }
+// Normalise a name: lower case, no accents, no "Sr/Br/Sister/Brother", hyphens → spaces
+function _vcNorm(s) {
+  return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ı/g, 'i')
+    .toLowerCase().replace(/[-_.,']/g, ' ')
+    .replace(/^\s*(sr|br|sister|brother|sheikh|cheikh)\s+/, '')
+    .replace(/\s+/g, ' ').trim();
+}
 function _vcDigits(s) { return String(s || '').replace(/\D/g, '').slice(-10); }
+function _vcNames(b) { return [b.name].concat(b.aliases || []).map(_vcNorm).filter(Boolean); }
+function _vcTokensIn(small, big) {
+  const B = big.split(' ');
+  return small.split(' ').every(t => B.includes(t));
+}
 
-// Returns the baseline entry for a volunteer, or null if not listed
+// Returns the baseline entry for a volunteer, or null if not listed.
+// Order: email → phone → exact name/alias → all words of one name inside the
+// other (handles middle names, e.g. "Lorin Soultan" ↔ "Lorin A. Soultan") →
+// single-name entries (e.g. "Mandeek") only when that first name is unique.
 function findVisitBaseline({ name, email, phone } = {}) {
-  const n = _vcNorm(name), e = _vcNorm(email), p = _vcDigits(phone);
-  return VISIT_BASELINES.find(b => e && _vcNorm(b.email) === e)
-      || VISIT_BASELINES.find(b => p.length >= 7 && _vcDigits(b.phone) === p)
-      || VISIT_BASELINES.find(b => n && _vcNorm(b.name) === n)
-      || null;
+  const n = _vcNorm(name), e = String(email || '').toLowerCase().trim(), p = _vcDigits(phone);
+  const B = VISIT_BASELINES;
+  let hit = (e && B.find(b => String(b.email || '').toLowerCase().trim() === e))
+         || (p.length >= 7 && B.find(b => _vcDigits(b.phone) === p))
+         || (n && B.find(b => _vcNames(b).includes(n)));
+  if (hit || !n) return hit || null;
+  if (n.includes(' ')) {
+    hit = B.find(b => _vcNames(b).some(x => x.includes(' ') && (_vcTokensIn(x, n) || _vcTokensIn(n, x))));
+    if (hit) return hit;
+  }
+  const first = n.split(' ')[0];
+  const singles = B.filter(b => _vcNames(b).some(x => x === first));
+  const sameFirst = B.filter(b => _vcNames(b).some(x => x.split(' ')[0] === first));
+  return singles.length === 1 && sameFirst.length === 1 ? singles[0] : null;
 }
 
 // True when a visit date (YYYY-MM-DD…) is after the baseline day
