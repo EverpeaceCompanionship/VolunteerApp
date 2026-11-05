@@ -27,11 +27,11 @@ const VISIT_BASELINES = [
   // { name: 'Full Legal Name', aliases: ['Other spelling'], email: '', phone: '', visits: 0 },
   { name: "Nadia Olfa Kebaier", aliases: ["Nadia Kebaier", "Nadia Olfa"], email: '', phone: '', visits: 22 },
   { name: "Rai Muhammad Wassay", aliases: ["Rai Mohammad Wassay"], email: '', phone: '', visits: 8 },
-  { name: "Lorin Soultan", aliases: ["Lori Lee Soultan", "Lori Soultan"], email: '', phone: '', visits: 7 },
+  { name: "Lorin Soultan", aliases: ["Lori Lee Soultan", "Lori Soultan"], email: '', phone: '', visits: 6 },   // 1 visit cancelled
   { name: "Mohammed Abdelghani", aliases: ["Mohamed Abdelghani", "Muhammad Abdelghani"], email: '', phone: '', visits: 7 },
   { name: "Muaad Ali Saleh Al-Shaibi", aliases: ["Muaad Al-Shaibi", "Muaad Al Shaibi"], email: '', phone: '', visits: 7 },
   { name: "Nusaybah Elfarawi", aliases: ["Nusayba Elfarawi"], email: '', phone: '', visits: 7 },
-  { name: "Abdurrahman Elfarawi", aliases: [], email: '', phone: '', visits: 6 },
+  { name: "Abdurrahman Elfarawi", aliases: [], email: '', phone: '', visits: 5 },   // 1 visit cancelled
   { name: "Omar Badr", aliases: [], email: '', phone: '', visits: 6 },
   { name: "Roxana Ghoreishi", aliases: [], email: '', phone: '', visits: 7 },
   { name: "Muhammad Maahir", aliases: ["Muhammed Maahir", "Mohammed Maahir"], email: '', phone: '', visits: 5 },
@@ -42,11 +42,11 @@ const VISIT_BASELINES = [
   { name: "Habib Ur Rahman Bharti", aliases: ["Habib-ur-Rahman Bharti", "Habib Rahman Bharti"], email: '', phone: '', visits: 3 },
   { name: "Habiba Hadiri", aliases: ["Sophia Amani"], email: '', phone: '', visits: 6, former: true },   // former volunteer — Eid 3, 5, 6 Jun + 12, 14, 18 Jun
   { name: "Ilham Rahimi", aliases: ["İlham Rahimi"], email: '', phone: '', visits: 3 },
-  { name: "Lydia Boumaarafi", aliases: [], email: '', phone: '', visits: 3 },
+  { name: "Lydia Boumaarafi", aliases: [], email: '', phone: '', visits: 2 },   // corrected by Nadouche
   { name: "Malak Beshr", aliases: [], email: '', phone: '', visits: 4 },
   { name: "Sajeda Almalki", aliases: [], email: '', phone: '', visits: 3 },
   { name: "Sawsan Ibrahim", aliases: ["Sawssan Ibrahim"], email: '', phone: '', visits: 3 },
-  { name: "Zeinab Karbo", aliases: ["Zeineb Karbo"], email: '', phone: '', visits: 4 },
+  { name: "Zeinab Karbo", aliases: ["Zeineb Karbo"], email: '', phone: '', visits: 3 },   // corrected by Nadouche
   { name: "Zeineb Rais", aliases: ["Zeinab Rais"], email: '', phone: '', visits: 3 },
   { name: "Abdou El Bashtaly", aliases: [], email: '', phone: '', visits: 2 },
   { name: "Aimanete Aboufatma", aliases: [], email: '', phone: '', visits: 2 },
@@ -66,7 +66,7 @@ const VISIT_BASELINES = [
   { name: "Kongling Bai", aliases: [], email: '', phone: '', visits: 1 },
   { name: "Leila Abdi", aliases: [], email: '', phone: '', visits: 0 },   // 9 Jul visit (Adam) unconfirmed — volunteer stopped responding
   { name: "Mandeek Mohamud", aliases: [], email: '', phone: '', visits: 1, former: true },
-  { name: "Manel", aliases: [], email: '', phone: '', visits: 1 },
+  { name: "Manal Abdussamad Siddiqui", aliases: ["Manel", "Manal Siddiqui", "Manal Abdussamad"], email: '', phone: '', visits: 1 },   // calendar: "Sr Manel", 3 Aug
   { name: "Mayar Ahrir", aliases: ["Mayar Amri"], email: '', phone: '', visits: 1, former: true },
   { name: "Melek Delice", aliases: [], email: '', phone: '', visits: 1 },
   { name: "Nourhan Mohamed", aliases: [], email: '', phone: '', visits: 1 },
