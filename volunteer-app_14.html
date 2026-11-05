@@ -1027,7 +1027,7 @@ async function fetchAllRows(tableId, extra = '') {
     if (!res.ok) throw new Error('Baserow GET ' + res.status);
     const data = await res.json();
     rows = rows.concat(data.results || []);
-    next = data.next || null;
+    next = data.next ? String(data.next).replace(/^http:/, 'https:') : null;   // Baserow returns http:// links → blocked on https pages
   }
   return rows;
 }

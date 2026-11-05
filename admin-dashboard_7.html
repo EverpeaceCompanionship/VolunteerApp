@@ -345,10 +345,42 @@
           <div>
             <label>Visit Language</label>
             <select id="match-lang">
+              <optgroup label="Most common">
               <option value="English">English</option>
               <option value="French">French / Français</option>
               <option value="Arabic">Arabic / عربي</option>
-              <option value="Bilingual">Bilingual</option>
+              <option value="Bilingual">Bilingual (English &amp; French)</option>
+              </optgroup>
+              <optgroup label="Other languages">
+                <option value="Amharic">Amharic / አማርኛ</option>
+                <option value="Bengali">Bengali / বাংলা</option>
+                <option value="Bosnian">Bosnian / Bosanski</option>
+                <option value="Chinese">Chinese / 中文</option>
+                <option value="Dari">Dari / دری</option>
+                <option value="Farsi">Farsi / فارسی</option>
+                <option value="Fula">Fula / Fulfulde</option>
+                <option value="Gujarati">Gujarati / ગુજરાતી</option>
+                <option value="Hausa">Hausa</option>
+                <option value="Hindi">Hindi / हिन्दी</option>
+                <option value="Indonesian">Indonesian / Bahasa Indonesia</option>
+                <option value="Kurdish">Kurdish / Kurdî</option>
+                <option value="Malay">Malay / Bahasa Melayu</option>
+                <option value="Oromo">Oromo / Afaan Oromoo</option>
+                <option value="Pashto">Pashto / پښتو</option>
+                <option value="Punjabi">Punjabi / ਪੰਜਾਬੀ</option>
+                <option value="Russian">Russian / Русский</option>
+                <option value="Somali">Somali / Soomaali</option>
+                <option value="Spanish">Spanish / Español</option>
+                <option value="Swahili">Swahili / Kiswahili</option>
+                <option value="Tamil">Tamil / தமிழ்</option>
+                <option value="Tigrinya">Tigrinya / ትግርኛ</option>
+                <option value="Turkish">Turkish / Türkçe</option>
+                <option value="Urdu">Urdu / اردو</option>
+                <option value="Uzbek">Uzbek / Oʻzbekcha</option>
+                <option value="Wolof">Wolof</option>
+                <option value="Yoruba">Yoruba / Yorùbá</option>
+              </optgroup>
+              <option value="Other">Other — specify in coordinator notes</option>
             </select>
           </div>
         </div>
@@ -562,7 +594,7 @@ async function loadTotalVisits() {
       if (!res.ok) throw new Error('Baserow ' + res.status);
       const data = await res.json();
       all  = all.concat(data.results || []);
-      next = data.next || null;
+      next = data.next ? String(data.next).replace(/^http:/, 'https:') : null;   // Baserow returns http:// links → blocked on https pages
     }
     allVisits = all;
     visitFields = await getTableFieldsAdmin(VISITS_TABLE);
@@ -588,7 +620,7 @@ async function loadVolunteers() {
       const res  = await fetch(next, { headers: { 'Authorization': `Token ${BASEROW_TOKEN}` } });
       const data = await res.json();
       rows = rows.concat(data.results || []);
-      next = data.next || null;
+      next = data.next ? String(data.next).replace(/^http:/, 'https:') : null;   // Baserow returns http:// links → blocked on https pages
     }
     allVolunteers = rows;
     document.getElementById('stat-vols').textContent = rows.length;
@@ -606,7 +638,7 @@ async function loadSeniors() {
       const res  = await fetch(next, { headers: { 'Authorization': `Token ${BASEROW_TOKEN}` } });
       const data = await res.json();
       rows = rows.concat(data.results || []);
-      next = data.next || null;
+      next = data.next ? String(data.next).replace(/^http:/, 'https:') : null;   // Baserow returns http:// links → blocked on https pages
     }
     allSeniors = rows;
     document.getElementById('stat-seniors').textContent = rows.length;

@@ -263,7 +263,7 @@ EMAILJS_TEMPLATE_ID = ''
 
 ### Tab: Match Builder
 - Select volunteer + senior from dropdowns
-- Set date, start time, duration, language
+- Set date, start time, duration, language (English/French/Arabic/Bilingual + 28 other languages incl. Pashto, Urdu, Dari, Hindi, Farsi, Punjabi, Turkish, Somali, Hausa, Chinese, Bengali; "Other")
 - Add coordinator notes (optional)
 - "Generate Calendar Event →" → produces copy-ready Google Calendar event description
 - **"📨 Send to Volunteer Portal"** → saves to Visits table as 'Upcoming' with JSON in Notes field
@@ -319,6 +319,8 @@ EMAILJS_TEMPLATE_ID = ''
 7. **(Nov 2026) Dates shifted to tomorrow after 7 pm:** every `toISOString().split('T')[0]` replaced by local-date helpers (`localDateKey()` in portal, `localISO()` in dashboard).
 
 8. **(Nov 2026) Fuzzy field mapping overwrote columns:** word-level matching sent "Senior Mood" and "The senior housing facility" into the `Senior` column. Now exact → whole-phrase only, never two values in one column, unmatched values skipped (`mapToFields`, `findBestFieldAdmin(fields, c, used)`).
+
+11. **(Nov 2026) Baserow pagination:** Baserow's `next` link comes back as `http://…`, which browsers block on the https site ("Failed to fetch") — every loop now rewrites it to `https:`. This is why "Total Visits ✓" showed "–" once the Visits table passed 200 rows.
 
 9. **(Nov 2026) Send to Volunteer Portal saved plain notes:** dashboard now writes the JSON Notes format again. Button re-enables for each new match.
 
