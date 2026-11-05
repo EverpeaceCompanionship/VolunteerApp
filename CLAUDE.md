@@ -190,14 +190,17 @@ EMAILJS_TEMPLATE_ID = ''
 - All strings in `T.en` and `T.fr` translation objects
 - Calendar availability days/months also translated
 
-### Design Rules — NEVER CHANGE
-- **Colors:** `--green-dark: #1B4332`, `--green: #2D6A4F`, `--gold: #C9A84C`, `--cream: #FAF7F2`
-- **Fonts:** Playfair Display (headings) + Lato (body)
-- **Bismillah** in Arabic always at top of content area
-- **Arabesque header pattern** — gold diamond SVG pattern on dark green
-- **Everpeace Companionship logo** embedded as base64 in header
-- Max container width: 540px (mobile-first)
-- Islamic moon (☽) decorative element on visit cards
+### Design Rules — match the Everpeace website (brand refresh, 5 Nov 2026)
+Both pages follow the website's design (Claude artifact 4JicWNpYvmEwa6VoXcMkgo). Nadouche asked for this; keep it in sync with the website.
+- **Colors** (same CSS variable names as before, new values): `--green-dark: #0F3732` (deep teal, primary), `--green: #1B4A43`, `--green-deep: #0A2622` (footer), `--gold: #CDB083`, `--gold-mid: #B8976A`, `--gold-dark: #7A5F38` (bronze text), `--cream: #F8F1EA` (ivory), `--sand: #F1E8DC`, `--border: #E4D8C6`, `--text-secondary: #4E6B63` (sage), `--mist: #DDE6E2`
+- **Fonts:** Cormorant Garamond (headings/numbers, lining numerals), Cinzel (EVERPEACE wordmark), Nunito Sans (body), Amiri (Bismillah)
+- **Header:** ivory bar with the website logo (base64 in `.brand-logo` CSS) + Cinzel wordmark "EVERPEACE · COMPANIONSHIP ·"; below it a deep-teal **hero band** with twinkling stars + gold crescent holding `#app-title` / `#app-subtitle`
+- **Bismillah** in Arabic always at top of content area, with the gold diamond divider
+- Pill buttons/tabs (radius 999px), cards radius 22px, soft teal shadows, stroke SVG tab icons
+- Deep-teal footer panel with wordmark + tagline "Honoring our seniors, caring as Muslims." / "Honorer nos aînés, servir avec foi." (`footerTagline` in T.en/T.fr)
+- Gold crescent (CSS box-shadow) on the visit card; logo on the login screens
+- Portal max container width: 560px (mobile-first); dashboard 1040px
+- All brand styles live in the "BRAND REFRESH" block at the end of each `<style>` — restyle there, never in JS
 
 ---
 
@@ -362,7 +365,7 @@ EMAILJS_TEMPLATE_ID = ''
 - The **Training tab** with all 8 modules and localStorage progress tracking
 - The **bilingual EN/FR** translation system — all new strings must be added to both `T.en` and `T.fr`
 - The **Bismillah Arabic text** at top of volunteer portal
-- The **Everpeace Companionship logo** embedded as base64 in the admin dashboard header
+- The **Everpeace Companionship logo** (website logo) embedded as base64 in both page headers
 - The **Bismillah + larger moon** in the admin dashboard (added intentionally)
 - The **Google Maps link** on the address in My Visit display
 - The **"Send to Volunteer Portal" button** in Match Builder
