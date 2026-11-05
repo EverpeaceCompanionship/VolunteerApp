@@ -440,7 +440,7 @@
   </div><!-- /screen-dash -->
 </div><!-- /container -->
 
-<script src="visit-counts.js?v=8"></script>
+<script src="visit-counts.js?v=9"></script>
 <script>
 // ============================================================
 // CONFIG
@@ -894,7 +894,7 @@ async function saveMatchToPortal() {
       if (f && !used.has(f)) { used.add(f); payload[f] = value; }
     };
     const timeStr = `${m.startTime} – ${m.endTime}`;
-    put(['Volunteer','Volunteer Name','Bénévole','Nom Bénévole'], m.volName);
+    put(['Volunteer','Volunteer Name','Bénévole','Nom Bénévole'], cleanVolunteerName(m.volName));
     put(['Senior','Senior Name','Senior Visited','Aîné'],        m.senName);
     put(['Date','Visit Date','Date de Visite'],                  m.date);
     put(['Duration','Durée'],                                    m.duration);
@@ -1407,7 +1407,7 @@ function renderVisitLog() {
     const first = /first/i.test(typeVal) || /^\[first visit\]/i.test(notes);
     const fu = fuF ? extractVal(r[fuF]) : '';
     return {
-      vol: extractVal(r[volF]), sen: extractVal(r[senF]), date: extractVal(r[dateF]),
+      vol: cleanVolunteerName(extractVal(r[volF])), sen: extractVal(r[senF]), date: extractVal(r[dateF]),
       dur: extractVal(r[durF]), mood: moodF ? extractVal(r[moodF]) : '',
       notes: notes.replace(/^\[first visit\]\s*/i, ''), first,
       flag: !!fu && !/^no\b/i.test(fu), fu

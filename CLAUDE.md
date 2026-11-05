@@ -368,7 +368,7 @@ EMAILJS_TEMPLATE_ID = ''
 - The **Visit Log & Feedback** panel in the dashboard
 - The **live visit counter** (`visit-counts.js`) — portal and dashboard must use the same formula
 - The **former-volunteer block**: `FORMER_VOLUNTEERS` in `visit-counts.js` (4 former volunteers + 19 inactive ones blocked "for now" on 5 Nov 2026 — delete a line to unblock) — cannot log in to the portal; their past visits still count. Nadouche keeps them in Baserow (do not delete rows).
-- **Baserow name format:** the name column is "Full Legal Name and DOB" with a visit-count prefix and notes, e.g. `6V-Hadiri Habiba OUT for safety reasons (1969/01/01)`. Use `cleanVolunteerName()` (visit-counts.js) for display; name matching ignores the prefix, brackets and word order.
+- **Baserow name format:** the name column is "Full Legal Name and DOB" with a visit-count prefix and notes, e.g. `6V-Hadiri Habiba OUT for safety reasons (1969/01/01)`. Codes seen: `C-`, `V-`, `6V-`, `0V-`, `0-V`, plus notes like `The form was not completed-`, `(DOB)`, `OUT …`, `: note`, `and Malik …`. Use `cleanVolunteerName()` (visit-counts.js) for display AND for the name written to the Visits table / Google Form (portal greeting shows the full clean name); name matching ignores the prefix, brackets and word order.
 
 ---
 

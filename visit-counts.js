@@ -27,7 +27,7 @@ const VISIT_BASELINES = [
   // { name: 'Full Legal Name', aliases: ['Other spelling'], email: '', phone: '', visits: 0 },
   { name: "Nadia Olfa Kebaier", aliases: ["Nadia Kebaier", "Nadia Olfa"], email: '', phone: '', visits: 22 },
   { name: "Rai Muhammad Wassay", aliases: ["Rai Mohammad Wassay"], email: '', phone: '', visits: 8 },
-  { name: "Lorin Soultan", aliases: [], email: '', phone: '', visits: 7 },
+  { name: "Lorin Soultan", aliases: ["Lori Lee Soultan", "Lori Soultan"], email: '', phone: '', visits: 7 },
   { name: "Mohammed Abdelghani", aliases: ["Mohamed Abdelghani", "Muhammad Abdelghani"], email: '', phone: '', visits: 7 },
   { name: "Muaad Ali Saleh Al-Shaibi", aliases: ["Muaad Al-Shaibi", "Muaad Al Shaibi"], email: '', phone: '', visits: 7 },
   { name: "Nusaybah Elfarawi", aliases: ["Nusayba Elfarawi"], email: '', phone: '', visits: 7 },
@@ -79,7 +79,7 @@ const VISIT_BASELINES = [
 function _vcNorm(s) {
   return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ı/g, 'i')
     .toLowerCase()
-    .replace(/^\s*\d*\s*-?\s*v\s*-\s*/, '')     // Baserow prefix "6V-", "0V-", "0-V"
+    .replace(/^\s*(?:\d*\s*-?\s*v|c)\s*-\s*/, '')     // Baserow prefix "6V-", "0V-", "0-V", "C-"
     .replace(/[^a-z0-9 ]/g, ' ')                   // brackets, dashes, dates → spaces
     .replace(/^\s*(sr|br|sister|brother|sheikh|cheikh)\s+/, '')
     .replace(/\s+/g, ' ').trim();
@@ -87,9 +87,18 @@ function _vcNorm(s) {
 // Display name from Baserow's "Full Legal Name and DOB" field:
 // "6V-Hadiri Habiba OUT for safety reasons (1969/01/01)" → "Hadiri Habiba"
 function cleanVolunteerName(raw) {
-  let n = String(raw || '').replace(/^\s*\d*\s*-?\s*V\s*-\s*/i, '');
-  n = n.split(/\s+(?:OUT|ÒUT)\b|\s*\(|\s+:\s|\s+-\s/i)[0];
-  return n.replace(/\s+/g, ' ').trim() || String(raw || '').trim();
+  const orig = String(raw || '').trim();
+  let n = orig;
+  // Leading Baserow codes, possibly repeated: "C-", "V-", "6V-", "0V-", "0-V", "12V -"
+  for (let i = 0; i < 3; i++) {
+    n = n.replace(/^\s*(?:\d+\s*V\s*-|\d*\s*-\s*V\s*-?|C\s*-|V\s*-)\s*/i, '');
+    // Status notes written before the name
+    n = n.replace(/^\s*(?:the form was not completed|cancel(?:led|ed)? last min(?:ute)?)\s*[-:]\s*/i, '');
+  }
+  // Everything after the name: OUT…, (DOB…), ": note", " - note", "and Malik…", "4 now…"
+  n = n.split(/\s+[OÒ]UT\b|\s*\(|\s*:\s|\s+-\s|\s+(?:and|et|&)\s+|\s+\d/i)[0];
+  n = n.replace(/[\s,;:-]+$/, '').replace(/\s+/g, ' ').trim();
+  return n || orig;
 }
 function _vcDigits(s) { return String(s || '').replace(/\D/g, '').slice(-10); }
 function _vcNames(b) { return [b.name].concat(b.aliases || []).map(_vcNorm).filter(Boolean); }
