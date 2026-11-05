@@ -144,6 +144,26 @@ const FORMER_VOLUNTEERS = [
   { name: 'Mandeek Mohamud', aliases: [],               email: '', phone: '', note: 'Former volunteer (1 visit)' },
   { name: 'Maryam Maafi',    aliases: ['Oummou Rayan'], email: '', phone: '', note: 'Former volunteer (1 visit)' },
   { name: 'Mayar Ahrir',     aliases: ['Mayar Amri'],   email: '', phone: '', note: 'Former volunteer (1 visit)' },
+  // ── Inactive — blocked FOR NOW (5 Nov 2026). To let someone back in, delete their line. ──
+  { name: 'Laura Sicoli',       aliases: [], email: '', phone: '', note: 'Inactive' },
+  { name: 'Sufia Quazi',        aliases: [], email: '', phone: '', note: 'Inactive' },
+  { name: 'Ines Attouchi',      aliases: ['Inès Attouchi'], email: '', phone: '', note: 'Inactive' },
+  { name: 'Abdul Waheed Butt',  aliases: [], email: '', phone: '', note: 'Inactive' },
+  { name: 'Armeen Mazhar',      aliases: [], email: '', phone: '', note: 'Inactive' },
+  { name: 'Mariam Abouseta',    aliases: [], email: '', phone: '', note: 'Inactive' },
+  { name: 'Suha Maryam Ali',    aliases: [], email: '', phone: '', note: 'Inactive' },
+  { name: 'Hafsah Butt',        aliases: [], email: '', phone: '', note: 'Inactive' },
+  { name: 'Zaiba Fatima Ali',   aliases: [], email: '', phone: '', note: 'Inactive' },
+  { name: 'Hafsa Khan Younis',  aliases: [], email: '', phone: '', note: 'Inactive' },
+  { name: 'Houdayfa Karbo',     aliases: [], email: '', phone: '', note: 'Inactive' },
+  { name: 'Najma Bhati',        aliases: [], email: '', phone: '', note: 'Inactive' },
+  { name: 'Souad Djama',        aliases: [], email: '', phone: '', note: 'Inactive' },
+  { name: 'Leila Abdi',         aliases: [], email: '', phone: '', note: 'Inactive' },
+  { name: 'Natasha Hernandez',  aliases: [], email: '', phone: '', note: 'Inactive' },
+  { name: 'Wassim Abu Zarad',   aliases: [], email: '', phone: '', note: 'Inactive' },
+  { name: 'Rayan Ghoreishi',    aliases: [], email: '', phone: '', note: 'Inactive' },
+  { name: 'Halima Osmane',      aliases: [], email: '', phone: '', note: 'Inactive' },
+  { name: 'Hannah Karimah',     aliases: [], email: '', phone: '', note: 'Inactive — "Hannah mom of Karimah"' },
 ];
 function isFormerVolunteer({ name, email, phone } = {}) {
   const n = _vcNorm(name), e = String(email || '').toLowerCase().trim(), p = _vcDigits(phone);
@@ -151,7 +171,9 @@ function isFormerVolunteer({ name, email, phone } = {}) {
     if (e && String(f.email || '').toLowerCase().trim() === e) return true;
     if (p.length >= 7 && _vcDigits(f.phone) === p) return true;
     if (!n) return false;
-    return _vcNames(f).some(x => x === n || (x.includes(' ') && n.includes(' ') && (_vcTokensIn(x, n) || _vcTokensIn(n, x))));
+    // Only "every word of the blocked name appears in the volunteer's record" —
+    // never the reverse, so an active "Maryam Ali" is NOT blocked by "Suha Maryam Ali".
+    return _vcNames(f).some(x => x === n || (x.includes(' ') && _vcTokensIn(x, n)));
   });
 }
 
