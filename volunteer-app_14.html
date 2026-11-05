@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Adopt a Muslim Senior — Volunteer Portal</title>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-<script src="visit-counts.js?v=4"></script>
+<script src="visit-counts.js?v=5"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@500;600&display=swap');
   :root {
@@ -738,6 +738,7 @@ const T = {
     genericError: 'Something went wrong. Please try again.',
     linkWebsite: 'Everpeace website', linkDashboard: 'Coordinator dashboard',
     liveCountTip: (d) => `Exact total up to ${d}, plus every visit since — updated automatically`,
+    accessRemoved: 'This account no longer has access to the volunteer portal. Please contact the coordinator if you think this is a mistake.',
   },
   fr: {
     appTitle: 'Adopter un A\u00een\u00e9 Musulman', appSubtitle: 'Portail B\u00e9n\u00e9vole',
@@ -839,6 +840,7 @@ const T = {
     genericError: 'Une erreur est survenue. Veuillez réessayer.',
     linkWebsite: 'Site web Everpeace', linkDashboard: 'Tableau de bord coordinatrice',
     liveCountTip: (d) => `Total exact jusqu\u2019au ${d}, plus chaque visite depuis \u2014 mis \u00e0 jour automatiquement`,
+    accessRemoved: 'Ce compte n\u2019a plus acc\u00e8s au portail des b\u00e9n\u00e9voles. Veuillez contacter la coordinatrice si vous pensez qu\u2019il s\u2019agit d\u2019une erreur.',
   }
 };
 
@@ -1203,6 +1205,16 @@ async function findVolunteer() {
       btn.textContent = t('btnContinue'); btn.disabled = false; return;
     }
 
+    // Former / dismissed volunteers have no access (FORMER_VOLUNTEERS in visit-counts.js)
+    if (typeof isFormerVolunteer === 'function') {
+      const fName  = getVolunteerField(found, ['Full Legal Name', 'Name', 'Full Name', 'Nom']);
+      const fEmail = getVolunteerField(found, ['Email', 'E-mail', 'Mail']);
+      const fPhone = getVolunteerField(found, ['Phone', 'Tel', 'Phone Number', 'Mobile']);
+      if (isFormerVolunteer({ name: fName, email: fEmail || email, phone: fPhone || phone })) {
+        showAlert(alertBox, t('accessRemoved'), 'error');
+        btn.textContent = t('btnContinue'); btn.disabled = false; return;
+      }
+    }
     currentVolunteer = found;
     // Store the exact identifiers used to log in — these are what Nadouche
     // writes in calendar events, so they must be used for calendar queries.

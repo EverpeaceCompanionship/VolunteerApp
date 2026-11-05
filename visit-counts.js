@@ -22,7 +22,7 @@ const BASELINE_DATE = '2026-11-05';   // counts below include every visit up to 
 // Source: Google Calendar export "All the visits till today 2026_11_05" (132 visits, 29 May → 3 Nov 2026).
 // Each volunteer named in a visit gets 1 (a visit by 2 volunteers counts for both).
 // Eid visits (29 May – 7 Jun) assigned from Nadouche's list (5 Nov); Nadia's total = her own list (2 Eid + 20).
-// Still unassigned: Grandpa Daniel Eid visits of 3, 5 and 6 June.
+// Grandpa Daniel Eid visits of 3, 5 and 6 June were done by Habiba Hadiri (former volunteer).
 const VISIT_BASELINES = [
   // { name: 'Full Legal Name', aliases: ['Other spelling'], email: '', phone: '', visits: 0 },
   { name: "Nadia Olfa Kebaier", aliases: ["Nadia Kebaier", "Nadia Olfa"], email: '', phone: '', visits: 22 },
@@ -40,7 +40,7 @@ const VISIT_BASELINES = [
   { name: "Naeem Ahmed", aliases: [], email: '', phone: '', visits: 5 },
   { name: "Ryma Iskounene", aliases: [], email: '', phone: '', visits: 5 },
   { name: "Habib Ur Rahman Bharti", aliases: ["Habib-ur-Rahman Bharti", "Habib Rahman Bharti"], email: '', phone: '', visits: 3 },
-  { name: "Habiba Hadiri", aliases: [], email: '', phone: '', visits: 3 },
+  { name: "Habiba Hadiri", aliases: ["Sophia Amani"], email: '', phone: '', visits: 6, former: true },   // former volunteer — Eid 3, 5, 6 Jun + 12, 14, 18 Jun
   { name: "Ilham Rahimi", aliases: ["İlham Rahimi"], email: '', phone: '', visits: 3 },
   { name: "Lydia Boumaarafi", aliases: [], email: '', phone: '', visits: 3 },
   { name: "Malak Beshr", aliases: [], email: '', phone: '', visits: 4 },
@@ -125,6 +125,22 @@ function isSeniorVisitEvent(ev) {
   const start = new Date(ev.start), end = new Date(ev.end);
   if (!isNaN(start) && !isNaN(end) && (end - start) >= 20 * 3600 * 1000) return false;   // all-day / multi-day
   return true;
+}
+
+// ── Former / dismissed volunteers: NO access to the volunteer portal ──
+// Their past visits stay in the counts above. Matched like baselines
+// (email, phone, or full name / alias — never a first name alone).
+const FORMER_VOLUNTEERS = [
+  { name: 'Habiba Hadiri', aliases: ['Sophia Amani'], email: '', phone: '', note: 'Dismissed June 2026' },
+];
+function isFormerVolunteer({ name, email, phone } = {}) {
+  const n = _vcNorm(name), e = String(email || '').toLowerCase().trim(), p = _vcDigits(phone);
+  return FORMER_VOLUNTEERS.some(f => {
+    if (e && String(f.email || '').toLowerCase().trim() === e) return true;
+    if (p.length >= 7 && _vcDigits(f.phone) === p) return true;
+    if (!n) return false;
+    return _vcNames(f).some(x => x === n || (x.includes(' ') && n.includes(' ') && (_vcTokensIn(x, n) || _vcTokensIn(n, x))));
+  });
 }
 
 // True when a visit date (YYYY-MM-DD…) is after the baseline day

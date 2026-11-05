@@ -364,6 +364,7 @@ EMAILJS_TEMPLATE_ID = ''
 - The **two post-visit Google Forms** in Log Visit and the **Mandatory / Recommended** split in Training
 - The **Visit Log & Feedback** panel in the dashboard
 - The **live visit counter** (`visit-counts.js`) — portal and dashboard must use the same formula
+- The **former-volunteer block**: `FORMER_VOLUNTEERS` in `visit-counts.js` (Habiba Hadiri / Sophia Amani, dismissed June 2026) — cannot log in to the portal; her past visits still count
 
 ---
 

@@ -440,7 +440,7 @@
   </div><!-- /screen-dash -->
 </div><!-- /container -->
 
-<script src="visit-counts.js?v=4"></script>
+<script src="visit-counts.js?v=5"></script>
 <script>
 // ============================================================
 // CONFIG
@@ -1348,7 +1348,7 @@ function renderLiveCounts() {
       <thead><tr><th>Volunteer</th><th class="num">Baseline</th><th class="num">Calendar since</th><th class="num">Portal since</th><th class="num">Live total</th></tr></thead>
       <tbody>${rows.map(x => `
         <tr>
-          <td>${esc(x.name)}</td>
+          <td>${esc(x.name)}${x.b && x.b.former ? ' <span class="tag tag-flag">Former · no portal access</span>' : ''}</td>
           <td class="num">${x.b ? x.b.visits : '<span class="lc-missing">not set</span>'}</td>
           <td class="num">${calCell(x.cal)}</td>
           <td class="num">${x.portal}</td>
