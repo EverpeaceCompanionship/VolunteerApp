@@ -64,13 +64,13 @@ const VISIT_BASELINES = [
   { name: "Hosai Zurmati-Halim", aliases: [], email: '', phone: '', visits: 1 },
   { name: "Khadija Siddiqi", aliases: [], email: '', phone: '', visits: 1 },
   { name: "Kongling Bai", aliases: [], email: '', phone: '', visits: 1 },
-  { name: "Leila Abdi", aliases: [], email: '', phone: '', visits: 1 },
+  { name: "Leila Abdi", aliases: [], email: '', phone: '', visits: 0 },   // 9 Jul visit (Adam) unconfirmed — volunteer stopped responding
   { name: "Mandeek Mohamud", aliases: [], email: '', phone: '', visits: 1, former: true },
   { name: "Manel", aliases: [], email: '', phone: '', visits: 1 },
   { name: "Mayar Ahrir", aliases: ["Mayar Amri"], email: '', phone: '', visits: 1, former: true },
   { name: "Melek Delice", aliases: [], email: '', phone: '', visits: 1 },
   { name: "Nourhan Mohamed", aliases: [], email: '', phone: '', visits: 1 },
-  { name: "Oummou Rayan", aliases: [], email: '', phone: '', visits: 1 },
+  { name: "Maryam Maafi", aliases: ["Oummou Rayan"], email: '', phone: '', visits: 1, former: true },   // calendar: "Sr Oummou Rayan", 29 Jul
   { name: "Wafa", aliases: [], email: '', phone: '', visits: 1 },
 ];
 
@@ -142,7 +142,7 @@ function isSeniorVisitEvent(ev) {
 const FORMER_VOLUNTEERS = [
   { name: 'Habiba Hadiri',   aliases: ['Sophia Amani'], email: '', phone: '', note: 'Dismissed June 2026' },
   { name: 'Mandeek Mohamud', aliases: [],               email: '', phone: '', note: 'Former volunteer (1 visit)' },
-  { name: 'Maryam Maafi',    aliases: [],               email: '', phone: '', note: 'Former volunteer (1 visit)' },
+  { name: 'Maryam Maafi',    aliases: ['Oummou Rayan'], email: '', phone: '', note: 'Former volunteer (1 visit)' },
   { name: 'Mayar Ahrir',     aliases: ['Mayar Amri'],   email: '', phone: '', note: 'Former volunteer (1 visit)' },
 ];
 function isFormerVolunteer({ name, email, phone } = {}) {
