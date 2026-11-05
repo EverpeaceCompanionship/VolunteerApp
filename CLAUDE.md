@@ -240,6 +240,7 @@ EMAILJS_TEMPLATE_ID = ''
 3. **Submitted Availability** — count of volunteers with non-empty Availability Schedule
 4. **Total Visits ✓** — EXACT organisation total of DISTINCT visits (a visit by 2 volunteers to the same senior counts once) = `ORG_VISITS_BASELINE` (133 as of 2026-11-05, in visit-counts.js) + max(calendar distinct visits since via bridge `?all=1&since=` → `orgCompletedSince`, portal-logged visits since deduped by senior+date). Must match the website's "Live counter". Old formula (non-Upcoming rows + `HISTORICAL_VISITS = 25`) kept only as fallback if visit-counts.js fails to load.
    - The per-volunteer table total (e.g. 162) is "volunteer-visits" and is bigger on purpose.
+   - **Website sync:** the dashboard total is THE reference. `.github/workflows/visit-total.yml` runs `scripts/compute-visit-total.mjs` hourly (same formula, constants loaded from visit-counts.js) and commits `visit-total.json` (`everpeacecompanionship.github.io/VolunteerApp/visit-total.json`). A daily Claude scheduled task copies that number into the website artifact's "Live counter" (`visits: "…"` in project/Main.dc.html, EN + FR).
 
 ### Tab: Availability
 - **Volunteer List** with filter (All / Has Availability / No Availability Yet) and search

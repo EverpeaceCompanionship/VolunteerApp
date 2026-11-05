@@ -1,0 +1,39 @@
+name: Update visit total
+
+# Recomputes the exact organisation visit total (same formula as the dashboard)
+# and saves it to visit-total.json, which keeps the website counter in sync.
+on:
+  schedule:
+    - cron: '17 * * * *'     # every hour
+  workflow_dispatch:          # "Run workflow" button in GitHub → Actions
+  push:
+    paths:
+      - 'visit-counts.js'      # a baseline changed → recompute right away
+
+permissions:
+  contents: write
+
+concurrency:
+  group: visit-total
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Compute total
+        run: node scripts/compute-visit-total.mjs
+      - name: Save if changed
+        run: |
+          if [ -n "$(git status --porcelain visit-total.json)" ]; then
+            git config user.name  "visit-total bot"
+            git config user.email "actions@users.noreply.github.com"
+            git add visit-total.json
+            git commit -m "Update visit total"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push
+          fi
