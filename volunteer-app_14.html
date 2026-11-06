@@ -896,8 +896,7 @@
     <div class="app-footer">
       <div class="footer-brand">EVERPEACE COMPANIONSHIP</div>
       <div class="footer-tagline" id="footer-tagline">Honoring our seniors, caring as Muslims.</div>
-      <p>Adopt a Muslim Senior &middot; Islamic Care Center Ottawa</p>
-      <p style="margin-top:4px">Muslim Family Services of Ottawa</p>
+      <p id="footer-program">Adopt a Muslim Senior &middot; A program of Everpeace Companionship</p>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px">
         <button class="btn btn-outline" onclick="showChangePassword()" style="width:auto;padding:8px 20px;font-size:12px" id="btn-change-pw">&#128274; Change Password</button>
         <button class="btn btn-outline" onclick="doLogout()" style="width:auto;padding:8px 20px;font-size:12px" id="btn-logout">Sign Out</button>
@@ -972,6 +971,7 @@ const T = {
   en: {
     appTitle: 'Adopt a Muslim Senior', appSubtitle: 'Volunteer Portal',
     footerTagline: 'Honoring our seniors, caring as Muslims.',
+    footerProgram: 'Adopt a Muslim Senior \u00b7 A program of Everpeace Companionship',
     loginTitle: 'Welcome, Volunteer', loginSub: 'Sign in to manage your visits and availability',
     labelEmail: 'Email Address', labelPhone: 'OR Phone Number',
     btnContinue: 'Continue', btnSignIn: 'Sign In', loginHelp: 'Your email or phone must match our volunteer records.',
@@ -1095,6 +1095,7 @@ const T = {
   fr: {
     appTitle: 'Adopter un A\u00een\u00e9 Musulman', appSubtitle: 'Portail B\u00e9n\u00e9vole',
     footerTagline: 'Honorer nos a\u00een\u00e9s, servir avec foi.',
+    footerProgram: 'Adopter un a\u00een\u00e9 musulman \u00b7 Un programme d\u2019Everpeace Companionship',
     loginTitle: 'Bienvenue, B\u00e9n\u00e9vole', loginSub: 'Connectez-vous pour g\u00e9rer vos visites et disponibilit\u00e9s',
     labelEmail: 'Adresse Email', labelPhone: 'OU Num\u00e9ro de T\u00e9l\u00e9phone',
     btnContinue: 'Continuer', btnSignIn: 'Se connecter', loginHelp: 'Votre email ou t\u00e9l\u00e9phone doit correspondre \u00e0 nos dossiers.',
@@ -1347,7 +1348,7 @@ function toggleLang() {
 
 function applyTranslations() {
   const ids = {
-    'app-title': 'appTitle', 'app-subtitle': 'appSubtitle', 'footer-tagline': 'footerTagline', 'login-title': 'loginTitle',
+    'app-title': 'appTitle', 'app-subtitle': 'appSubtitle', 'footer-tagline': 'footerTagline', 'footer-program': 'footerProgram', 'login-title': 'loginTitle',
     'login-sub': 'loginSub', 'label-email': 'labelEmail', 'label-phone': 'labelPhone',
     'btn-continue': 'btnContinue', 'login-help': 'loginHelp',
     'label-password': 'labelPassword', 'btn-verify-pw': 'btnSignIn',
