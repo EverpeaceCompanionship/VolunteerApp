@@ -175,7 +175,7 @@ EMAILJS_TEMPLATE_ID = ''
 
 ### Tab: Training
 - **Two sections:** Section 1 "Mandatory Training" (items with `level: 'mandatory'` in `TRAINING_COURSES`) and Section 2 "Recommended Resources" (everything else). Each section has its own progress bar; Mandatory shows "x required items left" / "All mandatory training completed".
-- Mandatory today: tr19 Agreement, tr20 Waiver, tr21 Code of Conduct, tr1 Mental Health webinar, tr2 Do's & Don'ts webinar, tr6 slides, tr9 Age-Friendly Communication, + coming soon tr5, tr7
+- Mandatory today: tr19 Agreement, tr20 Waiver, tr21 Code of Conduct, tr1 Mental Health webinar, tr2 Do's & Don'ts webinar, tr6 slides, tr9 Age-Friendly Communication, + coming soon tr7 (tr5 "How to Log a Visit" removed 6 Nov 2026)
 - Inside each section, items are grouped: Policies / Webinars / Videos / Documents / How-to Guides; filter pills apply to both sections
 - Red dot on the Training tab = a policy not yet opened OR mandatory items not marked done
 - Progress tracked in **localStorage** scoped to volunteer's email: `ep_training_done_{email}`
