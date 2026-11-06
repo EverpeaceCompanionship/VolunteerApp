@@ -190,17 +190,16 @@ EMAILJS_TEMPLATE_ID = ''
 - All strings in `T.en` and `T.fr` translation objects
 - Calendar availability days/months also translated
 
-### Design Rules — match the Everpeace website (brand refresh, 5 Nov 2026)
-Both pages follow the website's design (Claude artifact 4JicWNpYvmEwa6VoXcMkgo). Nadouche asked for this; keep it in sync with the website.
-- **Colors** (same CSS variable names as before, new values): `--green-dark: #0F3732` (deep teal, primary), `--green: #1B4A43`, `--green-deep: #0A2622` (footer), `--gold: #CDB083`, `--gold-mid: #B8976A`, `--gold-dark: #7A5F38` (bronze text), `--cream: #F8F1EA` (ivory), `--sand: #F1E8DC`, `--border: #E4D8C6`, `--text-secondary: #4E6B63` (sage), `--mist: #DDE6E2`
-- **Fonts:** Cormorant Garamond (headings/numbers, lining numerals), Cinzel (EVERPEACE wordmark), Nunito Sans (body), Amiri (Bismillah)
-- **Header:** ivory bar with the website logo (base64 in `.brand-logo` CSS) + Cinzel wordmark "EVERPEACE · COMPANIONSHIP ·"; below it a deep-teal **hero band** with twinkling stars + gold crescent holding `#app-title` / `#app-subtitle`
-- **Bismillah** in Arabic always at top of content area, with the gold diamond divider
-- Pill buttons/tabs (radius 999px), cards radius 22px, soft teal shadows, stroke SVG tab icons
-- Deep-teal footer panel with wordmark + tagline "Honoring our seniors, caring as Muslims." / "Honorer nos aînés, servir avec foi." (`footerTagline` in T.en/T.fr)
-- Gold crescent (CSS box-shadow) on the visit card; logo on the login screens
-- Portal max container width: 560px (mobile-first); dashboard 1040px
-- All brand styles live in the "BRAND REFRESH" block at the end of each `<style>` — restyle there, never in JS
+### Design Rules — "Midnight & Champagne" (thank-you card style, 6 Nov 2026)
+Website, portal and dashboard all follow the Everpeace thank-you card (International Day of Older Persons). Nadouche chose this to look distinctive, not like template/AI-built sites.
+- **Navy is #051635 — never change it.** Card golds are fixed too: champagne `#CDAE74` (on navy), antique gold `#86662E` (text on paper).
+- CSS variable names are kept from earlier versions, with new values: `--green-dark: #051635` (navy), `--green: #0C2147`, `--green-deep: #030E24`, `--gold: #CDAE74`, `--gold-dark: #86662E`, `--cream: #FBF7EE` (paper), `--sand: #F4ECDD`, `--border: #E6DAC2`, `--charcoal: #1A2238` (ink), `--text-secondary: #474D5E`, `--mist: #C9CCD6`
+- **Fonts:** EB Garamond (text, buttons), Cormorant Garamond italic (headings, numbers), Great Vibes (footer signature line only), Amiri (Bismillah)
+- **Logos:** the card's monochrome gold emblems, base64 in CSS: antique gold on paper (`.brand-logo`), champagne on navy (`.hero-logo`)
+- **Motifs:** thin double gold frame with four-point stars at the corners (hero, navy tiles, cards via outline), small gold diamond dividers, widely tracked small capitals. NO starry sky, NO crescent moon, NO pill buttons (buttons are squared, radius 4px, uppercase tracked)
+- **Bismillah** in Arabic always at top of content area
+- Portal container 560px (mobile-first); dashboard 1040px
+- All styles live in the "BRAND REFRESH" + "CARD STYLE" blocks at the end of each `<style>` — restyle there, never in JS
 
 ---
 
