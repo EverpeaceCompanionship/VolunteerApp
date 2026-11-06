@@ -10,8 +10,8 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Great+Vibes&display=swap');
   :root {
-    /* Everpeace website palette (everpeacecompanionship.org) */
-    /* Midnight & Champagne — the Everpeace thank-you card palette (navy #051635 is fixed) */
+    /* Everpeace Companionship website palette (everpeacecompanionship.org) */
+    /* Midnight & Champagne — the Everpeace Companionship thank-you card palette (navy #051635 is fixed) */
     --cream: #FBF7EE; --sand: #F4ECDD; --gold: #CDAE74; --gold-mid: #CDAE74; --gold-light: #EADBB8; --gold-dark: #86662E;
     --green: #0C2147; --green-light: #ECEDF2; --green-dark: #051635; --green-deep: #030E24; --sage: #474D5E; --mist: #C9CCD6;
     --charcoal: #1A2238; --ink-2: #3A4154; --text-secondary: #474D5E; --border: #E6DAC2;
@@ -229,7 +229,7 @@
   .check-row > span > span { font-weight: 700; }
   #fb-inline > label { text-transform: none; letter-spacing: 0; font-size: 13px; line-height: 1.4; margin-top: 16px; }
 
-  /* ═══════════ BRAND REFRESH (Nov 2026) — matches the Everpeace website ═══════════
+  /* ═══════════ BRAND REFRESH (Nov 2026) — matches the Everpeace Companionship website ═══════════
      Palette, type and components come from everpeacecompanionship.org.
      Everything below only restyles; no behaviour depends on it. */
   body { font-family: 'EB Garamond', Georgia, serif; background: var(--cream); color: var(--charcoal); line-height: 1.5; -webkit-font-smoothing: antialiased; }
@@ -421,7 +421,7 @@
   .course-card .course-cat { padding-right: 46px; }
   @media (max-width: 420px) { .header-logo .brand-logo { width: 38px; height: 44px; } }
 
-  /* ═══════════ CARD STYLE (6 Nov 2026) — matches the Everpeace thank-you cards ═══════════
+  /* ═══════════ CARD STYLE (6 Nov 2026) — matches the Everpeace Companionship thank-you cards ═══════════
      Navy #051635 + champagne gold, EB Garamond / Cormorant Garamond italic,
      thin double gold frames with four-point stars, squared "stationery" buttons. */
   body, input, select, textarea, button, .btn, .nav-tab, .lang-toggle, .btn-signout, .training-pill, .filter-btn, .vtog, .cal-nav-btn, .btn-course-open, .btn-course-done { font-family: 'EB Garamond', Georgia, serif; }
@@ -741,7 +741,7 @@
         </select>
         <label class="check-row" for="first-visit-check">
           <input type="checkbox" id="first-visit-check" onchange="onFirstVisitToggle()">
-          <span><span id="first-visit-label">This was my first visit with Everpeace</span>
+          <span><span id="first-visit-label">This was my first visit with Everpeace Companionship</span>
             <small id="first-visit-hint">We'll ask you to complete the first-time volunteer satisfaction survey.</small></span>
         </label>
 
@@ -903,7 +903,7 @@
         <button class="btn btn-outline" onclick="doLogout()" style="width:auto;padding:8px 20px;font-size:12px" id="btn-logout">Sign Out</button>
       </div>
       <div class="footer-links">
-        <a href="#" id="link-website" target="_blank" rel="noopener">&#127760; <span id="link-website-label">Everpeace website</span></a>
+        <a href="#" id="link-website" target="_blank" rel="noopener">&#127760; <span id="link-website-label">Everpeace Companionship website</span></a>
         <a href="#" id="link-dashboard" target="_blank" rel="noopener">&#128274; <span id="link-dashboard-label">Coordinator dashboard</span></a>
       </div>
     </div>
@@ -1052,7 +1052,7 @@ const T = {
     badgeReq: 'Required', badgeRec: 'Recommended', badgeNew: 'NEW', comingSoon: '\u{1F6A7} Coming Soon',
     linkMissing: 'This resource link has not been set up yet. Contact your coordinator for access.',
     step1: 'Visit & feedback', step2: 'Done',
-    firstVisitLabel: 'This was my first visit with Everpeace',
+    firstVisitLabel: 'This was my first visit with Everpeace Companionship',
     firstVisitHint: "We'll ask you to complete the first-time volunteer satisfaction survey.",
     regularVisitHint: "We'll ask you to complete the regular visit feedback form.",
     fbTitle: 'Share Your Feedback',
@@ -1069,7 +1069,7 @@ const T = {
     futureDate: 'The visit date cannot be in the future.',
     connError: 'Connection error. Please check your internet and try again.',
     genericError: 'Something went wrong. Please try again.',
-    linkWebsite: 'Everpeace website', linkDashboard: 'Coordinator dashboard',
+    linkWebsite: 'Everpeace Companionship website', linkDashboard: 'Coordinator dashboard',
     liveCountTip: (d) => `Exact total up to ${d}, plus every visit since — updated automatically`,
     seniorPlaceholder: 'Select the senior…', seniorOther: 'Other — type the name',
     secVisit: 'The visit', secSenior: 'About the senior', secFeedback: 'Your feedback',
@@ -1174,7 +1174,7 @@ const T = {
     badgeReq: 'Obligatoire', badgeRec: 'Recommandé', badgeNew: 'NOUVEAU', comingSoon: '\u{1F6A7} Bientôt disponible',
     linkMissing: 'Ce lien n’est pas encore configuré. Contactez votre coordinatrice pour y accéder.',
     step1: 'Visite et r\u00e9troaction', step2: 'Termin\u00e9',
-    firstVisitLabel: 'C’était ma première visite avec Everpeace',
+    firstVisitLabel: 'C’était ma première visite avec Everpeace Companionship',
     firstVisitHint: 'Nous vous demanderons de remplir le sondage de satisfaction de première visite.',
     regularVisitHint: 'Nous vous demanderons de remplir le formulaire de rétroaction régulier.',
     fbTitle: 'Donnez votre avis',
@@ -1191,7 +1191,7 @@ const T = {
     futureDate: 'La date de visite ne peut pas être dans le futur.',
     connError: 'Erreur de connexion. Vérifiez votre internet et réessayez.',
     genericError: 'Une erreur est survenue. Veuillez réessayer.',
-    linkWebsite: 'Site web Everpeace', linkDashboard: 'Tableau de bord coordinatrice',
+    linkWebsite: 'Site web Everpeace Companionship', linkDashboard: 'Tableau de bord coordinatrice',
     liveCountTip: (d) => `Total exact jusqu\u2019au ${d}, plus chaque visite depuis \u2014 mis \u00e0 jour automatiquement`,
     seniorPlaceholder: 'S\u00e9lectionnez l\u2019a\u00een\u00e9(e)\u2026', seniorOther: 'Autre \u2014 saisir le nom',
     secVisit: 'La visite', secSenior: '\u00c0 propos de l\u2019a\u00een\u00e9(e)', secFeedback: 'Votre r\u00e9troaction',
