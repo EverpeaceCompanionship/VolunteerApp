@@ -12,6 +12,35 @@
 //   Deploy → Manage deployments → ✏️ Edit → Version: "New version" → Deploy
 // ============================================================
 
+// ------------------------------------------------------------
+// CALENDARS TO READ
+// The script always reads the calendar of the Google account that owns it.
+// Add the Everpeace Companionship (professional) calendar below, between quotes,
+// after sharing it with this account ("See all event details").
+// Example: const EXTRA_CALENDAR_IDS = ['nadia@everpeacecompanionship.org'];
+// ------------------------------------------------------------
+const EXTRA_CALENDAR_IDS = [];
+
+// Events from every calendar above, without duplicates
+// (an event that appears in two calendars counts once)
+function getVisitCalendarEvents(start, end) {
+  const cals = [CalendarApp.getDefaultCalendar()];
+  EXTRA_CALENDAR_IDS.forEach(id => {
+    const c = id && CalendarApp.getCalendarById(String(id).trim());
+    if (c) cals.push(c);
+  });
+  const seen = {};
+  const out = [];
+  cals.forEach(c => c.getEvents(start, end).forEach(ev => {
+    const key = (ev.getTitle() || '').toLowerCase().trim() + '|' + ev.getStartTime().getTime();
+    const id = ev.getId();
+    if (seen[id] || seen[key]) return;
+    seen[id] = seen[key] = true;
+    out.push(ev);
+  }));
+  return out;
+}
+
 const COMPLETED_THRESHOLD_HOURS = 36; // hours after visit before it counts as "confirmed done"
 const CANCELLED_KEYWORDS = ['cancel', 'cancelled', 'annulé', 'annulée', 'annule'];
 
@@ -32,11 +61,10 @@ function doGet(e) {
 
     // ?all=1&since=YYYY-MM-DD → organisation total: distinct confirmed senior visits after that day
     if (e.parameter.all === '1' && sinceEnd) {
-      const calAll = CalendarApp.getDefaultCalendar();
       const nowAll = new Date();
       const cutoff = new Date(nowAll.getTime() - COMPLETED_THRESHOLD_HOURS * 60 * 60 * 1000);
       const seen = {};
-      calAll.getEvents(sinceEnd, cutoff).forEach(ev => {
+      getVisitCalendarEvents(sinceEnd, cutoff).forEach(ev => {
         const title = ev.getTitle() || '';
         if (CANCELLED_KEYWORDS.some(kw => title.toLowerCase().includes(kw))) return;
         if (!isSeniorVisitTitle(title) || ev.isAllDayEvent()) return;
@@ -53,14 +81,13 @@ function doGet(e) {
       }));
     }
 
-    const cal  = CalendarApp.getDefaultCalendar();
     const now  = new Date();
 
     // Search window: 3 years back → 60 days ahead (captures all visits since project start)
     const windowStart = new Date(now.getTime() - 3 * 365 * 24 * 60 * 60 * 1000);
     const windowEnd   = new Date(now.getTime() + 60 * 24 * 60 * 60 * 1000);
 
-    const allEvents = cal.getEvents(windowStart, windowEnd);
+    const allEvents = getVisitCalendarEvents(windowStart, windowEnd);
 
     // Keep only events that mention this volunteer's email or phone
     const matched = allEvents.filter(ev => {

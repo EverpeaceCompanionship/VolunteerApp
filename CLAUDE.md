@@ -211,6 +211,7 @@ Website, portal and dashboard all follow the Everpeace thank-you card (Internati
 **How it works:**
 - Accepts GET request with `?email=...&phone=...`
 - Searches **Nadouche's Google Calendar** (regular @gmail.com account)
+- **Also reads extra calendars** listed in `EXTRA_CALENDAR_IDS` (Nov 2026: the Everpeace Companionship professional calendar, shared with the personal account, holds coordinated visits from 9 Nov 2026 onward). Events appearing in both calendars count once (`getVisitCalendarEvents`). Keep the deployment in the personal account: same URL, and Workspace may block "Anyone" web-app access.
 - Search window: **3 years back → 60 days ahead** (updated from 90 days to catch all historical visits)
 - Matches events where volunteer's email OR phone digits appear **anywhere in the event description**
 - Returns: `{ success, upcoming[], completedTotal, completedThisMonth, recentCompleted[] }`
