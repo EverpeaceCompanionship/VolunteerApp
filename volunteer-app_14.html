@@ -1139,9 +1139,13 @@ const T = {
       'Fill in, sign and have witnessed each form below (anyone can sign as your witness), then upload them to MyImpactPage.com (Better Impact). A police records check is also required.',
       'When everything is uploaded, email the completed checklist to ann.hall@ottawa.ca so the Activities Coordinator can start your volunteering journey.'
     ],
-    ltcGroupGuide: 'Start here', ltcGroupForms: 'Forms to sign & upload', ltcGroupRef: 'Reference',
+    ltcGroupGuide: 'Start here', ltcGroupBi: 'Using Better Impact (your City volunteer profile)', ltcGroupForms: 'Forms to sign & upload', ltcGroupRef: 'Reference',
     ltcOpen: 'Open PDF', ltcFillable: 'Fillable', ltcUnder18: 'Under 18 only', ltcTwo: '× 2 references',
     ltcDocs: {
+      appform: ['How to Fill Out the Online Application Form', 'Bilingual tips for completing the City’s Better Impact application and finding your mandatory documents.'],
+      reqs: ['Application Process & Checklist of Requirements (2024)', 'Orientation, police check, references and accessibility training — what is needed and how.'],
+      bnav: ['Navigating Better Impact — Your Online Volunteer Profile', 'Where to find your volunteer documents and how to upload completed forms.'],
+      btrain: ['Where to Find the Training Modules in Better Impact', 'Locating the AODA and IASR accessibility training in your volunteer profile.'],
       howto: ['How to Apply for a Volunteer Opportunity', 'Bilingual step-by-step guide to the City’s online application.'],
       checklist: ['Checklist of Completed Documents', 'Track every requirement, then email it to the City when done.'],
       coc: ['Volunteer Code of Conduct', 'Standards of behaviour expected in City of Ottawa LTC homes.'],
@@ -1294,9 +1298,13 @@ const T = {
       'Remplissez, signez et faites attester chaque formulaire ci-dessous (n’importe qui peut signer comme témoin), puis téléversez-les sur MyImpactPage.com (Better Impact). Une vérification du casier judiciaire est aussi exigée.',
       'Une fois tout téléversé, envoyez la liste de vérification remplie à ann.hall@ottawa.ca afin que la coordonnatrice des activités puisse commencer votre parcours de bénévole.'
     ],
-    ltcGroupGuide: 'Commencez ici', ltcGroupForms: 'Formulaires à signer et téléverser', ltcGroupRef: 'Référence',
+    ltcGroupGuide: 'Commencez ici', ltcGroupBi: 'Utiliser Better Impact (votre profil de bénévole de la Ville)', ltcGroupForms: 'Formulaires à signer et téléverser', ltcGroupRef: 'Référence',
     ltcOpen: 'Ouvrir le PDF', ltcFillable: 'Remplissable', ltcUnder18: 'Moins de 18 ans seulement', ltcTwo: '× 2 références',
     ltcDocs: {
+      appform: ['Comment remplir le formulaire de demande en ligne', 'Conseils bilingues pour remplir la demande Better Impact de la Ville et trouver vos documents obligatoires.'],
+      reqs: ['Processus de demande et liste des exigences (2024)', 'Orientation, vérification policière, références et formation sur l’accessibilité — ce qu’il faut et comment.'],
+      bnav: ['Naviguer dans Better Impact — votre profil de bénévole en ligne', 'Où trouver vos documents de bénévole et comment téléverser les formulaires remplis.'],
+      btrain: ['Où trouver les modules de formation dans Better Impact', 'Trouver la formation sur l’accessibilité (LAPHO et RNAI) dans votre profil.'],
       howto: ['Comment présenter une demande de bénévolat', 'Guide bilingue étape par étape pour la demande en ligne de la Ville.'],
       checklist: ['Liste de vérification des documents remplis', 'Suivez chaque exigence, puis envoyez-la à la Ville une fois terminée.'],
       coc: ['Code de conduite des bénévoles', 'Normes de comportement attendues dans les foyers de SLD de la Ville.'],
@@ -3379,6 +3387,8 @@ function renderTraining() {
 // folder, add a line here, and add its title/description to T.en.ltcDocs and T.fr.ltcDocs.
 const LTC_DOCS = [
   { key: 'howto',     group: 'guide', emoji: '📌', url: './ltc-docs/10-how-to-apply.pdf' },
+  { key: 'appform',   group: 'guide', emoji: '📝', url: './ltc-docs/14-how-to-fill-application-form.pdf' },
+  { key: 'reqs',      group: 'guide', emoji: '📋', url: './ltc-docs/11-application-requirements-2024.pdf' },
   { key: 'checklist', group: 'guide', emoji: '✅', url: './ltc-docs/00-checklist.pdf' },
   { key: 'handbook',  group: 'guide', emoji: '📘', url: './ltc-docs/08-volunteer-handbook-2026.pdf' },
   { key: 'coc',       group: 'forms', emoji: '📜', url: './ltc-docs/01-code-of-conduct.pdf', fillable: true },
@@ -3388,6 +3398,8 @@ const LTC_DOCS = [
   { key: 'offence',   group: 'forms', emoji: '⚖️', url: './ltc-docs/05-offence-misconduct-declaration.pdf', fillable: true },
   { key: 'reference', group: 'forms', emoji: '👥', url: './ltc-docs/07-reference-questions.pdf', fillable: true, tag: 'ltcTwo' },
   { key: 'parental',  group: 'forms', emoji: '👪', url: './ltc-docs/06-parental-consent-14-17.pdf', fillable: true, tag: 'ltcUnder18' },
+  { key: 'bnav',      group: 'bi',    emoji: '🧭', url: './ltc-docs/12-navigating-better-impact.pdf' },
+  { key: 'btrain',    group: 'bi',    emoji: '🎓', url: './ltc-docs/13-better-impact-training-modules.pdf' },
   { key: 'photo',     group: 'ref',   emoji: '📷', url: './ltc-docs/09-photo-requirements.pdf' }
 ];
 
@@ -3422,7 +3434,7 @@ function renderLtcDocs() {
     steps.map(s => `<li>${esc(s).replace('ann.hall@ottawa.ca', '<a href="mailto:ann.hall@ottawa.ca">ann.hall@ottawa.ca</a>').replace('MyImpactPage.com', '<a href="https://www.myimpactpage.com" target="_blank" rel="noopener">MyImpactPage.com</a>')}</li>`).join('') +
     `</ol>` + (L.ltcEnNote ? `<div class="ltc-note">${esc(L.ltcEnNote)}</div>` : '');
 
-  const groups = [['guide', 'ltcGroupGuide'], ['forms', 'ltcGroupForms'], ['ref', 'ltcGroupRef']];
+  const groups = [['guide', 'ltcGroupGuide'], ['bi', 'ltcGroupBi'], ['forms', 'ltcGroupForms'], ['ref', 'ltcGroupRef']];
   body.innerHTML = groups.map(([g, labelKey]) => {
     const items = LTC_DOCS.filter(d => d.group === g);
     if (!items.length) return '';
