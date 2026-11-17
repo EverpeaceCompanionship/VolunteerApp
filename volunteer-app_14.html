@@ -493,6 +493,24 @@
   .app-footer .btn-outline { border-width: 1px; }
   .dash-footer .footer-tagline, .app-footer .footer-tagline { font-family: 'Great Vibes', cursive; font-style: normal; font-size: 27px; line-height: 1.2; }
   .assignment-card::before { width: 18px; height: 18px; border-radius: 0; box-shadow: none; top: 22px; right: 24px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M7 0Q7 7 14 7Q7 7 7 14Q7 7 0 7Q7 7 7 0Z' fill='%23CDAE74'/%3E%3C/svg%3E") center / contain no-repeat; }
+  /* ── Training Section 3: City of Ottawa LTC Homes Documentations ── */
+  .tsec-ltc { border: 1px solid var(--border); border-top: 3px solid var(--green); background: var(--white); }
+  .tsec-ltc .tsec-icon { background: var(--green); color: var(--gold); }
+  .tsec-ltc .tsec-kicker { color: var(--gold-dark); }
+  .ltc-steps { background: var(--cream); border: 1px solid var(--border); border-radius: 4px; padding: 12px 14px; margin: 4px 0 6px; font-size: 13px; color: var(--charcoal); line-height: 1.5; }
+  .ltc-steps-title { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--gold-dark); margin-bottom: 6px; }
+  .ltc-steps ol { margin: 0; padding-left: 20px; }
+  .ltc-steps li { margin-bottom: 4px; }
+  .ltc-steps a { color: var(--green-dark); font-weight: 700; }
+  .ltc-note { font-size: 11px; font-style: italic; color: var(--text-secondary); margin-top: 6px; }
+  .ltc-doc { display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--white); text-decoration: none; color: inherit; transition: border-color .15s, box-shadow .15s; }
+  .ltc-doc:hover { border-color: var(--green-dark); box-shadow: 0 10px 22px -18px rgba(5,22,53,.6); }
+  .ltc-doc-icon { width: 38px; height: 38px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; background: var(--sand); border-radius: 999px; }
+  .ltc-doc-text { flex: 1; min-width: 0; }
+  .ltc-doc-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 17px; font-weight: 700; color: var(--green-dark); line-height: 1.2; }
+  .ltc-doc-desc { display: block; font-size: 12px; color: var(--text-secondary); margin-top: 2px; line-height: 1.4; }
+  .ltc-doc-open { flex-shrink: 0; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--gold-dark); white-space: nowrap; }
+  @media (max-width: 420px) { .ltc-doc-open { display: none; } }
 </style>
 </head>
 <body>
@@ -891,6 +909,20 @@
         </div>
         <div id="tsec-r-body"></div>
       </section>
+
+      <!-- SECTION 3: CITY OF OTTAWA LTC HOMES DOCUMENTATIONS -->
+      <section class="tsec tsec-ltc" id="tsec-ltc">
+        <div class="tsec-head">
+          <div class="tsec-icon">&#127963;</div>
+          <div>
+            <div class="tsec-kicker" id="tsec-l-kicker">Section 3 · Partner Documents</div>
+            <div class="tsec-title" id="tsec-l-title">City of Ottawa Long-term Care Homes Documentations</div>
+            <div class="tsec-sub" id="tsec-l-sub">For volunteers placed in City of Ottawa long-term care homes. Every document below must be completed before you start volunteering there.</div>
+          </div>
+        </div>
+        <div class="ltc-steps" id="ltc-steps"></div>
+        <div id="tsec-l-body"></div>
+      </section>
     </div>
 
     <div class="app-footer">
@@ -1048,6 +1080,30 @@ const T = {
     tsecMSub: 'Please complete every item below before your first visit. These cover our policies, safety and the essentials of respectful companionship.',
     tsecRKicker: 'Section 2 · Optional', tsecRTitle: 'Recommended Resources',
     tsecRSub: 'Deepen your knowledge at your own pace — videos, guides and reference documents on ageing, dementia, communication and Islamic care.',
+    tsecLKicker: 'Section 3 · Partner Documents', tsecLTitle: 'City of Ottawa Long-term Care Homes Documentations',
+    tsecLSub: 'For volunteers placed in City of Ottawa long-term care homes. Every document below must be completed before you start volunteering there.',
+    ltcHowTitle: 'How to complete your file',
+    ltcSteps: [
+      'Complete the AODA and IASR online accessibility training and upload your certificate to MyImpactPage.com.',
+      'Attend a volunteer orientation session (links are in your original application email).',
+      'Read the Long-term Care Volunteer Handbook.',
+      'Fill in, sign and have witnessed each form below (anyone can sign as your witness), then upload them to MyImpactPage.com (Better Impact). A police records check is also required.',
+      'When everything is uploaded, email the completed checklist to ann.hall@ottawa.ca so the Activities Coordinator can start your volunteering journey.'
+    ],
+    ltcGroupGuide: 'Start here', ltcGroupForms: 'Forms to sign & upload', ltcGroupRef: 'Reference',
+    ltcOpen: 'Open PDF', ltcFillable: 'Fillable', ltcUnder18: 'Under 18 only', ltcTwo: '× 2 references',
+    ltcDocs: {
+      checklist: ['Checklist of Completed Documents', 'Track every requirement, then email it to the City when done.'],
+      coc: ['Volunteer Code of Conduct', 'Standards of behaviour expected in City of Ottawa LTC homes.'],
+      pledge: ['Pledge of Confidentiality', 'Your commitment to protect residents’ personal information.'],
+      abuse: ['Prevention of Abuse and Neglect Policy', 'Read, sign and have witnessed.'],
+      tb: ['Active Tuberculosis (TB) Screening Questionnaire', 'Required health screening form.'],
+      offence: ['Volunteer Offence and Misconduct Declaration', 'Legal declaration — sign and have witnessed.'],
+      parental: ['Parent/Legal Guardian Consent Form (ages 14–17)', 'Only for volunteers under 18.'],
+      reference: ['Reference Questions', 'Give to two references to complete.'],
+      handbook: ['Long-term Care Volunteer Handbook 2026', 'Everything you need to know about volunteering in City LTC homes.'],
+      photo: ['Approved Photograph Requirements', 'Photo rules for the volunteer database and ID badge.']
+    },
     tsecTodo: (n) => `⏳ ${n} required item${n!==1?'s':''} left`, tsecOk: '✓ All mandatory training completed',
     badgeReq: 'Required', badgeRec: 'Recommended', badgeNew: 'NEW', comingSoon: '\u{1F6A7} Coming Soon',
     linkMissing: 'This resource link has not been set up yet. Contact your coordinator for access.',
@@ -1171,6 +1227,32 @@ const T = {
     tsecMSub: 'Veuillez compléter chaque élément ci-dessous avant votre première visite. Ils couvrent nos politiques, la sécurité et l’essentiel d’un accompagnement respectueux.',
     tsecRKicker: 'Section 2 · Facultatif', tsecRTitle: 'Ressources recommandées',
     tsecRSub: 'Approfondissez vos connaissances à votre rythme — vidéos, guides et documents sur le vieillissement, la démence, la communication et les soins en Islam.',
+    tsecLKicker: 'Section 3 · Documents des partenaires', tsecLTitle: 'Documentation des foyers de soins de longue durée de la Ville d’Ottawa',
+    tsecLSub: 'Pour les bénévoles affectés aux foyers de soins de longue durée de la Ville d’Ottawa. Tous les documents ci-dessous doivent être remplis avant de commencer à y faire du bénévolat.',
+    ltcHowTitle: 'Comment compléter votre dossier',
+    ltcSteps: [
+      'Suivez la formation en ligne sur l’accessibilité (LAPHO et RNAI) et téléversez votre certificat sur MyImpactPage.com.',
+      'Assistez à une séance d’orientation des bénévoles (les liens sont dans le courriel de votre demande initiale).',
+      'Lisez le Guide des bénévoles en soins de longue durée.',
+      'Remplissez, signez et faites attester chaque formulaire ci-dessous (n’importe qui peut signer comme témoin), puis téléversez-les sur MyImpactPage.com (Better Impact). Une vérification du casier judiciaire est aussi exigée.',
+      'Une fois tout téléversé, envoyez la liste de vérification remplie à ann.hall@ottawa.ca afin que la coordonnatrice des activités puisse commencer votre parcours de bénévole.'
+    ],
+    ltcGroupGuide: 'Commencez ici', ltcGroupForms: 'Formulaires à signer et téléverser', ltcGroupRef: 'Référence',
+    ltcOpen: 'Ouvrir le PDF', ltcFillable: 'Remplissable', ltcUnder18: 'Moins de 18 ans seulement', ltcTwo: '× 2 références',
+    ltcDocs: {
+      checklist: ['Liste de vérification des documents remplis', 'Suivez chaque exigence, puis envoyez-la à la Ville une fois terminée.'],
+      coc: ['Code de conduite des bénévoles', 'Normes de comportement attendues dans les foyers de SLD de la Ville.'],
+      pledge: ['Engagement de confidentialité', 'Votre engagement à protéger les renseignements personnels des résidents.'],
+      abuse: ['Politique de prévention des mauvais traitements et de la négligence', 'À lire, signer et faire attester.'],
+      tb: ['Questionnaire de dépistage de la tuberculose (TB) active', 'Formulaire de dépistage obligatoire.'],
+      offence: ['Déclaration d’infractions et d’inconduite des bénévoles', 'Déclaration juridique — à signer et faire attester.'],
+      parental: ['Formulaire de consentement parental (14 à 17 ans)', 'Seulement pour les bénévoles de moins de 18 ans.'],
+      reference: ['Questions pour les références', 'À remettre à deux références.'],
+      handbook: ['Guide des bénévoles en soins de longue durée 2026', 'Tout ce qu’il faut savoir sur le bénévolat dans les foyers de SLD de la Ville.'],
+      photo: ['Exigences pour la photo approuvée', 'Règles pour la photo de la base de données et du badge d’identité.']
+    },
+    // Note: the PDFs themselves are in English (City of Ottawa originals)
+    ltcEnNote: 'Les documents sont en anglais (versions originales de la Ville d’Ottawa).',
     tsecTodo: (n) => `⏳ ${n} élément${n!==1?'s':''} obligatoire${n!==1?'s':''} restant${n!==1?'s':''}`, tsecOk: '✓ Formation obligatoire terminée',
     badgeReq: 'Obligatoire', badgeRec: 'Recommandé', badgeNew: 'NOUVEAU', comingSoon: '\u{1F6A7} Bientôt disponible',
     linkMissing: 'Ce lien n’est pas encore configuré. Contactez votre coordinatrice pour y accéder.',
@@ -1379,6 +1461,7 @@ function applyTranslations() {
     'training-video-label': 'videoSectionLabel', 'training-pdf-label': 'pdfSectionLabel',
     'tsec-m-kicker': 'tsecMKicker', 'tsec-m-title': 'tsecMTitle', 'tsec-m-sub': 'tsecMSub',
     'tsec-r-kicker': 'tsecRKicker', 'tsec-r-title': 'tsecRTitle', 'tsec-r-sub': 'tsecRSub',
+    'tsec-l-kicker': 'tsecLKicker', 'tsec-l-title': 'tsecLTitle', 'tsec-l-sub': 'tsecLSub',
     'tpill-all-label': 'tpillAll', 'tpill-video-label': 'tpillVideo', 'tpill-pdf-label': 'tpillDoc',
     'tpill-webinar-label': 'tpillWebinar', 'tpill-wtgo-label': 'tpillWtgo', 'tpill-policies-label': 'tpillPolicies',
     'step-1-label': 'step1', 'step-2-label': 'step2', 'first-visit-label': 'firstVisitLabel',
@@ -3153,6 +3236,52 @@ function renderTraining() {
   });
 
   updateTrainingProgress();
+  renderLtcDocs();
+}
+
+// ── Section 3: City of Ottawa Long-term Care Homes Documentations ──
+// PDFs live in ./ltc-docs/. To add/replace a document: drop the PDF in that
+// folder, add a line here, and add its title/description to T.en.ltcDocs and T.fr.ltcDocs.
+const LTC_DOCS = [
+  { key: 'checklist', group: 'guide', emoji: '✅', url: './ltc-docs/00-checklist.pdf' },
+  { key: 'handbook',  group: 'guide', emoji: '📘', url: './ltc-docs/08-volunteer-handbook-2026.pdf' },
+  { key: 'coc',       group: 'forms', emoji: '📜', url: './ltc-docs/01-code-of-conduct.pdf', fillable: true },
+  { key: 'pledge',    group: 'forms', emoji: '🔒', url: './ltc-docs/02-pledge-of-confidentiality.pdf', fillable: true },
+  { key: 'abuse',     group: 'forms', emoji: '🛡️', url: './ltc-docs/03-prevention-of-abuse-policy.pdf', fillable: true },
+  { key: 'tb',        group: 'forms', emoji: '🩺', url: './ltc-docs/04-tb-questionnaire.pdf', fillable: true },
+  { key: 'offence',   group: 'forms', emoji: '⚖️', url: './ltc-docs/05-offence-misconduct-declaration.pdf', fillable: true },
+  { key: 'reference', group: 'forms', emoji: '👥', url: './ltc-docs/07-reference-questions.pdf', fillable: true, tag: 'ltcTwo' },
+  { key: 'parental',  group: 'forms', emoji: '👪', url: './ltc-docs/06-parental-consent-14-17.pdf', fillable: true, tag: 'ltcUnder18' },
+  { key: 'photo',     group: 'ref',   emoji: '📷', url: './ltc-docs/09-photo-requirements.pdf' }
+];
+
+function renderLtcDocs() {
+  const body = document.getElementById('tsec-l-body');
+  const stepsEl = document.getElementById('ltc-steps');
+  if (!body || !stepsEl) return;
+  const L = T[currentLang] || T.en;
+  const steps = L.ltcSteps || T.en.ltcSteps;
+  stepsEl.innerHTML =
+    `<div class="ltc-steps-title">${esc(t('ltcHowTitle'))}</div><ol>` +
+    steps.map(s => `<li>${esc(s).replace('ann.hall@ottawa.ca', '<a href="mailto:ann.hall@ottawa.ca">ann.hall@ottawa.ca</a>').replace('MyImpactPage.com', '<a href="https://www.myimpactpage.com" target="_blank" rel="noopener">MyImpactPage.com</a>')}</li>`).join('') +
+    `</ol>` + (L.ltcEnNote ? `<div class="ltc-note">${esc(L.ltcEnNote)}</div>` : '');
+
+  const groups = [['guide', 'ltcGroupGuide'], ['forms', 'ltcGroupForms'], ['ref', 'ltcGroupRef']];
+  body.innerHTML = groups.map(([g, labelKey]) => {
+    const items = LTC_DOCS.filter(d => d.group === g);
+    if (!items.length) return '';
+    return `<div class="training-section-label">${esc(t(labelKey))}</div>` + items.map(d => {
+      const [title, desc] = (L.ltcDocs && L.ltcDocs[d.key]) || T.en.ltcDocs[d.key];
+      const tags = (d.fillable ? `<span class="req-badge rec">${esc(t('ltcFillable'))}</span>` : '') +
+                   (d.tag ? `<span class="req-badge req">${esc(t(d.tag))}</span>` : '');
+      return `<a class="ltc-doc" href="${d.url}" target="_blank" rel="noopener">
+        <span class="ltc-doc-icon">${d.emoji}</span>
+        <span class="ltc-doc-text"><span class="ltc-doc-title">${esc(title)}</span>${tags}
+          <span class="ltc-doc-desc">${esc(desc)}</span></span>
+        <span class="ltc-doc-open">${esc(t('ltcOpen'))} &rarr;</span>
+      </a>`;
+    }).join('');
+  }).join('');
 }
 
 // Training tab is rendered on demand via renderTraining(), called from showTab below

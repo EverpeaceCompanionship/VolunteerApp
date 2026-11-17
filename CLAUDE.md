@@ -177,6 +177,7 @@ EMAILJS_TEMPLATE_ID = ''
 - **Two sections:** Section 1 "Mandatory Training" (items with `level: 'mandatory'` in `TRAINING_COURSES`) and Section 2 "Recommended Resources" (everything else). Each section has its own progress bar; Mandatory shows "x required items left" / "All mandatory training completed".
 - Mandatory today: tr19 Agreement, tr20 Waiver, tr21 Code of Conduct, tr1 Mental Health webinar, tr2 Do's & Don'ts webinar, tr6 slides, tr9 Age-Friendly Communication, + coming soon tr7 (tr5 "How to Log a Visit" removed 6 Nov 2026)
 - Inside each section, items are grouped: Policies / Webinars / Videos / Documents / How-to Guides; filter pills apply to both sections
+- **Section 3 "City of Ottawa Long-term Care Homes Documentations" (17 Nov 2026):** City LTC volunteer onboarding package — 5-step "how to complete your file" box (from the City checklist: AODA training, orientation, handbook, sign/witness/upload forms to MyImpactPage.com, email checklist to ann.hall@ottawa.ca) + 10 PDFs in `./ltc-docs/` grouped Start here / Forms / Reference. Static list in `LTC_DOCS` + `renderLtcDocs()` (called from `renderTraining()`); titles in `T.en.ltcDocs` / `T.fr.ltcDocs`. Not counted in training progress. PDFs are the City's English originals.
 - Red dot on the Training tab = a policy not yet opened OR mandatory items not marked done
 - Progress tracked in **localStorage** scoped to volunteer's email: `ep_training_done_{email}`
 - Filter by: All / Videos / Documents
