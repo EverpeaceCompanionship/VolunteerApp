@@ -511,6 +511,17 @@
   .ltc-doc-desc { display: block; font-size: 12px; color: var(--text-secondary); margin-top: 2px; line-height: 1.4; }
   .ltc-doc-open { flex-shrink: 0; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--gold-dark); white-space: nowrap; }
   @media (max-width: 420px) { .ltc-doc-open { display: none; } }
+  /* Pinned "How to apply" card — navy tile with thin gold frame */
+  .ltc-pinned { position: relative; background: var(--green-dark); color: var(--cream); border-radius: 4px; padding: 18px 18px 16px; margin: 4px 0 22px; outline: 1px solid var(--gold); outline-offset: -6px; }
+  .ltc-pin-label { font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); }
+  .ltc-pin-title { font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: 22px; font-weight: 700; line-height: 1.2; margin: 4px 0 6px; color: #fff; }
+  .ltc-pin-sub { font-size: 13px; line-height: 1.5; color: var(--mist); margin-bottom: 12px; }
+  .ltc-pin-btn { display: inline-block; background: var(--gold); color: var(--green-dark); border-radius: 4px; padding: 9px 14px; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; text-decoration: none; }
+  .ltc-pin-btn:hover { background: #fff; }
+  .ltc-pin-apply { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin-top: 12px; font-size: 12px; color: var(--mist); }
+  .ltc-pin-apply a { color: var(--gold); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+  .ltc-pin-contact { font-size: 11px; color: var(--mist); margin-top: 8px; }
+  .ltc-pin-contact a { color: var(--gold); }
 </style>
 </head>
 <body>
@@ -843,6 +854,9 @@
       <h2 class="training-title" id="training-title">Training &amp; Resources</h2>
       <p class="training-subtitle" id="training-subtitle">Everything you need to serve our seniors with compassion, skill, and confidence — at your own pace.</p>
 
+      <!-- PINNED: How to apply to City of Ottawa LTC Homes (rendered by renderLtcPinned) -->
+      <div class="ltc-pinned" id="ltc-pinned"></div>
+
       <div class="training-progress">
         <div class="training-progress-icon">&#127807;</div>
         <div class="training-progress-text">
@@ -1082,8 +1096,14 @@ const T = {
     tsecRSub: 'Deepen your knowledge at your own pace — videos, guides and reference documents on ageing, dementia, communication and Islamic care.',
     tsecLKicker: 'Section 3 · Partner Documents', tsecLTitle: 'City of Ottawa Long-term Care Homes Documentations',
     tsecLSub: 'For volunteers placed in City of Ottawa long-term care homes. Every document below must be completed before you start volunteering there.',
+    ltcPinLabel: 'Pinned', ltcPinTitle: 'How to apply to volunteer in City of Ottawa Long-term Care Homes',
+    ltcPinSub: 'Step-by-step guide for Everpeace volunteers: choose a home, fill in the City’s online application (Better Impact), then upload your mandatory documents.',
+    ltcPinOpen: 'Read the guide (PDF)', ltcPinApply: 'Apply directly:',
+    ltcHomeGarry: 'Garry J. Armstrong Home', ltcHomeChamplain: 'Centre d’accueil Champlain',
+    ltcPinContact: 'Questions? Ann Hall, Coordinator of Volunteer Services —',
     ltcHowTitle: 'How to complete your file',
     ltcSteps: [
+      'Apply online for a volunteer role at your chosen home — follow the pinned guide at the top of this tab.',
       'Complete the AODA and IASR online accessibility training and upload your certificate to MyImpactPage.com.',
       'Attend a volunteer orientation session (links are in your original application email).',
       'Read the Long-term Care Volunteer Handbook.',
@@ -1093,6 +1113,7 @@ const T = {
     ltcGroupGuide: 'Start here', ltcGroupForms: 'Forms to sign & upload', ltcGroupRef: 'Reference',
     ltcOpen: 'Open PDF', ltcFillable: 'Fillable', ltcUnder18: 'Under 18 only', ltcTwo: '× 2 references',
     ltcDocs: {
+      howto: ['How to Apply for a Volunteer Opportunity', 'Bilingual step-by-step guide to the City’s online application.'],
       checklist: ['Checklist of Completed Documents', 'Track every requirement, then email it to the City when done.'],
       coc: ['Volunteer Code of Conduct', 'Standards of behaviour expected in City of Ottawa LTC homes.'],
       pledge: ['Pledge of Confidentiality', 'Your commitment to protect residents’ personal information.'],
@@ -1229,8 +1250,14 @@ const T = {
     tsecRSub: 'Approfondissez vos connaissances à votre rythme — vidéos, guides et documents sur le vieillissement, la démence, la communication et les soins en Islam.',
     tsecLKicker: 'Section 3 · Documents des partenaires', tsecLTitle: 'Documentation des foyers de soins de longue durée de la Ville d’Ottawa',
     tsecLSub: 'Pour les bénévoles affectés aux foyers de soins de longue durée de la Ville d’Ottawa. Tous les documents ci-dessous doivent être remplis avant de commencer à y faire du bénévolat.',
+    ltcPinLabel: 'Épinglé', ltcPinTitle: 'Comment postuler comme bénévole dans les foyers de soins de longue durée de la Ville d’Ottawa',
+    ltcPinSub: 'Guide étape par étape pour les bénévoles d’Everpeace : choisissez un foyer, remplissez la demande en ligne de la Ville (Better Impact), puis téléversez vos documents obligatoires.',
+    ltcPinOpen: 'Lire le guide (PDF)', ltcPinApply: 'Postuler directement :',
+    ltcHomeGarry: 'Foyer Garry J. Armstrong', ltcHomeChamplain: 'Centre d’accueil Champlain',
+    ltcPinContact: 'Questions ? Ann Hall, coordonnatrice des services bénévoles —',
     ltcHowTitle: 'Comment compléter votre dossier',
     ltcSteps: [
+      'Postulez en ligne pour un rôle de bénévole au foyer de votre choix — suivez le guide épinglé en haut de cet onglet.',
       'Suivez la formation en ligne sur l’accessibilité (LAPHO et RNAI) et téléversez votre certificat sur MyImpactPage.com.',
       'Assistez à une séance d’orientation des bénévoles (les liens sont dans le courriel de votre demande initiale).',
       'Lisez le Guide des bénévoles en soins de longue durée.',
@@ -1240,6 +1267,7 @@ const T = {
     ltcGroupGuide: 'Commencez ici', ltcGroupForms: 'Formulaires à signer et téléverser', ltcGroupRef: 'Référence',
     ltcOpen: 'Ouvrir le PDF', ltcFillable: 'Remplissable', ltcUnder18: 'Moins de 18 ans seulement', ltcTwo: '× 2 références',
     ltcDocs: {
+      howto: ['Comment présenter une demande de bénévolat', 'Guide bilingue étape par étape pour la demande en ligne de la Ville.'],
       checklist: ['Liste de vérification des documents remplis', 'Suivez chaque exigence, puis envoyez-la à la Ville une fois terminée.'],
       coc: ['Code de conduite des bénévoles', 'Normes de comportement attendues dans les foyers de SLD de la Ville.'],
       pledge: ['Engagement de confidentialité', 'Votre engagement à protéger les renseignements personnels des résidents.'],
@@ -3243,6 +3271,7 @@ function renderTraining() {
 // PDFs live in ./ltc-docs/. To add/replace a document: drop the PDF in that
 // folder, add a line here, and add its title/description to T.en.ltcDocs and T.fr.ltcDocs.
 const LTC_DOCS = [
+  { key: 'howto',     group: 'guide', emoji: '📌', url: './ltc-docs/10-how-to-apply.pdf' },
   { key: 'checklist', group: 'guide', emoji: '✅', url: './ltc-docs/00-checklist.pdf' },
   { key: 'handbook',  group: 'guide', emoji: '📘', url: './ltc-docs/08-volunteer-handbook-2026.pdf' },
   { key: 'coc',       group: 'forms', emoji: '📜', url: './ltc-docs/01-code-of-conduct.pdf', fillable: true },
@@ -3255,7 +3284,27 @@ const LTC_DOCS = [
   { key: 'photo',     group: 'ref',   emoji: '📷', url: './ltc-docs/09-photo-requirements.pdf' }
 ];
 
+// Pinned card at the top of the Training tab (guide + direct Better Impact links)
+const LTC_HOW_TO_APPLY = './ltc-docs/10-how-to-apply.pdf';
+const LTC_APPLY_LINKS = [
+  { key: 'ltcHomeGarry',     url: 'https://app.betterimpact.com/PublicEnterprise/EnterpriseSearch?Keyword=garry&EnterpriseGuid=6b5969ae-d970-4d4d-9ca7-ac29de2e1493&SearchType=Keyword' },
+  { key: 'ltcHomeChamplain', url: 'https://app.betterimpact.com/PublicEnterprise/EnterpriseSearch?Keyword=champlain&EnterpriseGuid=6b5969ae-d970-4d4d-9ca7-ac29de2e1493&SearchType=Keyword' }
+];
+function renderLtcPinned() {
+  const el = document.getElementById('ltc-pinned');
+  if (!el) return;
+  el.innerHTML = `
+    <div class="ltc-pin-label">📌 ${esc(t('ltcPinLabel'))}</div>
+    <div class="ltc-pin-title">${esc(t('ltcPinTitle'))}</div>
+    <div class="ltc-pin-sub">${esc(t('ltcPinSub'))}</div>
+    <a class="ltc-pin-btn" href="${LTC_HOW_TO_APPLY}" target="_blank" rel="noopener">${esc(t('ltcPinOpen'))} &rarr;</a>
+    <div class="ltc-pin-apply"><span>${esc(t('ltcPinApply'))}</span>
+      ${LTC_APPLY_LINKS.map(l => `<a href="${l.url}" target="_blank" rel="noopener">${esc(t(l.key))}</a>`).join('')}</div>
+    <div class="ltc-pin-contact">${esc(t('ltcPinContact'))} <a href="mailto:ann.hall@ottawa.ca">ann.hall@ottawa.ca</a></div>`;
+}
+
 function renderLtcDocs() {
+  renderLtcPinned();
   const body = document.getElementById('tsec-l-body');
   const stepsEl = document.getElementById('ltc-steps');
   if (!body || !stepsEl) return;
