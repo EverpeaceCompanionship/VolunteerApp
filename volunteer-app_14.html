@@ -511,6 +511,20 @@
   .ltc-doc-desc { display: block; font-size: 12px; color: var(--text-secondary); margin-top: 2px; line-height: 1.4; }
   .ltc-doc-open { flex-shrink: 0; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--gold-dark); white-space: nowrap; }
   @media (max-width: 420px) { .ltc-doc-open { display: none; } }
+  /* Training steps — open/close */
+  .tsec-head { cursor: pointer; user-select: none; margin-bottom: 0; padding-bottom: 10px; }
+  .tsec-head:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+  .tsec-head > div:nth-child(2) { flex: 1; min-width: 0; }
+  .tsec-chev { flex-shrink: 0; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 20px; line-height: 1;
+               color: var(--gold-dark); border: 1px solid var(--border); border-radius: 4px; transition: transform .2s; padding-bottom: 6px; }
+  .tsec:not(.tsec-closed) .tsec-chev { transform: rotate(180deg); padding: 6px 0 0; }
+  .tsec-summary { display: inline-block; margin-top: 6px; font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+                  color: var(--gold-dark); border: 1px solid var(--border); background: var(--cream); border-radius: 4px; padding: 3px 8px; }
+  .tsec-summary.ok { background: var(--green-dark); color: var(--gold); border-color: var(--green-dark); }
+  .tsec-closed { padding-bottom: 8px; }
+  .tsec-closed .tsec-content { display: none; }
+  .tsec-closed .tsec-sub { display: none; }
+  .tsec:hover .tsec-chev { border-color: var(--gold); }
   /* Pinned "How to apply" card — navy tile with thin gold frame */
   .ltc-pinned { position: relative; background: var(--green-dark); color: var(--cream); border-radius: 4px; padding: 18px 18px 16px; margin: 4px 0 22px; outline: 1px solid var(--gold); outline-offset: -6px; }
   .ltc-pin-label { font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); }
@@ -857,6 +871,7 @@
       <!-- PINNED: How to apply to City of Ottawa LTC Homes (rendered by renderLtcPinned) -->
       <div class="ltc-pinned" id="ltc-pinned"></div>
 
+      <div class="training-legacy-controls" style="display:none">
       <div class="training-progress">
         <div class="training-progress-icon">&#127807;</div>
         <div class="training-progress-text">
@@ -888,54 +903,67 @@
           <span id="tpill-wtgo-label">&#128218; How-to Guides</span> <span class="tc" id="tc-wtgo">0</span>
         </button>
       </div>
+      </div>
 
       <!-- SECTION 1: MANDATORY -->
       <section class="tsec tsec-mandatory" id="tsec-mandatory">
-        <div class="tsec-head">
+        <div class="tsec-head" onclick="tsecToggle('m')" role="button" tabindex="0">
           <div class="tsec-icon">&#9989;</div>
           <div>
-            <div class="tsec-kicker" id="tsec-m-kicker">Section 1 · Required</div>
+            <div class="tsec-kicker" id="tsec-m-kicker">Step 1 · Before your first visit</div>
             <div class="tsec-title" id="tsec-m-title">Mandatory Training</div>
             <div class="tsec-sub" id="tsec-m-sub">Please complete every item below before your first visit. These cover our policies, safety and the essentials of respectful companionship.</div>
+            <div class="tsec-summary" id="tsec-m-summary"></div>
           </div>
+          <div class="tsec-chev">&#8964;</div>
         </div>
+        <div class="tsec-content">
         <div class="tsec-progress">
           <div class="training-progress-track"><div class="training-progress-fill" id="tsec-m-fill" style="width:0%"></div></div>
           <span class="tsec-progress-txt" id="tsec-m-count">0/0</span>
         </div>
         <div id="tsec-m-status"></div>
         <div id="tsec-m-body"></div>
+        </div>
       </section>
 
       <!-- SECTION 2: RECOMMENDED -->
       <section class="tsec tsec-recommended" id="tsec-recommended">
-        <div class="tsec-head">
+        <div class="tsec-head" onclick="tsecToggle('r')" role="button" tabindex="0">
           <div class="tsec-icon">&#128218;</div>
           <div>
-            <div class="tsec-kicker" id="tsec-r-kicker">Section 2 · Optional</div>
+            <div class="tsec-kicker" id="tsec-r-kicker">Step 2 · Keep learning</div>
             <div class="tsec-title" id="tsec-r-title">Recommended Resources</div>
             <div class="tsec-sub" id="tsec-r-sub">Deepen your knowledge at your own pace — videos, guides and reference documents on ageing, dementia, communication and Islamic care.</div>
+            <div class="tsec-summary" id="tsec-r-summary"></div>
           </div>
+          <div class="tsec-chev">&#8964;</div>
         </div>
+        <div class="tsec-content">
         <div class="tsec-progress">
           <div class="training-progress-track"><div class="training-progress-fill" id="tsec-r-fill" style="width:0%"></div></div>
           <span class="tsec-progress-txt" id="tsec-r-count">0/0</span>
         </div>
         <div id="tsec-r-body"></div>
+        </div>
       </section>
 
       <!-- SECTION 3: CITY OF OTTAWA LTC HOMES DOCUMENTATIONS -->
       <section class="tsec tsec-ltc" id="tsec-ltc">
-        <div class="tsec-head">
+        <div class="tsec-head" onclick="tsecToggle('l')" role="button" tabindex="0">
           <div class="tsec-icon">&#127963;</div>
           <div>
-            <div class="tsec-kicker" id="tsec-l-kicker">Section 3 · Partner Documents</div>
+            <div class="tsec-kicker" id="tsec-l-kicker">Only if you are applying to a City of Ottawa LTC home</div>
             <div class="tsec-title" id="tsec-l-title">City of Ottawa Long-term Care Homes Documentations</div>
             <div class="tsec-sub" id="tsec-l-sub">For volunteers placed in City of Ottawa long-term care homes. Every document below must be completed before you start volunteering there.</div>
+            <div class="tsec-summary" id="tsec-l-summary"></div>
           </div>
+          <div class="tsec-chev">&#8964;</div>
         </div>
+        <div class="tsec-content">
         <div class="ltc-steps" id="ltc-steps"></div>
         <div id="tsec-l-body"></div>
+        </div>
       </section>
     </div>
 
@@ -1090,12 +1118,13 @@ const T = {
     trainingEmpty: 'No resources here.',
     tpillWebinar: '\u{1F393} Webinars', tpillWtgo: '\u{1F4DA} How-to Guides', tpillPolicies: '\u{1F4CB} Policies',
     policiesSectionLabel: '\u{1F4CB} VOLUNTEER POLICIES',
-    tsecMKicker: 'Section 1 · Required', tsecMTitle: 'Mandatory Training',
+    tsecMKicker: 'Step 1 · Before your first visit', tsecMTitle: 'Mandatory Training',
     tsecMSub: 'Please complete every item below before your first visit. These cover our policies, safety and the essentials of respectful companionship.',
-    tsecRKicker: 'Section 2 · Optional', tsecRTitle: 'Recommended Resources',
+    tsecRKicker: 'Step 2 · Keep learning', tsecRTitle: 'Recommended Resources',
     tsecRSub: 'Deepen your knowledge at your own pace — videos, guides and reference documents on ageing, dementia, communication and Islamic care.',
-    tsecLKicker: 'Section 3 · Partner Documents', tsecLTitle: 'City of Ottawa Long-term Care Homes Documentations',
+    tsecLKicker: 'Only if you are applying to a City of Ottawa LTC home', tsecLTitle: 'City of Ottawa Long-term Care Homes Documentations',
     tsecLSub: 'For volunteers placed in City of Ottawa long-term care homes. Every document below must be completed before you start volunteering there.',
+    tsecSumDone: (d, n) => `${d} of ${n} done`, tsecSumDocs: (n) => `${n} documents`, tsecTapOpen: 'Tap to open', tsecTapClose: 'Tap to close',
     ltcPinLabel: 'Pinned', ltcPinTitle: 'How to apply to volunteer in City of Ottawa Long-term Care Homes',
     ltcPinSub: 'Step-by-step guide for Everpeace volunteers: choose a home, fill in the City’s online application (Better Impact), then upload your mandatory documents.',
     ltcPinOpen: 'Read the guide (PDF)', ltcPinApply: 'Apply directly:',
@@ -1244,12 +1273,13 @@ const T = {
     trainingEmpty: 'Aucune ressource ici.',
     tpillWebinar: '\u{1F393} Webinaires', tpillWtgo: '\u{1F4DA} Guides pratiques', tpillPolicies: '\u{1F4CB} Politiques',
     policiesSectionLabel: '\u{1F4CB} POLITIQUES BÉNÉVOLES',
-    tsecMKicker: 'Section 1 · Obligatoire', tsecMTitle: 'Formation obligatoire',
+    tsecMKicker: 'Étape 1 · Avant votre première visite', tsecMTitle: 'Formation obligatoire',
     tsecMSub: 'Veuillez compléter chaque élément ci-dessous avant votre première visite. Ils couvrent nos politiques, la sécurité et l’essentiel d’un accompagnement respectueux.',
-    tsecRKicker: 'Section 2 · Facultatif', tsecRTitle: 'Ressources recommandées',
+    tsecRKicker: 'Étape 2 · Continuer d’apprendre', tsecRTitle: 'Ressources recommandées',
     tsecRSub: 'Approfondissez vos connaissances à votre rythme — vidéos, guides et documents sur le vieillissement, la démence, la communication et les soins en Islam.',
-    tsecLKicker: 'Section 3 · Documents des partenaires', tsecLTitle: 'Documentation des foyers de soins de longue durée de la Ville d’Ottawa',
+    tsecLKicker: 'Seulement si vous postulez dans un foyer de SLD de la Ville d’Ottawa', tsecLTitle: 'Documentation des foyers de soins de longue durée de la Ville d’Ottawa',
     tsecLSub: 'Pour les bénévoles affectés aux foyers de soins de longue durée de la Ville d’Ottawa. Tous les documents ci-dessous doivent être remplis avant de commencer à y faire du bénévolat.',
+    tsecSumDone: (d, n) => `${d} sur ${n} terminé${d > 1 ? 's' : ''}`, tsecSumDocs: (n) => `${n} documents`, tsecTapOpen: 'Toucher pour ouvrir', tsecTapClose: 'Toucher pour fermer',
     ltcPinLabel: 'Épinglé', ltcPinTitle: 'Comment postuler comme bénévole dans les foyers de soins de longue durée de la Ville d’Ottawa',
     ltcPinSub: 'Guide étape par étape pour les bénévoles d’Everpeace : choisissez un foyer, remplissez la demande en ligne de la Ville (Better Impact), puis téléversez vos documents obligatoires.',
     ltcPinOpen: 'Lire le guide (PDF)', ltcPinApply: 'Postuler directement :',
@@ -2023,7 +2053,7 @@ async function doChangePassword() {
 // Tracks which of the 3 policy documents have been opened
 // Stored in localStorage per volunteer — scoped by their email OR phone
 // ============================================================
-const POLICY_IDS = ['tr19', 'tr20', 'tr21'];
+const POLICY_IDS = ['tr19', 'tr20', 'tr21', 'tr22', 'tr23', 'tr24'];
 
 function getPolicyKey() {
   // Use email if available, otherwise phone digits — always unique per volunteer
@@ -2929,6 +2959,36 @@ const TRAINING_COURSES = [
     dur:   { en: '📄 Document · Policy', fr: '📄 Document · Politique' },
     url: './volunteer-code-of-conduct.pdf'
   },
+  {
+    id: 'tr22', level: 'mandatory', type: 'pdf', section: 'policies', emoji: '🤲',
+    cat:   { en: 'Volunteer Policies', fr: 'Politiques bénévoles' },
+    title: { en: 'Prevention of Abuse and Neglect',
+             fr: 'Prévention des mauvais traitements et de la négligence' },
+    desc:  { en: 'Acknowledgement and understanding of our abuse and neglect practice and procedure — read, sign and return to your coordinator.',
+             fr: 'Reconnaissance et compréhension de nos pratiques et procédures — à lire, signer et remettre à votre coordonnatrice.' },
+    dur:   { en: '📄 Document · Sign & return', fr: '📄 Document · À signer' },
+    url: './volunteer-prevention-of-abuse.pdf'
+  },
+  {
+    id: 'tr23', level: 'mandatory', type: 'pdf', section: 'policies', emoji: '🔒',
+    cat:   { en: 'Volunteer Policies', fr: 'Politiques bénévoles' },
+    title: { en: 'Pledge of Confidentiality and Privacy',
+             fr: 'Engagement de confidentialité et de protection de la vie privée' },
+    desc:  { en: 'How we protect seniors’ personal and health information — read, sign and return to your coordinator.',
+             fr: 'Comment nous protégeons les renseignements personnels et de santé des aîné(e)s — à lire, signer et remettre.' },
+    dur:   { en: '📄 Document · Sign & return', fr: '📄 Document · À signer' },
+    url: './volunteer-confidentiality-pledge.pdf'
+  },
+  {
+    id: 'tr24', level: 'mandatory', type: 'pdf', section: 'policies', emoji: '⚖️',
+    cat:   { en: 'Volunteer Policies', fr: 'Politiques bénévoles' },
+    title: { en: 'Declaration of Offences and Misconduct',
+             fr: 'Déclaration d’infractions et d’inconduite' },
+    desc:  { en: 'Confidential declaration for persons applying for volunteer positions — complete, sign and return to the Executive Director.',
+             fr: 'Déclaration confidentielle pour les candidat(e)s bénévoles — à remplir, signer et remettre à la directrice générale.' },
+    dur:   { en: '📄 Document · Sign & return', fr: '📄 Document · À signer' },
+    url: './volunteer-offence-declaration.pdf'
+  },
   // ── COMING SOON — VIDEOS ────────────────────────────────────────────────────
   {
     id: 'tr3', type: 'video', emoji: '👴',
@@ -3250,8 +3310,53 @@ function renderTrainingSection(bodyId, sectionEl, courses) {
   if (sectionEl) sectionEl.style.display = (html || af === 'all') ? '' : 'none';
 }
 
+// ── Training steps open/close (one open at a time) ──
+// Default: Step 1 open until all mandatory items are done, then Step 2.
+// The City LTC section starts closed. A volunteer's own choice wins for the session.
+let tsecOpen = null;          // 'm' | 'r' | 'l' | '' (all closed) | null (= automatic)
+let tsecLastMandatoryLeft = null;
+function tsecToggle(k) {
+  const cur = tsecCurrentOpen();
+  tsecOpen = (cur === k) ? '' : k;
+  tsecApply();
+  const el = document.getElementById({ m: 'tsec-mandatory', r: 'tsec-recommended', l: 'tsec-ltc' }[k]);
+  if (el && tsecOpen === k) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 30);
+}
+function tsecCurrentOpen() {
+  if (tsecOpen !== null) return tsecOpen;
+  return (typeof mandatoryStats === 'function' && mandatoryStats().left === 0) ? 'r' : 'm';
+}
+document.addEventListener('keydown', e => {
+  const h = e.target && e.target.closest && e.target.closest('.tsec-head');
+  if (h && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); h.click(); }
+});
+function tsecApply() {
+  const cur = tsecCurrentOpen();
+  [['m', 'tsec-mandatory'], ['r', 'tsec-recommended'], ['l', 'tsec-ltc']].forEach(([k, id]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle('tsec-closed', cur !== k);
+    const head = el.querySelector('.tsec-head');
+    if (head) { head.setAttribute('aria-expanded', cur === k ? 'true' : 'false'); head.title = cur === k ? t('tsecTapClose') : t('tsecTapOpen'); }
+  });
+}
+function tsecSummaries() {
+  const avail = TRAINING_COURSES.filter(c => !c.comingSoon);
+  const m = mandatoryStats();
+  const rec = avail.filter(c => !isMandatory(c));
+  const recDone = rec.filter(c => trainingCompleted.includes(c.id)).length;
+  const set = (id, txt, ok) => { const e = document.getElementById(id); if (e) { e.textContent = txt; e.classList.toggle('ok', !!ok); } };
+  set('tsec-m-summary', (m.left === 0 ? '✓ ' : '') + t('tsecSumDone', m.done, m.total), m.left === 0);
+  set('tsec-r-summary', t('tsecSumDone', recDone, rec.length), false);
+  set('tsec-l-summary', t('tsecSumDocs', (typeof LTC_DOCS !== 'undefined' ? LTC_DOCS.length : 0)), false);
+  // Auto-advance: the moment Step 1 becomes complete, close it and open Step 2
+  if (tsecLastMandatoryLeft !== null && tsecLastMandatoryLeft > 0 && m.left === 0) tsecOpen = 'r';
+  tsecLastMandatoryLeft = m.left;
+}
+
 function renderTraining() {
   if (!document.getElementById('tsec-m-body')) return;
+  trainingActiveFilter = 'all';   // filter pills are hidden — always show everything
   renderTrainingSection('tsec-m-body', document.getElementById('tsec-mandatory'), TRAINING_COURSES.filter(isMandatory));
   renderTrainingSection('tsec-r-body', document.getElementById('tsec-recommended'), TRAINING_COURSES.filter(c => !isMandatory(c)));
 
@@ -3265,6 +3370,8 @@ function renderTraining() {
 
   updateTrainingProgress();
   renderLtcDocs();
+  tsecSummaries();
+  tsecApply();
 }
 
 // ── Section 3: City of Ottawa Long-term Care Homes Documentations ──
