@@ -3,6 +3,20 @@
 
 ---
 
+## 0. 🔒 SECURITY RULES (24 Nov 2026) — READ FIRST, NEVER BREAK
+
+Everpeace is legally responsible for volunteers' and seniors' personal information. This repo **and** the GitHub Pages site are **public**: anything committed here can be read by anyone, forever (git history).
+
+- **Never** put in this repo: the Baserow token, any password/PIN, emails, phone numbers, addresses, dates of birth, notes about a person, or lists of real names (baselines, former volunteers). Use made-up names ("Jane Doe") in comments and examples.
+- The pages **never** call Baserow directly. All data goes through the **secure server** `calendar-bridge.gs` (Google Apps Script, runs as coordinator@everpeacecompanionship.org) via `api(action, data)` in each page.
+- Secrets live in Apps Script → Project Settings → **Script Properties**: `BASEROW_TOKEN`, `ADMIN_PASSWORD`, optional `COORDINATOR_PASSWORD`, `EXTRA_CALENDAR_IDS`, `SESSION_SECRET` (auto-created).
+- Personal lists (visit baselines, former volunteers) live in the Apps Script file **`private-data.gs`** (NOT in this repo — `private-data.example.gs` is the empty template; `.gitignore` blocks the real one).
+- The server enforces who sees what: a volunteer gets only their own record (no password hash), own visits, own calendar events (no descriptions), senior **names**, and their assigned senior's card; only an availability column of their own row can be written; logged visits are forced to their own name and can't be "Upcoming". The coordinator password unlocks full tables. Public = two numbers (`?all=1&since=`).
+- Passwords: same SHA-256 scheme as before, but computed **on the server**; 5 wrong tries → 15-min lock (dashboard: 10). Sessions are signed tokens kept in page memory only (12 h volunteer, 8 h coordinator) and stop working when the password changes or the person is added to the former list.
+- When adding a feature that needs new data: add a server action with the narrowest possible access, never a generic "read any table" for volunteers.
+
+---
+
 ## 1. PROJECT PURPOSE
 
 **Adopt a Muslim Senior** is a volunteer companionship program run by **Everpeace Companionship** (Ottawa, Ontario), affiliated with Islamic Care Center Ottawa and Muslim Family Services of Ottawa. The program matches Muslim volunteers with Muslim seniors for regular companionship visits.
@@ -48,7 +62,7 @@ Nadouche's Browser
             └── Baserow API (same tables)
 ```
 
-Everything is **static HTML** deployed via **GitHub Pages**. No server, no backend. All logic is client-side JavaScript.
+Pages are **static HTML** on **GitHub Pages**; all data goes through the **secure server** (`calendar-bridge.gs`, Google Apps Script) — see Section 0. The diagram above shows the old direct-Baserow layout: today every Baserow arrow goes through the Apps Script server.
 
 ---
 
@@ -56,7 +70,8 @@ Everything is **static HTML** deployed via **GitHub Pages**. No server, no backe
 
 ```javascript
 // Baserow
-BASEROW_TOKEN    = 'SWKMnsqQrocyKfXg9TVb5mMWTGGb1Zsc'
+// Baserow token: ONLY in Apps Script Script Properties (BASEROW_TOKEN) — never here
+API_URL          = same URL as CALENDAR_SCRIPT_URL below (the secure server)
 VOLUNTEERS_TABLE = 988315   // "Volunteers" table
 SENIORS_TABLE    = 917379   // "Seniors List for visits" table
 VISITS_TABLE     = 917197   // "Calls and Visits Follow-up" table
@@ -135,10 +150,10 @@ EMAILJS_TEMPLATE_ID = ''
 
 ### Stats Bar
 - **Total Visits — LIVE COUNTER (`visit-counts.js`, shared with the dashboard):**
-  - Volunteer listed in `VISIT_BASELINES` → **baseline + max(calendar confirmed visits after `BASELINE_DATE`, portal-logged visits dated after `BASELINE_DATE`)**. Max (not sum) so a visit in both sources counts once.
+  - Volunteer listed in `VISIT_BASELINES` (now `EC_VISIT_BASELINES` in Apps Script `private-data.gs`; the server sends a volunteer only their own entry, the dashboard the whole list) → **baseline + max(calendar confirmed visits after `BASELINE_DATE`, portal-logged visits dated after `BASELINE_DATE`)**. Max (not sum) so a visit in both sources counts once.
   - Not listed → previous behaviour: highest of calendar total / Baserow logged / record field
   - Calendar "since" count needs the updated `calendar-bridge.gs` (`?since=YYYY-MM-DD` → `completedSince`). Old bridge → portal logs only for the "since" part.
-  - To change a baseline: edit `visit-counts.js` only (bump `?v=` in both HTML files so browsers reload it)
+  - To change a baseline: edit `EC_VISIT_BASELINES` in Apps Script `private-data.gs`, then Deploy → Manage deployments → Edit → New version (no GitHub change needed). `BASELINE_DATE` / `ORG_VISITS_BASELINE` stay in `visit-counts.js` (bump `?v=` in both HTML files).
 - **Status:** ✓ or – from `Active` field in Baserow
 
 ### Tab: My Visit
@@ -159,7 +174,7 @@ EMAILJS_TEMPLATE_ID = ''
 ### Tab: Log Visit
 - **ONE form (Nov 2026):** visit details + the 4 regular-feedback questions (+ optional moment). On submit: Baserow Visits row (Notes gets a `[Feedback] …` summary line) AND a background POST to the "Post visit - Regular volunteer feedback" Google Form (`REGULAR_FORM_POST`, `REGULAR_FORM_ENTRIES`; email from the volunteer record). If the form questions change in Google Forms, update the entry ids.
 - "This was my first visit" → feedback questions hidden; after saving, the first-visit survey link card appears (unchanged Google Form).
-- Senior Visited = dropdown of clean names from the Seniors table (+ "Other — type the name"); pre-selected from the calendar title (e.g. "Grandpa Daniel …" → Daniel Godkin) via `matchSeniorName()`.
+- Senior Visited = dropdown of clean names from the Seniors table (+ "Other — type the name"); pre-selected from the calendar title (e.g. "Grandpa Adam …" → Adam Doe) via `matchSeniorName()`.
 - 2-step indicator: **1. Visit & feedback → 2. Done / First-visit survey**
 - "This was my first visit" checkbox — pre-ticked automatically when no previous visit is known (calendar + Baserow), volunteer can override
 - After saving, the matching Google Form is highlighted ("Your next step"):
@@ -212,9 +227,9 @@ Website, portal and dashboard all follow the Everpeace thank-you card (Internati
 `https://script.google.com/macros/s/AKfycbxc52C0-arbpnF4sx3Ejs0LRRK-H1xgNgVZ4fmmyZ6xH9it8B0vYBqxW-dN3npxscot/exec`
 
 **How it works:**
-- Accepts GET request with `?email=...&phone=...`
+- **24 Nov 2026: now also the secure Baserow proxy (Section 0).** The old public `GET ?email=...&phone=...` was closed (anyone could read a volunteer's visits); volunteers now call `POST {action:'myCalendar'}` with their session, the dashboard `adminCalendar`. Public GET keeps only `?all=1&since=` → `{orgCompletedSince, portalSince}`.
 - Searches the **coordinator@ account's calendars** (see Owner line)
-- **Owner (24 Nov 2026):** the bridge now runs in the role account **coordinator@everpeacecompanionship.org** (Execute as: Me, Access: Anyone), so a future coordinator never needs Nadouche's personal or pro Gmail. It reads that account's default calendar + **"Coordination - Visits Calendar"** (its ID is in `EXTRA_CALENDAR_IDS` in the deployed script). Visits from 6 Nov 2026 onward were copied into that calendar; earlier visits are covered by the baselines in `visit-counts.js`. The old deployment in the personal Gmail (`AKfycbwyR_…`) is retired once the new one is verified.
+- **Owner (24 Nov 2026):** the bridge now runs in the role account **coordinator@everpeacecompanionship.org** (Execute as: Me, Access: Anyone), so a future coordinator never needs Nadouche's personal or pro Gmail. It reads that account's default calendar + **"Coordination - Visits Calendar"** (its ID is in the Script Property `EXTRA_CALENDAR_IDS`). Visits from 6 Nov 2026 onward were copied into that calendar; earlier visits are covered by the baselines in `visit-counts.js`. The old deployment in the personal Gmail (`AKfycbwyR_…`) is retired once the new one is verified.
 - Search window: **3 years back → 60 days ahead** (updated from 90 days to catch all historical visits)
 - Matches events where volunteer's email OR phone digits appear **anywhere in the event description**
 - Returns: `{ success, upcoming[], completedTotal, completedThisMonth, recentCompleted[] }`
@@ -237,8 +252,8 @@ Website, portal and dashboard all follow the Everpeace thank-you card (Internati
 ## 8. ADMIN DASHBOARD — FULL FEATURE LIST
 
 ### Authentication
-- Simple PIN stored as `ADMIN_PIN` constant in JS
-- Nadouche must change this before each upload (open in Notepad → Ctrl+F → ADMIN_PIN)
+- Password checked by the secure server (Script Properties `ADMIN_PASSWORD`, optional `COORDINATOR_PASSWORD` for the coordinator@ hire). Change it in Script Properties — no file upload needed; changing it signs that account out everywhere.
+- The old `ADMIN_PIN` constant was removed (it was readable by anyone).
 
 ### Stats Strip (4 tiles)
 1. **Volunteers** — count from Volunteers table
@@ -356,7 +371,7 @@ Website, portal and dashboard all follow the Everpeace thank-you card (Internati
 |------|--------|
 | EmailJS for forgot password | ⏳ Not configured — keys are empty strings. Volunteers told to contact coordinator. |
 | Calendar bridge: only 1 calendar | ⚠️ Reads Nadouche's default calendar only |
-| Admin PIN in JS | ⚠️ Not secure (visible in source) — acceptable for internal tool |
+| Admin PIN in JS | ✅ Fixed 24 Nov 2026 — password checked by the secure server |
 | Training courses tr3-tr5, tr7-tr8 | ⏳ Marked "Coming Soon" — URLs to be added when ready |
 | Volunteer portal file naming | ⚠️ Gets _1, _2 etc. appended on each download — update live URL accordingly |
 
@@ -377,8 +392,8 @@ Website, portal and dashboard all follow the Everpeace thank-you card (Internati
 - The **two post-visit Google Forms** in Log Visit and the **Mandatory / Recommended** split in Training
 - The **Visit Log & Feedback** panel in the dashboard
 - The **live visit counter** (`visit-counts.js`) — portal and dashboard must use the same formula
-- The **former-volunteer block**: `FORMER_VOLUNTEERS` in `visit-counts.js` (4 former volunteers + 19 inactive ones blocked "for now" on 5 Nov 2026 — delete a line to unblock) — cannot log in to the portal; their past visits still count. Nadouche keeps them in Baserow (do not delete rows).
-- **Baserow name format:** the name column is "Full Legal Name and DOB" with a visit-count prefix and notes, e.g. `6V-Hadiri Habiba OUT for safety reasons (1969/01/01)`. Codes seen: `C-`, `V-`, `6V-`, `0V-`, `0-V`, plus notes like `The form was not completed-`, `(DOB)`, `OUT …`, `: note`, `and Malik …`. Use `cleanVolunteerName()` (visit-counts.js) for display AND for the name written to the Visits table / Google Form (portal greeting shows the full clean name); name matching ignores the prefix, brackets and word order.
+- The **former-volunteer block**: `EC_FORMER_VOLUNTEERS` in `private-data.gs` (Apps Script, private; was `FORMER_VOLUNTEERS` in visit-counts.js) (4 former volunteers + 19 inactive ones blocked "for now" on 5 Nov 2026 — delete a line to unblock) — cannot log in to the portal; their past visits still count. Nadouche keeps them in Baserow (do not delete rows).
+- **Baserow name format:** the name column is "Full Legal Name and DOB" with a visit-count prefix and notes, e.g. `6V-Doe Jane OUT note (1970/01/01)`. Codes seen: `C-`, `V-`, `6V-`, `0V-`, `0-V`, plus notes like `The form was not completed-`, `(DOB)`, `OUT …`, `: note`, `and Malik …`. Use `cleanVolunteerName()` (visit-counts.js) for display AND for the name written to the Visits table / Google Form (portal greeting shows the full clean name); name matching ignores the prefix, brackets and word order.
 
 ---
 

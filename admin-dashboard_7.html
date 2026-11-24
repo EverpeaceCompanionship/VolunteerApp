@@ -422,11 +422,11 @@
     <div class="login-wrap">
       <span class="brand-logo login-logo" role="img" aria-label="Everpeace Companionship logo"></span>
       <h2 class="login-heading">Coordinator Access</h2>
-      <p class="login-sub">Enter your coordinator PIN to access the admin dashboard.</p>
+      <p class="login-sub">Enter your coordinator password to access the admin dashboard.</p>
       <div class="card">
         <div id="pin-alert"></div>
-        <label for="pin-input">Coordinator PIN</label>
-        <input type="password" id="pin-input" placeholder="Enter PIN" autocomplete="off">
+        <label for="pin-input">Coordinator password</label>
+        <input type="password" id="pin-input" placeholder="Enter password" autocomplete="current-password">
         <button class="btn btn-primary" onclick="doLogin()" style="width:100%;margin-top:14px">Access Dashboard</button>
       </div>
     </div>
@@ -704,18 +704,18 @@
   </footer>
 </div><!-- /container -->
 
-<script src="visit-counts.js?v=11"></script>
+<script src="visit-counts.js?v=12"></script>
 <script>
 // ============================================================
 // CONFIG
 // ============================================================
 
-// 🔑 Change this PIN to something only you know.
-// Since this file is on GitHub, keep it simple but not obvious.
-const ADMIN_PIN = '1998';
-
-const BASEROW_TOKEN    = 'SWKMnsqQrocyKfXg9TVb5mMWTGGb1Zsc';
-const BASE_URL         = 'https://api.baserow.io/api';
+// 🔒 SECURITY: this page is public. It holds NO password, NO Baserow token and
+// NO personal data. The coordinator password is checked by the Everpeace secure
+// server (calendar-bridge.gs, Google Apps Script → Script Properties:
+// ADMIN_PASSWORD / COORDINATOR_PASSWORD); data loads only after that check.
+const API_URL          = 'https://script.google.com/macros/s/AKfycbxc52C0-arbpnF4sx3Ejs0LRRK-H1xgNgVZ4fmmyZ6xH9it8B0vYBqxW-dN3npxscot/exec';
+let   apiSession       = null;   // memory only — reloading the page signs out
 const VOLUNTEERS_TABLE = 988315;
 const SENIORS_TABLE    = 917379;
 const VISITS_TABLE     = 917197;
@@ -738,14 +738,39 @@ function esc(v) {
   return String(v === null || v === undefined ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
+// ── Secure server ────────────────────────────────────────────
+// text/plain body = no CORS preflight (required by Google Apps Script)
+async function api(action, data = {}) {
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(Object.assign({}, data, { action, session: apiSession }))
+  });
+  if (!res.ok) throw new Error('Server ' + res.status);
+  const out = await res.json();
+  if (!out.ok) {
+    const err = new Error(out.message || out.error || 'Server error');
+    err.code = out.error;
+    if (out.error === 'AUTH' && apiSession) {   // session expired or password changed
+      apiSession = null;
+      alert('For your security you have been signed out. Please sign in again.');
+      location.reload();
+    }
+    throw err;
+  }
+  return out;
+}
+
+// Every row of a table (the server follows Baserow pagination; password hashes removed)
+async function fetchAllRowsAdmin(tableId) {
+  return (await api('adminRows', { table: tableId })).rows || [];
+}
+
 // ── Field detection helpers ──────────────────────────────────
 async function getTableFieldsAdmin(tableId) {
   try {
-    const res = await fetch(`${BASE_URL}/database/fields/table/${tableId}/`, {
-      headers: { 'Authorization': `Token ${BASEROW_TOKEN}` }
-    });
-    const data = await res.json();
-    return Array.isArray(data) ? data.map(f => f.name) : [];
+    const data = await api('fields', { table: tableId });
+    return Array.isArray(data.fields) ? data.fields : [];
   } catch(e) { return []; }
 }
 
@@ -780,18 +805,32 @@ let visitLogFilter   = 'all';
 // ============================================================
 // LOGIN
 // ============================================================
-function doLogin() {
+async function doLogin() {
   const pin = document.getElementById('pin-input').value.trim();
   const alertBox = document.getElementById('pin-alert');
-  if (pin === ADMIN_PIN) {
+  if (!pin) return;
+  alertBox.innerHTML = '';
+  let out = null;
+  try {
+    out = await api('adminLogin', { password: pin });
+  } catch (e) {
+    const msg = e.code === 'WRONG_PASSWORD' ? 'Incorrect password. Please try again.'
+              : e.code === 'LOCKED' ? 'Too many attempts. Please wait 15 minutes.'
+              : 'Could not reach the secure server: ' + esc(e.message);
+    alertBox.innerHTML = '<div class="alert alert-error"><span>&#10005;</span><span>' + msg + '</span></div>';
+    return;
+  }
+  if (out && out.session) {
+    apiSession = out.session;
+    document.getElementById('pin-input').value = '';
+    // Visit baselines + former-volunteer list (private — never in the public files)
+    if (typeof setPrivateVisitData === 'function') setPrivateVisitData(out.privateData);
     document.getElementById('screen-login').classList.remove('active');
     document.getElementById('screen-dash').classList.add('active');
     document.getElementById('coord-badge').style.display = 'inline';
     document.getElementById('btn-signout').style.display = 'inline';
     document.getElementById('match-date').value = localISO();
     loadAll();
-  } else {
-    alertBox.innerHTML = '<div class="alert alert-error"><span>&#10005;</span><span>Incorrect PIN. Please try again.</span></div>';
   }
 }
 
@@ -854,14 +893,7 @@ async function loadTotalVisits() {
     const el = document.getElementById('stat-total-visits');
     el.textContent = '...';
 
-    let all = [], next = `${BASE_URL}/database/rows/table/${VISITS_TABLE}/?user_field_names=true&size=200`;
-    while (next) {
-      const res  = await fetch(next, { headers: { 'Authorization': `Token ${BASEROW_TOKEN}` } });
-      if (!res.ok) throw new Error('Baserow ' + res.status);
-      const data = await res.json();
-      all  = all.concat(data.results || []);
-      next = data.next ? String(data.next).replace(/^http:/, 'https:') : null;   // Baserow returns http:// links → blocked on https pages
-    }
+    const all = await fetchAllRowsAdmin(VISITS_TABLE);
     allVisits = all;
     visitFields = await getTableFieldsAdmin(VISITS_TABLE);
 
@@ -891,13 +923,7 @@ async function loadTotalVisits() {
 
 async function loadVolunteers() {
   try {
-    let rows = [], next = `${BASE_URL}/database/rows/table/${VOLUNTEERS_TABLE}/?user_field_names=true&size=200`;
-    while (next) {
-      const res  = await fetch(next, { headers: { 'Authorization': `Token ${BASEROW_TOKEN}` } });
-      const data = await res.json();
-      rows = rows.concat(data.results || []);
-      next = data.next ? String(data.next).replace(/^http:/, 'https:') : null;   // Baserow returns http:// links → blocked on https pages
-    }
+    const rows = await fetchAllRowsAdmin(VOLUNTEERS_TABLE);
     allVolunteers = rows;
     document.getElementById('stat-vols').textContent = rows.length;
     renderVolunteers(rows);
@@ -909,13 +935,7 @@ async function loadVolunteers() {
 
 async function loadSeniors() {
   try {
-    let rows = [], next = `${BASE_URL}/database/rows/table/${SENIORS_TABLE}/?user_field_names=true&size=200`;
-    while (next) {
-      const res  = await fetch(next, { headers: { 'Authorization': `Token ${BASEROW_TOKEN}` } });
-      const data = await res.json();
-      rows = rows.concat(data.results || []);
-      next = data.next ? String(data.next).replace(/^http:/, 'https:') : null;   // Baserow returns http:// links → blocked on https pages
-    }
+    const rows = await fetchAllRowsAdmin(SENIORS_TABLE);
     allSeniors = rows;
     document.getElementById('stat-seniors').textContent = rows.length;
     renderSeniors(rows);
@@ -1215,20 +1235,10 @@ async function saveMatchToPortal() {
     put(['Location','Address','Facility'], m.senFacility || '');
     put(['Time','Visit Time','Heure'],     timeStr);
 
-    const res = await fetch(`${BASE_URL}/database/rows/table/${VISITS_TABLE}/?user_field_names=true`, {
-      method: 'POST',
-      headers: { 'Authorization': `Token ${BASEROW_TOKEN}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    if (res.ok) {
-      document.getElementById('save-confirm').style.display = 'block';
-      document.getElementById('save-error').style.display   = 'none';
-      btn.textContent = '✓ Sent!';
-    } else {
-      const err = await res.json();
-      throw new Error(JSON.stringify(err).substring(0, 150));
-    }
+    await api('adminCreateVisit', { row: payload });
+    document.getElementById('save-confirm').style.display = 'block';
+    document.getElementById('save-error').style.display   = 'none';
+    btn.textContent = '✓ Sent!';
   } catch(e) {
     document.getElementById('save-error').textContent = 'Could not save: ' + e.message;
     document.getElementById('save-error').style.display = 'block';
@@ -1570,7 +1580,7 @@ function selectCalDay(ds) {
 // LIVE VISIT COUNTER — per volunteer (same formula as the portal)
 //   live = baseline (visit-counts.js) + max(calendar since, portal logs since)
 // ============================================================
-const CALENDAR_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxc52C0-arbpnF4sx3Ejs0LRRK-H1xgNgVZ4fmmyZ6xH9it8B0vYBqxW-dN3npxscot/exec';
+const CALENDAR_SCRIPT_URL = API_URL;   // same secure server (public part: organisation totals only)
 let calSinceByVol = {};     // volunteer row id → number | null (bridge not updated) | 'err'
 let lcLoading = false;
 
@@ -1619,8 +1629,7 @@ async function refreshLiveCounts() {
       const phone = String(id.phone || '').replace(/\D/g, '');
       if (!id.email && phone.length < 7) { calSinceByVol[r.id] = 'err'; continue; }
       try {
-        const res = await fetch(`${CALENDAR_SCRIPT_URL}?email=${encodeURIComponent((id.email||'').toLowerCase())}&phone=${encodeURIComponent(phone)}&since=${BASELINE_DATE}`);
-        const data = await res.json();
+        const data = await api('adminCalendar', { email: (id.email || '').toLowerCase(), phone, since: BASELINE_DATE });
         calSinceByVol[r.id] = !data.success ? 'err' : (typeof data.completedSince === 'number' ? data.completedSince : null);
       } catch (e) { calSinceByVol[r.id] = 'err'; }
       renderLiveCounts();
