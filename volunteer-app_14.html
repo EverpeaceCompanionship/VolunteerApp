@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#051635">
 <title>Adopt a Muslim Senior — Volunteer Portal</title>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-<script src="visit-counts.js?v=11"></script>
+<script src="visit-counts.js?v=12"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Great+Vibes&display=swap');
   :root {
@@ -987,15 +987,17 @@
 // ============================================================
 // CONFIG — Edit these values
 // ============================================================
-const BASEROW_TOKEN    = 'SWKMnsqQrocyKfXg9TVb5mMWTGGb1Zsc';
-const BASE_URL         = 'https://api.baserow.io/api';
+// 🔒 SECURITY: this page is public. It holds NO Baserow token and NO personal
+// data. Every read/write goes through the Everpeace secure server
+// (calendar-bridge.gs, Google Apps Script), which checks the volunteer's
+// sign-in and returns only that volunteer's own information.
+const API_URL          = 'https://script.google.com/macros/s/AKfycbxc52C0-arbpnF4sx3Ejs0LRRK-H1xgNgVZ4fmmyZ6xH9it8B0vYBqxW-dN3npxscot/exec';
 const VOLUNTEERS_TABLE = 988315;
 const SENIORS_TABLE    = 917379;
 const VISITS_TABLE     = 917197;
 
-// ✅ STEP 2: After deploying the Google Apps Script (calendar-bridge.gs),
-// paste your Web App URL here. Leave empty ('') to use Baserow-only mode.
-const CALENDAR_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxc52C0-arbpnF4sx3Ejs0LRRK-H1xgNgVZ4fmmyZ6xH9it8B0vYBqxW-dN3npxscot/exec';
+// Google Calendar is read by the same secure server
+const CALENDAR_SCRIPT_URL = API_URL;
 
 // ============================================================
 // EMAILJS CONFIG — Password Reset OTP
@@ -1035,7 +1037,8 @@ let otpExpiry        = null;   // timestamp when OTP expires
 // These are the EXACT values the volunteer typed to log in.
 // They are guaranteed to match what Nadouche writes in calendar event descriptions.
 // NEVER re-detect these from Baserow — always use what the volunteer typed.
-let _loginEmail = '';   // e.g. 'roxana@gmail.com'
+let _loginEmail = '';   // e.g. 'name@example.com'
+let apiSession  = null; // signed session from the secure server (memory only — never stored)
 let _loginPhone = '';   // digits only, e.g. '6135551234'
 
 // ============================================================
@@ -1201,6 +1204,8 @@ const T = {
     fbLastTitle: 'One last step',
     fbLastSub: 'Please complete this short survey. It takes 2–3 minutes and helps us support you and our seniors.',
     accessRemoved: 'This account no longer has access to the volunteer portal. Please contact the coordinator if you think this is a mistake.',
+    sessionExpired: 'For your security you have been signed out. Please sign in again.',
+    tooManyAttempts: 'Too many attempts. Please wait 15 minutes and try again, or contact the coordinator.',
   },
   fr: {
     appTitle: 'Adopter un A\u00een\u00e9 Musulman', appSubtitle: 'Portail B\u00e9n\u00e9vole',
@@ -1362,6 +1367,8 @@ const T = {
     fbLastTitle: 'Derni\u00e8re \u00e9tape',
     fbLastSub: 'Veuillez remplir ce court sondage. Cela prend 2 \u00e0 3 minutes et nous aide \u00e0 vous soutenir, vous et nos a\u00een\u00e9(e)s.',
     accessRemoved: 'Ce compte n\u2019a plus acc\u00e8s au portail des b\u00e9n\u00e9voles. Veuillez contacter la coordinatrice si vous pensez qu\u2019il s\u2019agit d\u2019une erreur.',
+    sessionExpired: 'Pour votre s\u00e9curit\u00e9, vous avez \u00e9t\u00e9 d\u00e9connect\u00e9(e). Veuillez vous reconnecter.',
+    tooManyAttempts: 'Trop de tentatives. Veuillez attendre 15 minutes et r\u00e9essayer, ou contacter la coordinatrice.',
   }
 };
 
@@ -1427,7 +1434,7 @@ function getVolunteerDisplayName() {
 
 function firstName(fullName) {
   if (!fullName) return '';
-  // Baserow names carry prefixes/notes ("3V-Lorin Soultan (DOB)…") — greet with the clean first name
+  // Baserow names carry prefixes/notes ("3V-Jane Doe (DOB)…") — greet with the clean first name
   const clean = typeof cleanVolunteerName === 'function' ? cleanVolunteerName(fullName) : fullName;
   return clean.split(' ')[0];
 }
@@ -1448,17 +1455,47 @@ function localDateKey(d) {
   return `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`;
 }
 
-// Fetch every row of a table (follows Baserow pagination)
-async function fetchAllRows(tableId, extra = '') {
-  let rows = [], next = `${BASE_URL}/database/rows/table/${tableId}/?user_field_names=true&size=200${extra}`;
-  while (next) {
-    const res = await fetch(next, { headers: { 'Authorization': `Token ${BASEROW_TOKEN}` } });
-    if (!res.ok) throw new Error('Baserow GET ' + res.status);
-    const data = await res.json();
-    rows = rows.concat(data.results || []);
-    next = data.next ? String(data.next).replace(/^http:/, 'https:') : null;   // Baserow returns http:// links → blocked on https pages
+// ============================================================
+// SECURE SERVER — every data request goes through here
+// text/plain body = no CORS preflight (required by Google Apps Script)
+// ============================================================
+async function api(action, data = {}) {
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(Object.assign({}, data, { action, session: apiSession }))
+  });
+  if (!res.ok) throw new Error('Server ' + res.status);
+  const out = await res.json();
+  if (!out.ok) {
+    const err = new Error(out.message || out.error || 'Server error');
+    err.code = out.error;
+    // Session expired / password changed elsewhere / access removed → back to sign-in
+    if ((out.error === 'AUTH' || out.error === 'FORMER') && apiSession && currentVolunteer) {
+      setTimeout(() => {
+        doLogout();
+        showAlert(document.getElementById('login-alert'), out.error === 'FORMER' ? t('accessRemoved') : t('sessionExpired'), 'error');
+      }, 0);
+    }
+    throw err;
   }
-  return rows;
+  return out;
+}
+
+// The volunteer's own rows only (server-side filter). Seniors: names only.
+// My Visit, the counter and Recent Visits all need the same rows at login → one request
+let _myVisitsCache = null;
+async function fetchAllRows(tableId, extra = '') {
+  if (tableId === VISITS_TABLE) {
+    if (!_myVisitsCache) {
+      _myVisitsCache = api('myVisits').then(o => o.rows || []);
+      _myVisitsCache.catch(() => { _myVisitsCache = null; });
+      setTimeout(() => { _myVisitsCache = null; }, 30000);
+    }
+    return _myVisitsCache;
+  }
+  if (tableId === SENIORS_TABLE) return (await api('seniorNames')).rows || [];
+  throw new Error('Not allowed');
 }
 
 // Does a Visits-table "Volunteer" value belong to the logged-in volunteer?
@@ -1569,46 +1606,34 @@ function applyTranslations() {
 // ============================================================
 // BASEROW API
 // ============================================================
+// (All calls below go through the secure server — see api() above.)
+
+// Only use: the senior assigned on the volunteer's own record (My Visit fallback)
 async function baserowGet(tableId, params = '') {
-  const res = await fetch(`${BASE_URL}/database/rows/table/${tableId}/?user_field_names=true${params}`, {
-    headers: { 'Authorization': `Token ${BASEROW_TOKEN}` }
-  });
-  if (!res.ok) throw new Error('Baserow GET ' + res.status);
-  return res.json();
+  if (tableId === SENIORS_TABLE) return { results: (await api('assignedSenior')).results || [] };
+  throw new Error('Not allowed');
 }
 
+// Only use: Log Visit (server forces Status ≠ Upcoming and this volunteer's name)
 async function baserowCreate(tableId, data) {
-  const res = await fetch(`${BASE_URL}/database/rows/table/${tableId}/?user_field_names=true`, {
-    method: 'POST',
-    headers: { 'Authorization': `Token ${BASEROW_TOKEN}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  });
-  const json = await res.json();
-  if (!res.ok) throw new Error('Baserow CREATE ' + res.status + ': ' + JSON.stringify(json).substring(0,200));
-  return json;
+  if (tableId === VISITS_TABLE) { _myVisitsCache = null; return (await api('logVisit', { row: data })).row; }
+  throw new Error('Not allowed');
 }
 
+// Only use: Availability (server allows only an availability column of the volunteer's own row)
 async function baserowUpdate(tableId, rowId, data) {
-  const res = await fetch(`${BASE_URL}/database/rows/table/${tableId}/${rowId}/?user_field_names=true`, {
-    method: 'PATCH',
-    headers: { 'Authorization': `Token ${BASEROW_TOKEN}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  });
-  if (!res.ok) throw new Error('Baserow UPDATE ' + res.status);
-  return res.json();
+  const keys = Object.keys(data || {});
+  if (tableId !== VOLUNTEERS_TABLE || keys.length !== 1) throw new Error('Not allowed');
+  return api('saveAvailability', { field: keys[0], value: data[keys[0]] });
 }
 
-// Get actual field names from Baserow table
+// Get actual field names from Baserow table (names only, via the server)
 const _fieldCache = {};
 async function getTableFields(tableId) {
   if (_fieldCache[tableId]) return _fieldCache[tableId];
   try {
-    const res = await fetch(`${BASE_URL}/database/fields/table/${tableId}/`, {
-      headers: { 'Authorization': `Token ${BASEROW_TOKEN}` }
-    });
-    if (!res.ok) return [];
-    const data = await res.json();
-    const names = Array.isArray(data) ? data.map(f => f.name) : [];
+    const data = { fields: (await api('fields', { table: tableId })).fields };
+    const names = Array.isArray(data.fields) ? data.fields : [];
     if (names.length) _fieldCache[tableId] = names;
     return names;
   } catch(e) {
@@ -1722,54 +1747,28 @@ async function findVolunteer() {
   alertBox.innerHTML = '';
 
   try {
-    const allRows = await fetchAllRows(VOLUNTEERS_TABLE);
+    // The server searches the Volunteers table (same email / phone rules as before)
+    // and answers only: found? former? has a password? first name.
+    const found = await api('lookup', { email, phone });
 
-    const inputPhoneDigits = cleanPhone(phone);
-    let found = null;
-    for (const row of allRows) {
-      const keys = Object.keys(row);
-      if (email) {
-        for (const key of keys) {
-          if (key.toLowerCase().includes('mail') || key.toLowerCase().includes('email')) {
-            if (extractVal(row[key]).toLowerCase() === email) { found = row; break; }
-          }
-        }
-      }
-      if (found) break;
-      if (phone && inputPhoneDigits.length >= 7) {
-        for (const key of keys) {
-          const kl = key.toLowerCase();
-          if (kl.includes('phone') || kl.includes('tel') || kl.includes('mobile') || (kl.includes('number') && !kl.includes('visit'))) {
-            const rowLast = cleanPhone(row[key]).slice(-10);
-            if (rowLast.length >= 7 && rowLast === inputPhoneDigits.slice(-10)) { found = row; break; }
-          }
-        }
-      }
-      if (found) break;
-    }
-
-    if (!found) {
+    if (!found.found) {
       showAlert(alertBox, t('loginError'), 'error');
       btn.textContent = t('btnContinue'); btn.disabled = false; return;
     }
 
-    // Former / dismissed volunteers have no access (FORMER_VOLUNTEERS in visit-counts.js)
-    if (typeof isFormerVolunteer === 'function') {
-      const fName  = getVolunteerField(found, ['Full Legal Name', 'Name', 'Full Name', 'Nom']);
-      const fEmail = getVolunteerField(found, ['Email', 'E-mail', 'Mail']);
-      const fPhone = getVolunteerField(found, ['Phone', 'Tel', 'Phone Number', 'Mobile']);
-      if (isFormerVolunteer({ name: fName, email: fEmail || email, phone: fPhone || phone })) {
-        showAlert(alertBox, t('accessRemoved'), 'error');
-        btn.textContent = t('btnContinue'); btn.disabled = false; return;
-      }
+    // Former / dismissed volunteers have no access (list kept on the server)
+    if (found.former) {
+      showAlert(alertBox, t('accessRemoved'), 'error');
+      btn.textContent = t('btnContinue'); btn.disabled = false; return;
     }
-    currentVolunteer = found;
+    // Until the password step, only the first name is known
+    currentVolunteer = { 'Full Legal Name': found.firstName || '' };
     // Store the exact identifiers used to log in — these are what Nadouche
     // writes in calendar events, so they must be used for calendar queries.
     _loginEmail = email;                          // what they typed (already lowercased)
     _loginPhone = cleanPhone(phone);              // digits only
     const name   = firstName(getVolunteerName());
-    const pwHash = getPasswordHash();
+    const pwHash = found.hasPassword;
     document.getElementById('login-step1').style.display = 'none';
 
     if (!pwHash) {
@@ -1803,19 +1802,21 @@ async function verifyPassword() {
   if (!password) { showAlert(alertBox, t('passwordRequired'), 'error'); return; }
   btn.disabled = true; btn.textContent = t('loginLoading');
   try {
-    const inputHash = await hashPassword(password, currentVolunteer.id);
-    if (inputHash !== getPasswordHash()) {
-      showAlert(alertBox, t('wrongPassword'), 'error');
-      btn.disabled = false; btn.textContent = t('btnSignIn');
-      document.getElementById('login-password').value = '';
-      document.getElementById('login-password').focus();
-      return;
-    }
+    // Checked on the server (same SHA-256 scheme, so existing passwords still work)
+    const out = await api('login', { email: _loginEmail, phone: _loginPhone, password });
+    startSession(out);
     completeLogin();
   } catch(e) {
     // Ensure button is always re-enabled so volunteer isn't permanently locked out
-    showAlert(alertBox, t('genericError'), 'error');
+    const msg = e.code === 'WRONG_PASSWORD' ? t('wrongPassword')
+              : e.code === 'LOCKED' ? t('tooManyAttempts')
+              : e.code === 'FORMER' ? t('accessRemoved') : t('genericError');
+    showAlert(alertBox, msg, 'error');
     btn.disabled = false; btn.textContent = t('btnSignIn');
+    if (e.code === 'WRONG_PASSWORD') {
+      document.getElementById('login-password').value = '';
+      document.getElementById('login-password').focus();
+    }
   }
 }
 
@@ -1832,15 +1833,23 @@ async function createPassword() {
   if (pw1 !== pw2)    { showAlert(alertBox, t('passwordMismatch'), 'error'); return; }
   btn.disabled = true; btn.textContent = t('loginLoading');
   try {
-    const hash = await hashPassword(pw1, currentVolunteer.id);
-    await baserowUpdate(VOLUNTEERS_TABLE, currentVolunteer.id, { 'Password_Hash': hash });
-    currentVolunteer['Password_Hash'] = hash;
+    // Server saves the hash only if this volunteer has no password yet
+    const out = await api('createPassword', { email: _loginEmail, phone: _loginPhone, password: pw1 });
+    startSession(out);
     showAlert(alertBox, t('passwordSaved'), 'success');
     setTimeout(() => completeLogin(), 1200);
   } catch(e) {
     showAlert(alertBox, 'Error saving password: ' + e.message, 'error');
     btn.disabled = false; btn.textContent = t('btnCreatePassword');
   }
+}
+
+// Server sign-in response → session (memory only), own record without
+// the password hash, own visit baseline (visit-counts.js lists stay private)
+function startSession(out) {
+  apiSession = out.session;
+  currentVolunteer = out.volunteer || currentVolunteer;
+  if (typeof setPrivateVisitData === 'function') setPrivateVisitData(out.privateData || { baselines: [], former: [] });
 }
 
 // ============================================================
@@ -1883,6 +1892,7 @@ function completeLogin() {
 // ============================================================
 function backToStep1() {
   currentVolunteer = null;
+  apiSession = null;
   _loginEmail = ''; _loginPhone = '';  // clear stale login identifiers
   document.getElementById('login-step1').style.display          = 'block';
   document.getElementById('login-step2-password').style.display = 'none';
@@ -2037,14 +2047,17 @@ async function doChangePassword() {
   if (newPw !== confirmPw) { showAlert(alertBox, t('passwordMismatch'), 'error'); return; }
   btn.disabled = true; btn.textContent = t('loginLoading');
   try {
-    const currentHash = await hashPassword(currentPw, currentVolunteer.id);
-    if (currentHash !== getPasswordHash()) {
-      showAlert(alertBox, t('wrongCurrentPw'), 'error');
-      btn.disabled = false; btn.textContent = t('btnSavePw'); return;
+    let out;
+    try {
+      out = await api('changePassword', { current: currentPw, next: newPw });
+    } catch (err) {
+      if (err.code === 'WRONG_PASSWORD' || err.code === 'LOCKED') {
+        showAlert(alertBox, err.code === 'LOCKED' ? t('tooManyAttempts') : t('wrongCurrentPw'), 'error');
+        btn.disabled = false; btn.textContent = t('btnSavePw'); return;
+      }
+      throw err;
     }
-    const newHash = await hashPassword(newPw, currentVolunteer.id);
-    await baserowUpdate(VOLUNTEERS_TABLE, currentVolunteer.id, { 'Password_Hash': newHash });
-    currentVolunteer['Password_Hash'] = newHash;
+    startSession(out);   // the old session stops working once the password changes
     showAlert(alertBox, t('passwordChanged'), 'success');
     document.getElementById('current-password').value        = '';
     document.getElementById('new-password-change').value     = '';
@@ -2175,11 +2188,8 @@ async function loadCalendarVisit(container) {
     const name  = getVolunteerName();
     if (!email && phone.length < 7 && name.length < 3) throw new Error('No identifier');
 
-    const since = typeof BASELINE_DATE === 'string' ? `&since=${BASELINE_DATE}` : '';
-    const url = `${CALENDAR_SCRIPT_URL}?email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}&name=${encodeURIComponent(name)}${since}`;
-    const res  = await fetch(url);
-    if (!res.ok) throw new Error('Script error ' + res.status);
-    const data = await res.json();
+    // The server uses the email/phone this volunteer signed in with (never another person's)
+    const data = await api('myCalendar', { since: typeof BASELINE_DATE === 'string' ? BASELINE_DATE : '' });
     if (!data.success) throw new Error(data.error || 'Unknown error');
 
     // Only real Muslim Senior Visits — webinars, lectures, events, all-day items are dropped
@@ -2275,7 +2285,7 @@ function getSeniorValue() {
 }
 
 // Find the senior a calendar title / assignment refers to, e.g.
-// "Grandpa Daniel Muslim Senior Visit by Sr Lorin" → "Daniel Godkin"
+// "Grandpa Adam Muslim Senior Visit by Sr Jane" → "Adam Doe"
 function matchSeniorName(text) {
   if (!text || !seniorNames.length) return '';
   const norm = v => String(v).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9 ]/g, ' ');
@@ -2839,6 +2849,9 @@ function showAlert(container, message, type) {
 function doLogout() {
   currentVolunteer = null; selectedDays = {}; calendarData = null;
   _loginEmail = ''; _loginPhone = '';
+  apiSession = null; _myVisitsCache = null;
+  if (typeof setPrivateVisitData === 'function') setPrivateVisitData({ baselines: [], former: [] });
+  Object.keys(_fieldCache).forEach(k => delete _fieldCache[k]);
   trainingCompleted = []; trainingActiveFilter = 'all';
   pendingFeedback = null; lastAssignmentRender = null;
   visitCounts = { calendar: null, baserow: null, record: null };

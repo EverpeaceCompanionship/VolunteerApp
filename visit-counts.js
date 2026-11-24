@@ -11,7 +11,7 @@
 //                calendar AND logged in the portal is counted once, not twice.
 //
 // HOW TO EDIT
-//   • Put each volunteer's exact total in `visits`. Match is by email, then phone,
+//   • Put each volunteer's exact total in `visits` (in private-data.gs, Apps Script). Match is by email, then phone,
 //     then full name (any one is enough; case and spacing don't matter).
 //   • A volunteer NOT listed here keeps the previous automatic count.
 //   • To re-baseline later: update every `visits` and move BASELINE_DATE to that day.
@@ -19,60 +19,13 @@
 
 const BASELINE_DATE = '2026-11-05';   // counts below include every visit up to and including this day
 
-// Source: Google Calendar export "All the visits till today 2026_11_05" (132 visits, 29 May → 3 Nov 2026).
-// Each volunteer named in a visit gets 1 (a visit by 2 volunteers counts for both).
-// Eid visits (29 May – 7 Jun) assigned from Nadouche's list (5 Nov); Nadia's total = her own list (2 Eid + 20).
-// Grandpa Daniel Eid visits of 3, 5 and 6 June were done by Habiba Hadiri (former volunteer).
-const VISIT_BASELINES = [
-  // { name: 'Full Legal Name', aliases: ['Other spelling'], email: '', phone: '', visits: 0 },
-  { name: "Nadia Olfa Kebaier", aliases: ["Nadia Kebaier", "Nadia Olfa"], email: '', phone: '', visits: 22 },
-  { name: "Rai Muhammad Wassay", aliases: ["Rai Mohammad Wassay"], email: '', phone: '', visits: 8 },
-  { name: "Lorin Soultan", aliases: ["Lori Lee Soultan", "Lori Soultan"], email: '', phone: '', visits: 6 },   // 1 visit cancelled
-  { name: "Mohammed Abdelghani", aliases: ["Mohamed Abdelghani", "Muhammad Abdelghani"], email: '', phone: '', visits: 7 },
-  { name: "Muaad Ali Saleh Al-Shaibi", aliases: ["Muaad Al-Shaibi", "Muaad Al Shaibi"], email: '', phone: '', visits: 7 },
-  { name: "Nusaybah Elfarawi", aliases: ["Nusayba Elfarawi"], email: '', phone: '', visits: 7 },
-  { name: "Abdurrahman Elfarawi", aliases: [], email: '', phone: '', visits: 5 },   // 1 visit cancelled
-  { name: "Omar Badr", aliases: [], email: '', phone: '', visits: 6 },
-  { name: "Roxana Ghoreishi", aliases: [], email: '', phone: '', visits: 7 },
-  { name: "Muhammad Maahir", aliases: ["Muhammed Maahir", "Mohammed Maahir"], email: '', phone: '', visits: 5 },
-  { name: "Muhammad Qasim", aliases: ["Mohammed Qasim", "Mohamed Qasim"], email: '', phone: '', visits: 5 },
-  { name: "Thanaa Al Shaibi", aliases: ["Thana Al Shaibi", "Thanaa Al-Shaibi"], email: '', phone: '', visits: 5 },
-  { name: "Naeem Ahmed", aliases: [], email: '', phone: '', visits: 5 },
-  { name: "Ryma Iskounene", aliases: [], email: '', phone: '', visits: 5 },
-  { name: "Habib Ur Rahman Bharti", aliases: ["Habib-ur-Rahman Bharti", "Habib Rahman Bharti"], email: '', phone: '', visits: 3 },
-  { name: "Habiba Hadiri", aliases: ["Sophia Amani"], email: '', phone: '', visits: 6, former: true },   // former volunteer — Eid 3, 5, 6 Jun + 12, 14, 18 Jun
-  { name: "Ilham Rahimi", aliases: ["İlham Rahimi"], email: '', phone: '', visits: 3 },
-  { name: "Lydia Boumaarafi", aliases: [], email: '', phone: '', visits: 2 },   // corrected by Nadouche
-  { name: "Malak Beshr", aliases: [], email: '', phone: '', visits: 4 },
-  { name: "Sajeda Almalki", aliases: [], email: '', phone: '', visits: 3 },
-  { name: "Sawsan Ibrahim", aliases: ["Sawssan Ibrahim"], email: '', phone: '', visits: 3 },
-  { name: "Zeinab Karbo", aliases: ["Zeineb Karbo"], email: '', phone: '', visits: 3 },   // corrected by Nadouche
-  { name: "Zeineb Rais", aliases: ["Zeinab Rais"], email: '', phone: '', visits: 3 },
-  { name: "Abdou El Bashtaly", aliases: [], email: '', phone: '', visits: 2 },
-  { name: "Aimanete Aboufatma", aliases: [], email: '', phone: '', visits: 2 },
-  { name: "Asma Abdisamad", aliases: [], email: '', phone: '', visits: 2 },
-  { name: "Hassan Yassin", aliases: ["Hassen Yassin"], email: '', phone: '', visits: 3 },
-  { name: "Mohamed Abdel Baky", aliases: ["Mohammed Abdel Baky", "Mohamed Abdelbaky"], email: '', phone: '', visits: 2 },
-  { name: "Randa Hassan", aliases: [], email: '', phone: '', visits: 3 },
-  { name: "Eman Selim", aliases: [], email: '', phone: '', visits: 1 },
-  { name: "Amal Khan", aliases: [], email: '', phone: '', visits: 1 },
-  { name: "Asma Jawed", aliases: [], email: '', phone: '', visits: 2 },
-  { name: "Awa Diop", aliases: [], email: '', phone: '', visits: 1 },
-  { name: "Aya Gadi", aliases: [], email: '', phone: '', visits: 1 },
-  { name: "Faduma Hagi", aliases: [], email: '', phone: '', visits: 1 },
-  { name: "Faiza Ahmed-Hassan", aliases: [], email: '', phone: '', visits: 1 },
-  { name: "Hosai Zurmati-Halim", aliases: [], email: '', phone: '', visits: 1 },
-  { name: "Khadija Siddiqi", aliases: [], email: '', phone: '', visits: 1 },
-  { name: "Kongling Bai", aliases: [], email: '', phone: '', visits: 1 },
-  { name: "Leila Abdi", aliases: [], email: '', phone: '', visits: 0 },   // 9 Jul visit (Adam) unconfirmed — volunteer stopped responding
-  { name: "Mandeek Mohamud", aliases: [], email: '', phone: '', visits: 1, former: true },
-  { name: "Manal Abdussamad Siddiqui", aliases: ["Manel", "Manal Siddiqui", "Manal Abdussamad"], email: '', phone: '', visits: 1 },   // calendar: "Sr Manel", 3 Aug
-  { name: "Mayar Ahrir", aliases: ["Mayar Amri"], email: '', phone: '', visits: 1, former: true },
-  { name: "Melek Delice", aliases: [], email: '', phone: '', visits: 1 },
-  { name: "Nourhan Mohamed", aliases: [], email: '', phone: '', visits: 1 },
-  { name: "Maryam Maafi", aliases: ["Oummou Rayan"], email: '', phone: '', visits: 1, former: true },   // calendar: "Sr Oummou Rayan", 29 Jul
-  { name: "Wafa", aliases: [], email: '', phone: '', visits: 1 },
-];
+// The LISTS (each volunteer's baseline, former volunteers) are personal data,
+// so they are NOT in this public file. They live in the Apps Script project
+// (private-data.gs) and are sent only to a signed-in user:
+//   • the coordinator dashboard gets both lists;
+//   • a volunteer gets only their own baseline entry.
+// Format of one entry: { name: 'Full Legal Name', aliases: ['Other spelling'], email: '', phone: '', visits: 0 }
+let VISIT_BASELINES = [];
 
 // ── Helpers (shared) ────────────────────────────────────────
 // Normalise a name: lower case, no accents, no "Sr/Br/Sister/Brother", hyphens → spaces
@@ -85,7 +38,7 @@ function _vcNorm(s) {
     .replace(/\s+/g, ' ').trim();
 }
 // Display name from Baserow's "Full Legal Name and DOB" field:
-// "6V-Hadiri Habiba OUT for safety reasons (1969/01/01)" → "Hadiri Habiba"
+// "6V-Doe Jane OUT note (1970/01/01)" → "Doe Jane"
 function cleanVolunteerName(raw) {
   const orig = String(raw || '').trim();
   let n = orig;
@@ -109,8 +62,8 @@ function _vcTokensIn(small, big) {
 
 // Returns the baseline entry for a volunteer, or null if not listed.
 // Order: email → phone → exact name/alias → all words of one name inside the
-// other (handles middle names, e.g. "Lorin Soultan" ↔ "Lorin A. Soultan") →
-// single-name entries (e.g. "Mandeek") only when that first name is unique.
+// other (handles middle names, e.g. "Jane Doe" ↔ "Jane A. Doe") →
+// single-name entries (e.g. "Jane") only when that first name is unique.
 function findVisitBaseline({ name, email, phone } = {}) {
   const n = _vcNorm(name), e = String(email || '').toLowerCase().trim(), p = _vcDigits(phone);
   const B = VISIT_BASELINES;
@@ -148,32 +101,13 @@ function isSeniorVisitEvent(ev) {
 // ── Former / dismissed volunteers: NO access to the volunteer portal ──
 // Their past visits stay in the counts above. Matched like baselines
 // (email, phone, or full name / alias — never a first name alone).
-const FORMER_VOLUNTEERS = [
-  { name: 'Habiba Hadiri',   aliases: ['Sophia Amani'], email: '', phone: '', note: 'Dismissed June 2026' },
-  { name: 'Mandeek Mohamud', aliases: [],               email: '', phone: '', note: 'Former volunteer (1 visit)' },
-  { name: 'Maryam Maafi',    aliases: ['Oummou Rayan'], email: '', phone: '', note: 'Former volunteer (1 visit)' },
-  { name: 'Mayar Ahrir',     aliases: ['Mayar Amri'],   email: '', phone: '', note: 'Former volunteer (1 visit)' },
-  // ── Inactive — blocked FOR NOW (5 Nov 2026). To let someone back in, delete their line. ──
-  { name: 'Laura Sicoli',       aliases: [], email: '', phone: '', note: 'Inactive' },
-  { name: 'Sufia Quazi',        aliases: [], email: '', phone: '', note: 'Inactive' },
-  { name: 'Ines Attouchi',      aliases: ['Inès Attouchi'], email: '', phone: '', note: 'Inactive' },
-  { name: 'Abdul Waheed Butt',  aliases: [], email: '', phone: '', note: 'Inactive' },
-  { name: 'Armeen Mazhar',      aliases: [], email: '', phone: '', note: 'Inactive' },
-  { name: 'Mariam Abouseta',    aliases: [], email: '', phone: '', note: 'Inactive' },
-  { name: 'Suha Maryam Ali',    aliases: [], email: '', phone: '', note: 'Inactive' },
-  { name: 'Hafsah Butt',        aliases: [], email: '', phone: '', note: 'Inactive' },
-  { name: 'Zaiba Fatima Ali',   aliases: [], email: '', phone: '', note: 'Inactive' },
-  { name: 'Hafsa Khan Younis',  aliases: [], email: '', phone: '', note: 'Inactive' },
-  { name: 'Houdayfa Karbo',     aliases: [], email: '', phone: '', note: 'Inactive' },
-  { name: 'Najma Bhati',        aliases: [], email: '', phone: '', note: 'Inactive' },
-  { name: 'Souad Djama',        aliases: [], email: '', phone: '', note: 'Inactive' },
-  { name: 'Leila Abdi',         aliases: [], email: '', phone: '', note: 'Inactive' },
-  { name: 'Natasha Hernandez',  aliases: [], email: '', phone: '', note: 'Inactive' },
-  { name: 'Wassim Abu Zarad',   aliases: [], email: '', phone: '', note: 'Inactive' },
-  { name: 'Rayan Ghoreishi',    aliases: [], email: '', phone: '', note: 'Inactive' },
-  { name: 'Halima Osmane',      aliases: [], email: '', phone: '', note: 'Inactive' },
-  { name: 'Hannah Karimah',     aliases: [], email: '', phone: '', note: 'Inactive — "Hannah mom of Karimah"' },
-];
+let FORMER_VOLUNTEERS = [];   // filled from the server for the dashboard (see above)
+
+// Called after sign-in with the data the server allows this user to see
+function setPrivateVisitData(d) {
+  if (d && Array.isArray(d.baselines)) VISIT_BASELINES = d.baselines;
+  if (d && Array.isArray(d.former))    FORMER_VOLUNTEERS = d.former;
+}
 function isFormerVolunteer({ name, email, phone } = {}) {
   const n = _vcNorm(name), e = String(email || '').toLowerCase().trim(), p = _vcDigits(phone);
   return FORMER_VOLUNTEERS.some(f => {
