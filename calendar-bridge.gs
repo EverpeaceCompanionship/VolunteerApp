@@ -39,6 +39,9 @@ const VOLUNTEER_SESSION_HOURS = 12;
 const ADMIN_SESSION_HOURS     = 8;
 const MAX_FAILED_ATTEMPTS     = 5;     // then locked for LOCK_MINUTES
 const LOCK_MINUTES            = 15;
+const CODE_MINUTES            = 10;    // emailed verification code lifetime
+const MAX_CODES_PER_WINDOW    = 3;     // emails per volunteer per LOCK_MINUTES
+const MAX_CODE_TRIES          = 5;     // wrong codes before the code is cancelled
 
 // ── Calendar rules (unchanged from the calendar bridge) ──────
 const COMPLETED_THRESHOLD_HOURS = 36;   // hours after a visit before it counts as "confirmed done"
@@ -64,6 +67,7 @@ function setup() {
     Logger.log('✓ Baserow reachable — Visits table has ' + f.length + ' columns');
   }
   Logger.log('✓ Calendars: ' + visitCalendars_().map(c => c.getName()).join(', '));
+  Logger.log('✓ Email: ' + MailApp.getRemainingDailyQuota() + ' verification emails left today');
   Logger.log('✓ Private data: ' + privateBaselines_().length + ' baselines, ' + privateFormer_().length + ' former volunteers');
   Logger.log(problems.length ? '⚠️ ' + problems.join(' · ') : '✓ Configuration complete');
 }
@@ -120,7 +124,10 @@ const ACTIONS = {
   // ── Volunteer sign-in ──
   lookup:          (r) => actLookup_(r),
   login:           (r) => actLogin_(r),
+  requestCode:     (r) => actRequestCode_(r),
+  checkCode:       (r) => actCheckCode_(r),
   createPassword:  (r) => actCreatePassword_(r),
+  resetPassword:   (r) => actResetPassword_(r),
   // ── Volunteer (signed in) ──
   changePassword:  (r) => actChangePassword_(r),
   fields:          (r) => actFields_(r),
@@ -166,7 +173,40 @@ function actLogin_(r) {
   return volunteerSessionResponse_(v, r.email, r.phone);
 }
 
-// First login only: the record has no password yet
+// ── Emailed verification code (first sign-in and "Forgot password") ──
+// The code goes ONLY to the email address on the volunteer's Baserow record,
+// never to an address typed in the page.
+function actRequestCode_(r) {
+  const v = findVolunteerByLogin_(r.email, r.phone);
+  if (!v) throw apiError_('NOT_FOUND', 'Volunteer not found');
+  if (isFormerRecord_(v, r.email, r.phone)) throw apiError_('FORMER', 'Access removed');
+  const purpose = r.purpose === 'reset' ? 'reset' : 'create';
+  if (purpose === 'create' && passwordHashOf_(v)) throw apiError_('HAS_PASSWORD', 'A password already exists');
+  const to = fieldVal_(v, ['Email', 'E-mail', 'Mail']).trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) throw apiError_('NO_EMAIL', 'No email address on file');
+
+  const cache = CacheService.getScriptCache();
+  const sentKey = 'otpsent:' + v.id;
+  const sent = Number(cache.get(sentKey) || 0);
+  if (sent >= MAX_CODES_PER_WINDOW) throw apiError_('LOCKED', 'Too many codes requested — please wait ' + LOCK_MINUTES + ' minutes.');
+  cache.put(sentKey, String(sent + 1), LOCK_MINUTES * 60);
+
+  const code = newCode_();
+  const expires = Date.now() + CODE_MINUTES * 60e3;
+  cache.put('otp:' + v.id, JSON.stringify({ h: codeHash_(code, v.id), p: purpose, n: 0, exp: expires }), CODE_MINUTES * 60);
+  sendCodeEmail_(to, firstNameOf_(v), code, purpose, r.lang === 'fr' ? 'fr' : 'en');
+  return { sent: true, to: maskEmail_(to), minutes: CODE_MINUTES };
+}
+
+// Checks the code without using it up (so the page can move to "choose a password")
+function actCheckCode_(r) {
+  const v = findVolunteerByLogin_(r.email, r.phone);
+  if (!v) throw apiError_('NOT_FOUND', 'Volunteer not found');
+  verifyCode_(v, r.code, r.purpose === 'reset' ? 'reset' : 'create', false);
+  return { valid: true };
+}
+
+// First login only: the record has no password yet + emailed code
 function actCreatePassword_(r) {
   const v = findVolunteerByLogin_(r.email, r.phone);
   if (!v) throw apiError_('NOT_FOUND', 'Volunteer not found');
@@ -174,9 +214,78 @@ function actCreatePassword_(r) {
   if (passwordHashOf_(v)) throw apiError_('HAS_PASSWORD', 'A password already exists');
   const pw = String(r.password || '');
   if (pw.length < 8) throw apiError_('BAD_REQUEST', 'Password too short');
-  const field = passwordFieldName_();
-  updateRow_(T_VOLUNTEERS, v.id, { [field]: hashPassword_(pw, v.id) });
+  verifyCode_(v, r.code, 'create', true);
+  updateRow_(T_VOLUNTEERS, v.id, { [passwordFieldName_()]: hashPassword_(pw, v.id) });
+  clearFailures_('vol:' + v.id);
   return volunteerSessionResponse_(getRow_(T_VOLUNTEERS, v.id), r.email, r.phone);
+}
+
+// Forgot password: emailed code → new password (old sessions stop working)
+function actResetPassword_(r) {
+  const v = findVolunteerByLogin_(r.email, r.phone);
+  if (!v) throw apiError_('NOT_FOUND', 'Volunteer not found');
+  if (isFormerRecord_(v, r.email, r.phone)) throw apiError_('FORMER', 'Access removed');
+  const pw = String(r.password || '');
+  if (pw.length < 8) throw apiError_('BAD_REQUEST', 'Password too short');
+  verifyCode_(v, r.code, 'reset', true);
+  updateRow_(T_VOLUNTEERS, v.id, { [passwordFieldName_()]: hashPassword_(pw, v.id) });
+  clearFailures_('vol:' + v.id);   // a successful reset also lifts the wrong-password lock
+  return volunteerSessionResponse_(getRow_(T_VOLUNTEERS, v.id), r.email, r.phone);
+}
+
+function verifyCode_(v, code, purpose, consume) {
+  const cache = CacheService.getScriptCache();
+  const key = 'otp:' + v.id;
+  const raw = cache.get(key);
+  if (!raw) throw apiError_('CODE_EXPIRED', 'Code expired — please request a new one');
+  const o = JSON.parse(raw);
+  if (Date.now() > o.exp) { cache.remove(key); throw apiError_('CODE_EXPIRED', 'Code expired — please request a new one'); }
+  const entered = String(code || '').replace(/\D/g, '');
+  if (o.p !== purpose || !safeEqual_(codeHash_(entered, v.id), o.h)) {
+    o.n++;
+    if (o.n >= MAX_CODE_TRIES) { cache.remove(key); throw apiError_('CODE_EXPIRED', 'Too many wrong codes — please request a new one'); }
+    cache.put(key, JSON.stringify(o), Math.max(1, Math.floor((o.exp - Date.now()) / 1000)));
+    throw apiError_('CODE_INVALID', 'Incorrect code');
+  }
+  if (consume) cache.remove(key);
+}
+
+// 6 digits from a random UUID (Java SecureRandom behind Utilities.getUuid)
+function newCode_() {
+  const hex = Utilities.getUuid().replace(/-/g, '');
+  return String(parseInt(hex.slice(0, 12), 16) % 1000000).padStart(6, '0');
+}
+function codeHash_(code, id) {
+  return hex_(Utilities.computeHmacSha256Signature(String(code) + ':' + id, sessionSecret_()));
+}
+function maskEmail_(e) {
+  const parts = String(e).split('@');
+  return parts[0].slice(0, 1) + '•••@' + (parts[1] || '');
+}
+
+function sendCodeEmail_(to, firstName, code, purpose, lang) {
+  const fr = lang === 'fr';
+  const hello = fr ? 'Bonjour' : 'Hello';
+  const why = purpose === 'reset'
+    ? (fr ? 'Voici votre code pour choisir un nouveau mot de passe du portail des bénévoles :' : 'Here is your code to choose a new volunteer portal password:')
+    : (fr ? 'Voici votre code pour créer le mot de passe de votre portail des bénévoles :' : 'Here is your code to create your volunteer portal password:');
+  const exp = fr ? 'Ce code expire dans ' + CODE_MINUTES + ' minutes.' : 'This code expires in ' + CODE_MINUTES + ' minutes.';
+  const notYou = fr ? 'Si vous n’avez rien demandé, ignorez ce courriel : votre compte ne change pas.'
+                    : 'If you didn’t ask for this, ignore this email — nothing changes on your account.';
+  const subject = (fr ? 'Votre code Everpeace : ' : 'Your Everpeace code: ') + code;
+  const name = firstName ? ' ' + firstName : '';
+  const body = hello + name + ',\n\n' + why + '\n\n    ' + code + '\n\n' + exp + '\n' + notYou + '\n\nEverpeace Companionship';
+  const html =
+    '<div style="font-family:Georgia,serif;background:#FBF7EE;padding:24px">' +
+    '<div style="max-width:440px;margin:auto;background:#051635;color:#FBF7EE;border:1px solid #CDAE74;padding:28px;text-align:center">' +
+    '<div style="letter-spacing:.2em;font-size:12px;color:#CDAE74">EVERPEACE COMPANIONSHIP</div>' +
+    '<p style="font-size:16px">' + hello + escHtml_(name) + ',</p><p style="font-size:14px;line-height:1.5">' + why + '</p>' +
+    '<div style="font-size:34px;letter-spacing:10px;color:#CDAE74;margin:18px 0;font-family:Courier,monospace">' + code + '</div>' +
+    '<p style="font-size:12px">' + exp + '</p><p style="font-size:12px;color:#C9CCD6">' + notYou + '</p></div></div>';
+  MailApp.sendEmail({ to: to, subject: subject, body: body, htmlBody: html, name: 'Everpeace Companionship' });
+}
+function escHtml_(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 }
 
 function actChangePassword_(r) {
