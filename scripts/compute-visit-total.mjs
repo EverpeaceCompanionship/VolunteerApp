@@ -16,7 +16,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const BASEROW_TOKEN = 'SWKMnsqQrocyKfXg9TVb5mMWTGGb1Zsc';
 const BASE_URL = 'https://api.baserow.io/api';
 const VISITS_TABLE = 917197;
-const CALENDAR_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwyR_3wuqhI1XHRmIq1PkL2R3Q3sosSqk1dg00WTL4oIoUQ-KBJRlzrQuLQTUSfBe-nZg/exec';
+const CALENDAR_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxc52C0-arbpnF4sx3Ejs0LRRK-H1xgNgVZ4fmmyZ6xH9it8B0vYBqxW-dN3npxscot/exec';
 
 // Load the shared constants/helpers exactly as the portal and dashboard do
 const ctx = {};

@@ -63,7 +63,7 @@ VISITS_TABLE     = 917197   // "Calls and Visits Follow-up" table
 BASE_URL         = 'https://api.baserow.io/api'
 
 // Google Calendar Bridge
-CALENDAR_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwyR_3wuqhI1XHRmIq1PkL2R3Q3sosSqk1dg00WTL4oIoUQ-KBJRlzrQuLQTUSfBe-nZg/exec'
+CALENDAR_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxc52C0-arbpnF4sx3Ejs0LRRK-H1xgNgVZ4fmmyZ6xH9it8B0vYBqxW-dN3npxscot/exec'
 
 // EmailJS (NOT YET CONFIGURED — keys are currently empty strings)
 EMAILJS_PUBLIC_KEY  = ''
@@ -209,12 +209,12 @@ Website, portal and dashboard all follow the Everpeace thank-you card (Internati
 ## 7. GOOGLE CALENDAR BRIDGE (calendar-bridge.gs)
 
 **Deployed Web App URL:**
-`https://script.google.com/macros/s/AKfycbwyR_3wuqhI1XHRmIq1PkL2R3Q3sosSqk1dg00WTL4oIoUQ-KBJRlzrQuLQTUSfBe-nZg/exec`
+`https://script.google.com/macros/s/AKfycbxc52C0-arbpnF4sx3Ejs0LRRK-H1xgNgVZ4fmmyZ6xH9it8B0vYBqxW-dN3npxscot/exec`
 
 **How it works:**
 - Accepts GET request with `?email=...&phone=...`
-- Searches **Nadouche's Google Calendar** (regular @gmail.com account)
-- **Also reads extra calendars** listed in `EXTRA_CALENDAR_IDS` (Nov 2026: the Everpeace Companionship professional calendar, shared with the personal account, holds coordinated visits from 9 Nov 2026 onward). Events appearing in both calendars count once (`getVisitCalendarEvents`). Keep the deployment in the personal account: same URL, and Workspace may block "Anyone" web-app access.
+- Searches the **coordinator@ account's calendars** (see Owner line)
+- **Owner (24 Nov 2026):** the bridge now runs in the role account **coordinator@everpeacecompanionship.org** (Execute as: Me, Access: Anyone), so a future coordinator never needs Nadouche's personal or pro Gmail. It reads that account's default calendar + **"Coordination - Visits Calendar"** (its ID is in `EXTRA_CALENDAR_IDS` in the deployed script). Visits from 6 Nov 2026 onward were copied into that calendar; earlier visits are covered by the baselines in `visit-counts.js`. The old deployment in the personal Gmail (`AKfycbwyR_…`) is retired once the new one is verified.
 - Search window: **3 years back → 60 days ahead** (updated from 90 days to catch all historical visits)
 - Matches events where volunteer's email OR phone digits appear **anywhere in the event description**
 - Returns: `{ success, upcoming[], completedTotal, completedThisMonth, recentCompleted[] }`
