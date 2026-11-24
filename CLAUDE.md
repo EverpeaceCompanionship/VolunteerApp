@@ -80,10 +80,7 @@ BASE_URL         = 'https://api.baserow.io/api'
 // Google Calendar Bridge
 CALENDAR_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxc52C0-arbpnF4sx3Ejs0LRRK-H1xgNgVZ4fmmyZ6xH9it8B0vYBqxW-dN3npxscot/exec'
 
-// EmailJS (NOT YET CONFIGURED — keys are currently empty strings)
-EMAILJS_PUBLIC_KEY  = ''
-EMAILJS_SERVICE_ID  = ''
-EMAILJS_TEMPLATE_ID = ''
+// EmailJS: REMOVED (Nov 2026) — verification codes are emailed by the secure server (MailApp, coordinator@)
 ```
 
 ---
@@ -140,13 +137,14 @@ EMAILJS_TEMPLATE_ID = ''
 ### Authentication (2-Step Login)
 1. **Step 1:** Enter email OR phone → `findVolunteer()` searches Volunteers table
 2. **Step 2a:** Volunteer has a password → `verifyPassword()` checks SHA-256 hash
-3. **Step 2b:** First login → `createPassword()` sets password in Baserow
-4. **Step 2c:** Forgot password → OTP via EmailJS → `verifyOTPCode()` → set new password
+3. **Step 2b:** First login → server emails a 6-digit code to the email **on the Baserow record** (`requestCode`) → `verifyOTPCode()` (`checkCode`) → `createPassword()` (server re-checks the code). Phone-only volunteers with no email on file are told to contact the coordinator.
+4. **Step 2c:** Forgot password → same code flow (`requestCode` purpose `reset`) → `resetPassword` → new session; old sessions signed out, wrong-password lock lifted
+   - Codes: 10 min, single use, 5 wrong tries cancel it, max 3 emails per volunteer per 15 min, stored only as an HMAC in Apps Script cache. Sent from coordinator@ (MailApp, bilingual EN/FR, branded).
 5. **Change Password:** Accessible from footer on main screen
 6. Password strength meter on creation screen
 7. Eye toggle on all password fields
 
-> ⚠️ EmailJS is NOT configured yet (keys are empty strings). Forgot password flow shows "not configured" message and tells volunteer to contact coordinator.
+> To reset a volunteer manually (e.g. no email on file): clear their `Password_Hash` cell in Baserow — next sign-in starts the first-login flow.
 
 ### Stats Bar
 - **Total Visits — LIVE COUNTER (`visit-counts.js`, shared with the dashboard):**
@@ -369,7 +367,7 @@ Website, portal and dashboard all follow the Everpeace thank-you card (Internati
 
 | Item | Status |
 |------|--------|
-| EmailJS for forgot password | ⏳ Not configured — keys are empty strings. Volunteers told to contact coordinator. |
+| Forgot password / first sign-in verification | ✅ Nov 2026 — emailed code from the secure server |
 | Calendar bridge: only 1 calendar | ⚠️ Reads Nadouche's default calendar only |
 | Admin PIN in JS | ✅ Fixed 24 Nov 2026 — password checked by the secure server |
 | Training courses tr3-tr5, tr7-tr8 | ⏳ Marked "Coming Soon" — URLs to be added when ready |

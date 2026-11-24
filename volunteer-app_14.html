@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#051635">
 <title>Adopt a Muslim Senior — Volunteer Portal</title>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script src="visit-counts.js?v=12"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Great+Vibes&display=swap');
@@ -999,13 +998,8 @@ const VISITS_TABLE     = 917197;
 // Google Calendar is read by the same secure server
 const CALENDAR_SCRIPT_URL = API_URL;
 
-// ============================================================
-// EMAILJS CONFIG — Password Reset OTP
-// ⚠️  Fill in your 3 values from emailjs.com (see setup guide)
-// ============================================================
-const EMAILJS_PUBLIC_KEY  = '';   // e.g. 'hDhIhu8ecr3iL0Y6M'
-const EMAILJS_SERVICE_ID  = '';   // e.g. 'service_qyjnn9o'
-const EMAILJS_TEMPLATE_ID = '';   // e.g. 'template_od7i24m'
+// Verification codes (first sign-in, forgot password) are emailed by the
+// secure server from coordinator@ — no third-party email service, no keys here.
 
 // ============================================================
 // CONNECTED LINKS — post-visit forms, dashboard, website
@@ -1030,8 +1024,8 @@ let currentLang      = 'en';
 let currentVolunteer = null;
 let selectedDays     = {};
 let calendarData     = null;
-let otpCode          = null;   // current active OTP
-let otpExpiry        = null;   // timestamp when OTP expires
+let codeMode         = null;   // 'create' (first sign-in) | 'reset' (forgot password)
+let verifiedCode     = '';     // emailed code, checked by the server, sent again with the new password
 
 // ── Login identifiers — stored at login time, used for calendar queries ──────
 // These are the EXACT values the volunteer typed to log in.
@@ -1086,6 +1080,9 @@ const T = {
     otpNoEmail: 'No email address found for your account. Please contact your coordinator.',
     otpNotConfigured: 'Email reset is not configured yet. Please contact your coordinator to reset your password.',
     otpError: 'Could not send email. Please try again or contact your coordinator.',
+    codeSubCreate: 'First sign-in: to protect your account, we sent a 6-digit code to the email on your volunteer file:',
+    newPwSub: 'Choose your new password.',
+    tooManyCodes: 'Too many codes requested. Please wait 15 minutes, or contact the coordinator.',
     changePwTitle: 'Change Password',
     pwStrengthWeak: 'Weak', pwStrengthFair: 'Fair', pwStrengthGood: 'Good', pwStrengthStrong: 'Strong',
     greetingText: (n) => `As-salamu alaykum, ${n}!`, greetingSub: "Here's your volunteer dashboard",
@@ -1248,6 +1245,9 @@ const T = {
     otpNoEmail: 'Aucune adresse courriel trouv\u00e9e. Veuillez contacter votre coordinatrice.',
     otpNotConfigured: 'La r\u00e9initialisation par courriel n\u2019est pas encore configur\u00e9e. Contactez votre coordinatrice.',
     otpError: 'Impossible d\u2019envoyer le courriel. Veuillez r\u00e9essayer ou contacter votre coordinatrice.',
+    codeSubCreate: 'Premi\u00e8re connexion\u00a0: pour prot\u00e9ger votre compte, nous avons envoy\u00e9 un code \u00e0 6 chiffres au courriel de votre dossier de b\u00e9n\u00e9vole\u00a0:',
+    newPwSub: 'Choisissez votre nouveau mot de passe.',
+    tooManyCodes: 'Trop de codes demand\u00e9s. Veuillez attendre 15 minutes ou contacter la coordinatrice.',
     changePwTitle: 'Changer le mot de passe',
     pwStrengthWeak: 'Faible', pwStrengthFair: 'Passable', pwStrengthGood: 'Bon', pwStrengthStrong: 'Fort',
     greetingText: (n) => `As-salamu alaykum, ${n}!`, greetingSub: 'Voici votre tableau de bord',
@@ -1772,11 +1772,10 @@ async function findVolunteer() {
     document.getElementById('login-step1').style.display = 'none';
 
     if (!pwHash) {
-      // First login — create password
-      document.getElementById('create-pw-name').textContent = name ? `${name} —` : '';
-      document.getElementById('create-pw-sub').textContent  = t('createPwSub');
-      document.getElementById('login-step2-create').style.display = 'block';
-      document.getElementById('new-password').focus();
+      // First login — confirm it's really them with a code sent to the email
+      // on their volunteer file, then create the password
+      btn.textContent = t('btnContinue'); btn.disabled = false;
+      await startCodeFlow('create');
     } else {
       // Returning volunteer — enter password
       document.getElementById('pw-welcome-name').textContent = name ? t('greetingText', name) : '';
@@ -1833,14 +1832,22 @@ async function createPassword() {
   if (pw1 !== pw2)    { showAlert(alertBox, t('passwordMismatch'), 'error'); return; }
   btn.disabled = true; btn.textContent = t('loginLoading');
   try {
-    // Server saves the hash only if this volunteer has no password yet
-    const out = await api('createPassword', { email: _loginEmail, phone: _loginPhone, password: pw1 });
+    // Server checks the emailed code again, then saves the new password
+    const action = codeMode === 'reset' ? 'resetPassword' : 'createPassword';
+    const out = await api(action, { email: _loginEmail, phone: _loginPhone, password: pw1, code: verifiedCode });
     startSession(out);
+    verifiedCode = ''; codeMode = null;
     showAlert(alertBox, t('passwordSaved'), 'success');
     setTimeout(() => completeLogin(), 1200);
   } catch(e) {
-    showAlert(alertBox, 'Error saving password: ' + e.message, 'error');
     btn.disabled = false; btn.textContent = t('btnCreatePassword');
+    if (e.code === 'CODE_EXPIRED' || e.code === 'CODE_INVALID') {
+      showAlert(alertBox, t('otpExpired'), 'error');   // ask for a new code
+      document.getElementById('login-step2-create').style.display = 'none';
+      document.getElementById('login-step2-reset').style.display  = 'block';
+      return;
+    }
+    showAlert(alertBox, (e.code === 'FORMER' ? t('accessRemoved') : t('genericError')), 'error');
   }
 }
 
@@ -1919,107 +1926,84 @@ function backToStep1() {
 // ============================================================
 // FORGOT PASSWORD — Email OTP self-service reset
 // ============================================================
-function maskEmail(email) {
-  if (!email || !email.includes('@')) return email;
-  const [local, domain] = email.split('@');
-  return local[0] + '***@' + domain;
-}
-
-function generateOTP() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+// Sends a 6-digit code to the email on the volunteer's Baserow record
+// (the server never uses an address typed in the page)
+async function startCodeFlow(mode) {
+  const alertBox = document.getElementById('login-alert');
+  codeMode = mode; verifiedCode = '';
+  showAlert(alertBox, t('otpSending'), 'info');
+  try {
+    const out = await api('requestCode', { email: _loginEmail, phone: _loginPhone, purpose: mode, lang: currentLang });
+    ['login-step1', 'login-step2-password', 'login-step2-create'].forEach(id => { document.getElementById(id).style.display = 'none'; });
+    document.getElementById('login-step2-reset').style.display = 'block';
+    document.getElementById('reset-email-display').textContent = out.to || '';
+    document.getElementById('reset-sub').textContent = mode === 'create' ? t('codeSubCreate') : t('resetSub');
+    document.getElementById('reset-otp').value = '';
+    showAlert(alertBox, t('otpSent'), 'success');
+    document.getElementById('reset-otp').focus();
+  } catch (e) {
+    const msg = e.code === 'NO_EMAIL' ? t('otpNoEmail')
+              : e.code === 'LOCKED'   ? t('tooManyCodes')
+              : e.code === 'FORMER'   ? t('accessRemoved') : t('otpError');
+    showAlert(alertBox, msg, 'error');
+    // First sign-in can't continue without the code → back to step 1
+    if (mode === 'create') {
+      ['login-step2-password', 'login-step2-create', 'login-step2-reset'].forEach(id => { document.getElementById(id).style.display = 'none'; });
+      document.getElementById('login-step1').style.display = 'block';
+    }
+  }
 }
 
 async function showForgotPassword() {
-  const alertBox = document.getElementById('login-alert');
-  const email    = getVolunteerEmail();
-
-  if (!email) { showAlert(alertBox, t('otpNoEmail'), 'error'); return; }
-
-  if (!EMAILJS_PUBLIC_KEY || !EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID) {
-    // Show briefly near the link, then auto-clear so it doesn't block the password screen
-    showAlert(alertBox, t('otpNotConfigured'), 'error');
-    setTimeout(() => { alertBox.innerHTML = ''; }, 5000);
-    return;
-  }
-
-  document.getElementById('login-step2-password').style.display = 'none';
-  document.getElementById('login-step2-reset').style.display    = 'block';
-  document.getElementById('reset-otp').value = '';
-  document.getElementById('reset-email-display').textContent    = maskEmail(email);
-  alertBox.innerHTML = '';
-
-  await sendOTPEmail(false);
-  document.getElementById('reset-otp').focus();
+  await startCodeFlow('reset');
 }
 
-async function sendOTPEmail(isResend) {
+async function verifyOTPCode() {
+  const entered  = document.getElementById('reset-otp').value.replace(/\D/g, '');
   const alertBox = document.getElementById('login-alert');
-  const email    = getVolunteerEmail();
-  const name     = firstName(getVolunteerName()) || 'Volunteer';
-
-  otpCode   = generateOTP();
-  otpExpiry = Date.now() + 10 * 60 * 1000; // 10 minutes
-
-  showAlert(alertBox, t('otpSending'), 'info');
-
+  const btn      = document.getElementById('btn-verify-otp');
+  if (entered.length !== 6) { showAlert(alertBox, t('otpInvalid'), 'error'); return; }
+  btn.disabled = true;
   try {
-    emailjs.init(EMAILJS_PUBLIC_KEY);
-    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      to_name:  name,
-      to_email: email,
-      otp_code: otpCode,
-      org_name: 'Everpeace Companionship'
-    });
-    showAlert(alertBox, isResend ? t('otpResent') : t('otpSent'), 'success');
-  } catch(e) {
-    otpCode = null; otpExpiry = null;
-    showAlert(alertBox, t('otpError'), 'error');
-  }
-}
-
-function verifyOTPCode() {
-  const entered  = document.getElementById('reset-otp').value.trim();
-  const alertBox = document.getElementById('login-alert');
-
-  if (!entered) { showAlert(alertBox, t('otpInvalid'), 'error'); return; }
-  if (!otpCode || Date.now() > otpExpiry) {
-    showAlert(alertBox, t('otpExpired'), 'error'); return;
-  }
-  if (entered !== otpCode) {
-    showAlert(alertBox, t('otpInvalid'), 'error');
+    await api('checkCode', { email: _loginEmail, phone: _loginPhone, code: entered, purpose: codeMode });
+  } catch (e) {
+    btn.disabled = false;
+    showAlert(alertBox, e.code === 'CODE_EXPIRED' ? t('otpExpired') : t('otpInvalid'), 'error');
     document.getElementById('reset-otp').value = '';
     document.getElementById('reset-otp').focus();
     return;
   }
-
-  // ✅ OTP correct — clear it and go to create-new-password step
-  otpCode = null; otpExpiry = null;
+  btn.disabled = false;
+  verifiedCode = entered;
+  // ✅ Code correct — choose the password
   showAlert(alertBox, t('otpSuccess'), 'success');
-
   setTimeout(() => {
+    const name = firstName(getVolunteerName());
     document.getElementById('login-step2-reset').style.display  = 'none';
-    document.getElementById('create-pw-name').textContent = firstName(getVolunteerName()) || '';
-    document.getElementById('create-pw-sub').textContent  = t('createPwSub');
+    document.getElementById('create-pw-name').textContent = name ? `${name} —` : '';
+    document.getElementById('create-pw-sub').textContent  = codeMode === 'reset' ? t('newPwSub') : t('createPwSub');
     document.getElementById('login-step2-create').style.display = 'block';
+    const cbtn = document.getElementById('btn-create-pw');   // may still be disabled from a previous sign-in on this device
+    cbtn.disabled = false; cbtn.textContent = t('btnCreatePassword');
     document.getElementById('new-password').value     = '';
     document.getElementById('confirm-password').value = '';
     document.getElementById('new-password').focus();
     document.getElementById('login-alert').innerHTML = '';
-  }, 1200);
+  }, 900);
 }
 
 async function resendOTP() {
   document.getElementById('reset-otp').value = '';
-  await sendOTPEmail(true);
-  document.getElementById('reset-otp').focus();
+  await startCodeFlow(codeMode || 'reset');
 }
 
 function backToPasswordStep() {
-  otpCode = null; otpExpiry = null;
+  document.getElementById('reset-otp').value = '';
+  verifiedCode = '';
+  if (codeMode === 'create') { backToStep1(); return; }   // no password yet → start again
   document.getElementById('login-step2-reset').style.display    = 'none';
   document.getElementById('login-step2-password').style.display = 'block';
   document.getElementById('login-alert').innerHTML = '';
-  document.getElementById('reset-otp').value = '';
 }
 function showChangePassword() {
   document.getElementById('screen-main').classList.remove('active');
