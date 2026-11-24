@@ -115,7 +115,7 @@ function isFormerVolunteer({ name, email, phone } = {}) {
     if (p.length >= 7 && _vcDigits(f.phone) === p) return true;
     if (!n) return false;
     // Only "every word of the blocked name appears in the volunteer's record" —
-    // never the reverse, so an active "Maryam Ali" is NOT blocked by "Suha Maryam Ali".
+    // never the reverse, so an active "Jane Ali" is NOT blocked by "Sara Jane Ali".
     return _vcNames(f).some(x => x === n || (x.includes(' ') && _vcTokensIn(x, n)));
   });
 }
