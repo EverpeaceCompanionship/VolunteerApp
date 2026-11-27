@@ -204,6 +204,10 @@ EMAILJS_TEMPLATE_ID = ''
 - Content is hardcoded in `TRAINING_COURSES` array — edit there to add/change resources
 - Currently available: tr1 (Mental Health webinar), tr2 (Do's and Don'ts webinar), tr6 (Slide deck)
 
+### Ten messages of gratitude (27 Nov – 6 Dec 2026)
+- `gratitude.js` (+ `images/logo-gold-champagne.png`) renders the navy/gold cover card + message cards. Portal: `<div id="ep-gratitude" data-mode="portal">` under the greeting on the main screen → cover + TODAY's message (message N on day N = Nov 26 + N; if missing, the latest earlier one). Website (everpeacecompanionship.github.io, index.html + fr.html, section `data-epg-wrap` before #about, loads this file by absolute URL) → cover + messages with `website: true` (Nadia's day 1; the general EC team message is added on Dec 5).
+- Nadia sends each day's message: add `{ day, text, author, role }` to `MESSAGES`, bump `gratitude.js?v=` in the portal and website. Everything hides itself after Dec 6 (Ottawa time).
+
 ### Bilingual (EN / FR)
 - Toggle button in header switches all UI text
 - All strings in `T.en` and `T.fr` translation objects
