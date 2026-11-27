@@ -536,6 +536,20 @@
   .ltc-pin-apply a { color: var(--gold); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
   .ltc-pin-contact { font-size: 11px; color: var(--mist); margin-top: 8px; }
   .ltc-pin-contact a { color: var(--gold); }
+  /* Recent Visits — tidy entries (26 Nov 2026) */
+  .visit-info { flex: 1; min-width: 0; }
+  .visit-senior { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 18px; font-weight: 600; color: var(--green-dark); line-height: 1.2; }
+  .visit-senior.unnamed { font-style: italic; color: var(--text-secondary); }
+  .visit-date { font-size: 12px; letter-spacing: .04em; color: var(--text-secondary); margin-top: 2px; }
+  .vh-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .vh-badge { font-size: 11px; letter-spacing: .04em; padding: 2px 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--sand); color: var(--charcoal); }
+  .vh-badge.vh-first { background: var(--green-dark); border-color: var(--green-dark); color: var(--gold); }
+  .visit-note { font-size: 14px; line-height: 1.55; color: var(--charcoal); margin-top: 8px; white-space: pre-line; overflow-wrap: anywhere; }
+  .visit-note.clamp { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .visit-note.clamp.open { display: block; -webkit-line-clamp: unset; overflow: visible; }
+  .vh-more { background: none; border: none; padding: 4px 0 0; font-family: 'EB Garamond', Georgia, serif; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--gold-dark); cursor: pointer; }
+  .vh-more:hover { text-decoration: underline; }
+  .visit-dot { margin-top: 7px; }
 </style>
 </head>
 <body>
@@ -1101,6 +1115,8 @@ const T = {
     labelDuration: 'Duration', labelMood: 'How did the senior seem today?',
     labelNotes: 'Visit Notes', labelFollowup: 'Does this senior need a follow-up?',
     btnLogVisit: 'Submit Visit & Feedback', historyTitle: 'Recent Visits', noVisits: 'No visits logged yet.',
+    readMore: 'Read more', showLess: 'Show less', seniorVisitLabel: 'Senior visit', firstVisitBadge: 'First visit',
+    moodVeryHappy: 'Very happy', moodGood: 'Good spirits', moodQuiet: 'Quiet, but okay', moodSad: 'Seemed sad', moodUnwell: 'Not feeling well',
     logSuccess: 'Visit logged successfully. Barakallah feek!', logError: 'Could not log visit. Please try again.',
     loadingAssignment: 'Loading your visit...', assignedLabel: 'Your confirmed visit',
     calendarLabel: 'From your coordinator\'s calendar',
@@ -1263,6 +1279,8 @@ const T = {
     labelDuration: 'Dur\u00e9e', labelMood: 'Comment \u00e9tait l\'a\u00een\u00e9(e)?',
     labelNotes: 'Notes de Visite', labelFollowup: 'Un suivi est-il n\u00e9cessaire?',
     btnLogVisit: 'Envoyer la visite et la r\u00e9troaction', historyTitle: 'Visites R\u00e9centes', noVisits: 'Aucune visite enregistr\u00e9e.',
+    readMore: 'Lire la suite', showLess: 'R\u00e9duire', seniorVisitLabel: 'Visite \u00e0 un(e) a\u00een\u00e9(e)', firstVisitBadge: 'Premi\u00e8re visite',
+    moodVeryHappy: 'Tr\u00e8s heureux(se)', moodGood: 'De bonne humeur', moodQuiet: 'Calme', moodSad: 'Semblait triste', moodUnwell: 'Ne se sentait pas bien',
     logSuccess: 'Visite enregistr\u00e9e. Barakallah feek!', logError: 'Impossible d\'enregistrer. Veuillez r\u00e9essayer.',
     loadingAssignment: 'Chargement...', assignedLabel: 'Votre visite confirm\u00e9e',
     calendarLabel: 'Du calendrier de votre coordinatrice',
@@ -1529,6 +1547,7 @@ function toggleLang() {
   currentLang = currentLang === 'en' ? 'fr' : 'en';
   document.getElementById('lang-btn').textContent = currentLang === 'en' ? 'FR' : 'EN';
   applyTranslations();
+  if (_historyRows) renderVisitHistory();
 }
 
 function applyTranslations() {
@@ -1878,7 +1897,7 @@ function completeLogin() {
   // visits never appeared in "Recent Visits" (calendarData was still null).
   loadMyVisit().finally(() => loadVisitHistory());
   loadVisitCount();
-  loadSeniorOptions();
+  seniorNamesReady = loadSeniorOptions();
   buildCalendar();
   trainingLoadProgress();
   updateTrainingTabBadge();
@@ -2771,27 +2790,63 @@ function markFeedbackOpened(kind) {
 // ============================================================
 // VISIT HISTORY — calendar visits (gold) + visits logged in the portal (green)
 // ============================================================
+// Mood values the log form writes. Old rows (before the Nov 2026 field-mapping
+// fix) sometimes have the mood in the Senior column — never show it as a name.
+const MOOD_KEYS = { 'very happy':'moodVeryHappy', 'good':'moodGood', 'quiet':'moodQuiet', 'sad':'moodSad', 'unwell':'moodUnwell' };
+const MOOD_ICONS = { moodVeryHappy:'\u{1F60A}', moodGood:'\u{1F642}', moodQuiet:'\u{1F610}', moodSad:'\u{1F614}', moodUnwell:'\u{1F912}' };
+function moodKey(v) { return MOOD_KEYS[String(v || '').trim().toLowerCase()] || ''; }
+
+let _historyRows = null;                // cached for language switches
+let seniorNamesReady = null;            // promise set by loadSeniorOptions()
+
+// "Adam" → "Adam Mohammed Salih Adam": use the full name from the Seniors list
+function fullSeniorName(raw) {
+  const v = String(raw || '').trim();
+  if (!v || moodKey(v) || v === '–') return '';
+  if (!seniorNames.length) return v;
+  const exact = seniorNames.find(n => n.toLowerCase() === v.toLowerCase());
+  return exact || matchSeniorName(v) || v;
+}
+
+// Old rows with no name: look for exactly one senior's name in the volunteer's notes
+function seniorFromNotes(text) {
+  if (!text || !seniorNames.length) return '';
+  const norm = v => String(v).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9 ]/g, ' ');
+  const words = new Set(norm(text).split(/\s+/));
+  const hits = seniorNames.filter(n => norm(n).split(/\s+/).some(w => w.length >= 4 && words.has(w)));
+  return hits.length === 1 ? hits[0] : '';
+}
+
+function formatVisitDate(v) {
+  const m = String(v || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!m) return String(v || '');
+  const d = new Date(+m[1], +m[2] - 1, +m[3]);
+  return d.toLocaleDateString(currentLang === 'fr' ? 'fr-CA' : 'en-CA', { month:'short', day:'numeric', year:'numeric' });
+}
+
+function formatDuration(v) {
+  const s = String(v || '').trim();
+  return /^\d+$/.test(s) ? s + ' min' : s;
+}
+
+// Remove the technical lines the portal adds to Notes ([First visit], [Feedback] …)
+function cleanVisitNotes(raw) {
+  let text = String(raw || ''), first = false;
+  try { const j = JSON.parse(text); if (j && typeof j === 'object') text = j.coordinatorNotes || ''; } catch(e) {}
+  if (/^\s*\[First visit\]/i.test(text)) { first = true; text = text.replace(/^\s*\[First visit\]\s*/i, ''); }
+  text = text.split('\n').filter(l => !/^\s*\[Feedback\]/i.test(l)).join('\n').trim();
+  return { text, first };
+}
+
+function toggleVisitNote(btn) {
+  const note = btn.previousElementSibling;
+  const open = note.classList.toggle('open');
+  btn.textContent = open ? t('showLess') : t('readMore');
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+
 async function loadVisitHistory() {
-  const container = document.getElementById('visit-history-container');
-  const loc = currentLang === 'fr' ? 'fr-CA' : 'en-CA';
-  let html = '';
-
-  if (calendarData && calendarData.recentCompleted && calendarData.recentCompleted.length > 0) {
-    calendarData.recentCompleted.forEach(ev => {
-      const d = new Date(ev.start);
-      const dateStr = d.toLocaleDateString(loc, { month:'short', day:'numeric', year:'numeric' });
-      const time    = d.toLocaleTimeString(loc, { hour:'2-digit', minute:'2-digit' });
-      html += `
-        <div class="visit-history-item">
-          <div class="visit-dot calendar"></div>
-          <div class="visit-info">
-            <div class="visit-senior">${esc(ev.seniorName || ev.title)}</div>
-            <div class="visit-date">&#128197; ${esc(dateStr)} &middot; ${esc(time)}${ev.location ? ' &middot; ' + esc(ev.location) : ''}</div>
-          </div>
-        </div>`;
-    });
-  }
-
+  _historyRows = [];
   try {
     const fields  = await getTableFields(VISITS_TABLE);
     const F = (c) => findBestField(fields, c);
@@ -2800,32 +2855,76 @@ async function loadVisitHistory() {
     const dateF   = F(['Date', 'Visit Date', 'Date de Visite']) || 'Date';
     const durF    = F(['Duration', 'Durée']) || 'Duration';
     const senF    = F(['Senior', 'Senior Name']) || 'Senior';
+    const moodF   = F(['Senior Mood', 'Mood', 'Humeur']);
+    const typeF   = F(['Visit Type', 'Type de visite']);
     const notesF  = F(['Notes', 'Visit Notes']) || 'Notes';
     const first   = (getVolunteerName().split(' ')[0] || '').trim();
     const rows = first ? await fetchAllRows(VISITS_TABLE, `&search=${encodeURIComponent(first)}`) : [];
-    rows.filter(r => !isUpcomingRow(r, statusF) && rowBelongsToVolunteer(r[volF]))
+    _historyRows = rows.filter(r => !isUpcomingRow(r, statusF) && rowBelongsToVolunteer(r[volF]))
       .sort((a, b) => extractVal(b[dateF]).localeCompare(extractVal(a[dateF])))
       .slice(0, 20)
-      .forEach(r => {
-        const dateVal  = extractVal(r[dateF]);
-        const duration = extractVal(r[durF]);
-        const senior   = extractVal(r[senF]);
-        const rawNotes = extractVal(r[notesF]);
-        let notesDisplay = rawNotes;
-        try { const j = JSON.parse(rawNotes); if (j && typeof j === 'object') notesDisplay = j.coordinatorNotes || ''; } catch(e) {}
-        html += `
-          <div class="visit-history-item">
-            <div class="visit-dot"></div>
-            <div class="visit-info">
-              <div class="visit-senior">${esc(senior || '–')}</div>
-              <div class="visit-date">${esc(dateVal)}${duration ? ' &middot; ' + esc(duration) : ''}</div>
-              ${notesDisplay ? `<div class="visit-note">${esc(notesDisplay.substring(0,80))}${notesDisplay.length > 80 ? '...' : ''}</div>` : ''}
-            </div>
-          </div>`;
-      });
+      .map(r => ({
+        date: extractVal(r[dateF]), duration: extractVal(r[durF]), senior: extractVal(r[senF]),
+        mood: moodF ? extractVal(r[moodF]) : '', type: typeF ? extractVal(r[typeF]) : '',
+        notes: extractVal(r[notesF])
+      }));
   } catch(e) { /* Baserow log unavailable */ }
+  try { if (seniorNamesReady) await seniorNamesReady; } catch(e) {}
+  renderVisitHistory();
+}
 
-  container.innerHTML = html || `<p style="font-size:13px;color:var(--text-secondary);text-align:center;padding:16px">${t('noVisits')}</p>`;
+function renderVisitHistory() {
+  const container = document.getElementById('visit-history-container');
+  if (!container) return;
+  const loc = currentLang === 'fr' ? 'fr-CA' : 'en-CA';
+  const items = [];
+
+  // Calendar visits (gold dot) — also used to recover the senior's name on old log rows
+  const calByDate = {};
+  ((calendarData && calendarData.recentCompleted) || []).forEach(ev => {
+    const d = new Date(ev.start);
+    const name = fullSeniorName(ev.seniorName) || matchSeniorName(ev.title) || ev.seniorName || ev.title;
+    calByDate[localDateKey(d)] = name;
+    items.push({ cal: true, name, meta: [d.toLocaleDateString(loc, { month:'short', day:'numeric', year:'numeric' }),
+      d.toLocaleTimeString(loc, { hour:'2-digit', minute:'2-digit' }), ev.location || ''].filter(Boolean) });
+  });
+
+  (_historyRows || []).forEach(r => {
+    const notes = cleanVisitNotes(r.notes);
+    // Mood stored in the Senior column (old rows) → recover the name, keep the mood as a badge
+    const misplacedMood = moodKey(r.senior) ? r.senior : '';
+    let name = fullSeniorName(r.senior);
+    if (!name) name = calByDate[String(r.date).slice(0, 10)] || seniorFromNotes(notes.text) || '';
+    const mk = moodKey(r.mood) || moodKey(misplacedMood);
+    const first = notes.first || /first/i.test(r.type);
+    items.push({ cal: false, name, mood: mk, first, notes: notes.text,
+      meta: [formatVisitDate(r.date), formatDuration(r.duration)].filter(Boolean) });
+  });
+
+  if (!items.length) {
+    container.innerHTML = `<p style="font-size:13px;color:var(--text-secondary);text-align:center;padding:16px">${t('noVisits')}</p>`;
+    return;
+  }
+  container.innerHTML = items.map(it => {
+    const badges = (it.first ? `<span class="vh-badge vh-first">${esc(t('firstVisitBadge'))}</span>` : '') +
+      (it.mood ? `<span class="vh-badge">${MOOD_ICONS[it.mood]} ${esc(t(it.mood))}</span>` : '');
+    const long = it.notes && it.notes.length > 140;
+    return `
+      <div class="visit-history-item">
+        <div class="visit-dot${it.cal ? ' calendar' : ''}"></div>
+        <div class="visit-info">
+          <div class="visit-senior${it.name ? '' : ' unnamed'}">${esc(it.name || t('seniorVisitLabel'))}</div>
+          <div class="visit-date">${it.meta.map(esc).join(' &middot; ')}</div>
+          ${badges ? `<div class="vh-badges">${badges}</div>` : ''}
+          ${it.notes ? `<div class="visit-note${long ? ' clamp' : ''}">${esc(it.notes)}</div>` : ''}
+          ${long ? `<button type="button" class="vh-more" aria-expanded="false" onclick="toggleVisitNote(this)">${esc(t('readMore'))}</button>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+  // Only offer "Read more" when the note is really cut off
+  requestAnimationFrame(() => container.querySelectorAll('.visit-note.clamp').forEach(n => {
+    if (n.offsetParent && n.scrollHeight <= n.clientHeight + 1) { n.classList.remove('clamp'); n.nextElementSibling && n.nextElementSibling.remove(); }
+  }));
 }
 
 // ============================================================

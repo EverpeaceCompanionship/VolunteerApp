@@ -187,6 +187,7 @@ EMAILJS_TEMPLATE_ID = ''
 - Uses `buildVisitPayload()` with `getTableFields()` + `findBestField()` for smart field detection
 - Saves to Visits table with Status: 'Completed'
 - ⚠️ Does NOT increment a counter — visit count comes from calendar
+- **Recent Visits (26 Nov 2026):** `loadVisitHistory()` fetches rows → `renderVisitHistory()` (re-runs on EN/FR switch). Senior shown with the FULL name from the Seniors list (`fullSeniorName`, e.g. "Adam" → full name). Old rows that have the mood in the Senior column ("Very happy" — pre-fix bug #8) never show the mood as a name: name recovered from the calendar visit on the same date, else from exactly one senior name found in the notes (`seniorFromNotes`), else "Senior visit / Visite à un(e) aîné(e)"; the mood becomes a badge. Dates "Nov 25, 2026", "[First visit]" → badge, "[Feedback] …" line hidden, long notes clamp to 3 lines with Read more / Show less.
 
 ### Tab: Training
 - **Layout (17 Nov 2026, "steps that open and close"):** pinned navy card "How to apply… City of Ottawa LTC Homes" at the very top; then 3 collapsible sections, only one open at a time (`tsecToggle/tsecApply/tsecSummaries`): **Step 1 · Before your first visit** (open until all mandatory done) → **Step 2 · Keep learning** (auto-opens the moment Step 1 is completed) → **City of Ottawa LTC** (closed by default, "Only if you are applying…"). Each header shows an "x of y done" chip. The old global progress bar + filter pills are kept in the HTML but hidden (`.training-legacy-controls`, filter forced to 'all').
