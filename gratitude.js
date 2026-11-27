@@ -92,12 +92,12 @@
   '.epg-body .epg-kicker{font-size:11.5px;letter-spacing:.24em}' +
   '.epg-thanks{font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;font-weight:500;font-size:clamp(40px,5.4vw,56px);line-height:1;margin:12px 0 0}' +
   '.epg-merci{font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;font-size:24px;color:#CDAE74;margin:2px 0 14px}' +
-  '.epg-quote{font-style:italic;font-weight:600;font-size:16px;line-height:1.55;margin:0;color:#FBF7EE}' +
-  '.epg-quote em{color:#CDAE74;font-weight:500}' +
+  '.epg-quote{font-style:normal;font-weight:500;font-size:19px;line-height:1.7;letter-spacing:.005em;margin:0;color:#FFFFFF;text-shadow:0 1px 2px rgba(3,14,36,.6);max-width:62ch}' +
+  '.epg-quote em{font-style:italic;color:#E2C68E;font-weight:500}' +
   '.epg-sign{font-family:"Great Vibes",cursive;font-size:34px;color:#CDAE74;margin:12px 0 0;line-height:1.1}' +
   '.epg-role{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#C9CCD6;margin-top:4px}' +
   '.epg-stack .epg-msg{grid-template-columns:1fr}.epg-stack .epg-side{border-right:0;border-bottom:1px solid rgba(205,174,116,.45);padding:0 0 18px}.epg-stack .epg-body{padding:18px 2px 0}.epg-stack .epg-card{padding:16px}.epg-stack .epg-frame{padding:26px 16px 18px}' +
-  '@media (max-width:620px){.epg-card{padding:16px}.epg-frame{padding:26px 16px 18px}.epg-msg{grid-template-columns:1fr}.epg-side{border-right:0;border-bottom:1px solid rgba(205,174,116,.45);padding:0 0 18px}.epg-body{padding:18px 2px 0}.epg-num{font-size:46px}}';
+  '@media (max-width:620px){.epg-quote{font-size:17.5px;line-height:1.65}.epg-card{padding:16px}.epg-frame{padding:26px 16px 18px}.epg-msg{grid-template-columns:1fr}.epg-side{border-right:0;border-bottom:1px solid rgba(205,174,116,.45);padding:0 0 18px}.epg-body{padding:18px 2px 0}.epg-num{font-size:46px}}';
 
   var STAR = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12 0c.6 6.5 5.5 11.4 12 12-6.5.6-11.4 5.5-12 12-.6-6.5-5.5-11.4-12-12C6.5 11.4 11.4 6.5 12 0z"/></svg>';
   function frame(inner) {
